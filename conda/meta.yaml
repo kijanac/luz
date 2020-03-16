@@ -1,0 +1,41 @@
+{% set data = load_setup_py_data(setup_file='../setup.py',from_recipe_dir=True)  %}
+
+package:
+  name: {{ data.name }}
+  version: {{ data.version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ data.name[0] }}/{{ data.name }}/{{ data.name }}-{{ data.version }}.tar.gz
+  sha256: {{ environ["PYPI_TARBALL_SHA_256"] }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  build:
+    {% for item in data.extras_require['dev'] %}
+    - {{ item }}
+    {% endfor %}
+  host:
+    - python {{ data.python_requires }}
+  run:
+    - python {{ data.python_requires }}
+    {% for item in data.install_requires %}
+    - {{ item }}
+    {% endfor %}
+
+test:
+  requires:
+    {% for item in data.tests_require %}
+    - {{ item }}
+    {% endfor %}
+
+about:
+  home: {{ data.url }}
+  author: {{ data.author }}
+  author_email: {{ data.author_email }}
+  license: {{ data.license }}
+  license_file: '{{ os.path.join(os.path.dirname(environ["RECIPE_DIR"]),"LICENSE") }}'
+  summary: {{ data.description }}
