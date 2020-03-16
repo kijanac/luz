@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  create:
+    tags:
+    - 'v*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Update conda
+      run: conda update -n base -c defaults conda
+
+    - name: Make conda environment and install dependencies
+      run: make setup VERBOSE=1
+
+    - name: Install package (editable)
+      run: make install EDIT=1 VERBOSE=1
+
+    - name: Run tests on editable install
+      run: make test EDIT=1 VERBOSE=1
+
+    - name: Build sdist and wheel
+      run: make build VERBOSE=1
+
+    - name: Deploy to PyPI and Anaconda
+      run: make deploy PYPI_TOKEN=${{ secrets.PYPI_TOKEN }} ANACONDA_USERNAME=${{ secrets.ANACONDA_USERNAME }} ANACONDA_PASSWORD=${{ secrets.ANACONDA_PASSWORD}} CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} VERBOSE=1
