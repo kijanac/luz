@@ -24,7 +24,7 @@ Installing
 
 To install, open a shell terminal and run::
 
-`conda create -n luz -c conda-forge -c kijana luz`
+`conda create -n luz -c conda-forge -c dglteam -c ostrokach-forge -c pytorch -c kijana luz`
 
 ----------
 Versioning
