@@ -1,13 +1,16 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Any, Callable, Optional
 
 import ast
 import collections
+import contextlib
 import functools
 import importlib
 import math
+import numpy as np
 import operator
 import pathlib
+import torch
 
 
 __all__ = [
@@ -15,7 +18,9 @@ __all__ = [
     "expand_path",
     "int_length",
     "memoize",
+    "set_seed",
     "string_to_class",
+    "temporary_seed",
 ]
 
 # from https://stackoverflow.com/a/9558001
@@ -43,7 +48,6 @@ ops = {
 def evaluate_expression(expression: str) -> Any:
     node = ast.parse(expression, mode="eval").body
 
-    # evaluate operators
     return _evaluate_operators(node)
 
 
@@ -93,7 +97,10 @@ def int_length(n: int) -> int:
         return int(math.log10(-n)) + 2
 
 
-def memoize(func):
+T = Callable[..., Any]
+
+
+def memoize(func: T) -> T:
     func.cache = collections.OrderedDict()
 
     @functools.wraps(func)
@@ -107,7 +114,12 @@ def memoize(func):
     return memoized
 
 
-def string_to_class(class_str: str):
+def set_seed(seed: int) -> None:
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+
+
+def string_to_class(class_str: str) -> Any:
     """Converts a string specifying the name of a Python class to a reference to that class.
 
     Parameters
@@ -127,90 +139,28 @@ def string_to_class(class_str: str):
     """
     try:
         split_name = class_str.rsplit(".", 1)
-    except AttributeError:  # means that class_str doesn't have rsplit function - probably was passed as None
+    except AttributeError:
+        # means that class_str doesn't have rsplit function - probably was passed as None
         return None
 
     try:
         source_path, class_name = split_name
         return getattr(importlib.import_module(source_path), class_name)
-    except ValueError:  # couldn't unpack split_name, so len(split_name) < 2 - probably = 1, no '.' in class_str so assume builtin
+    except ValueError:
+        # couldn't unpack split_name, so len(split_name) < 2 - probably = 1, no '.' in class_str so assume builtin
         return getattr(importlib.import_module("builtins"), class_str)
 
 
-# class NestedDictionary(collections.abc.MutableMapping):
-#     def __init__(self, *args, **kwargs):
-#         self.d = dict(*args, **kwargs)
+@contextlib.contextmanager
+def temporary_seed(seed: int) -> None:
+    # adapted from https://stackoverflow.com/a/49557127
+    np_state = np.random.get_state()
+    torch_state = torch.random.get_rng_state()
 
-#     def find_key(self, k):
-#         yield from set(
-#             x
-#             for kk in self
-#             for x in tuple(kk[: i + 1] for i, v in enumerate(kk) if v == k)
-#         )
+    set_seed(seed)
 
-#     def __getitem__(self, keys):
-#         if not isinstance(keys, tuple):
-#             keys = (keys,)
-
-#         branch = self.d
-#         for k in keys:
-#             branch = branch[k]
-
-#         return NestedDictionary(branch) if isinstance(branch, dict) else branch
-
-#     def __setitem__(self, keys, value):
-#         if not isinstance(keys, tuple):
-#             keys = (keys,)
-
-#         *most_keys, last_key = keys
-
-#         branch = self.d
-#         for k in most_keys:
-#             if k not in branch:
-#                 branch[k] = {}
-#             branch = branch[k]
-
-#         branch[last_key] = value
-
-#     def __delitem__(self, keys):
-#         if not isinstance(keys, tuple):
-#             keys = (keys,)
-
-#         *most_keys, last_key = keys
-
-#         branch = self.d
-#         for k in most_keys:
-#             if k not in branch:
-#                 branch[k] = {}
-#             branch = branch[k]
-
-#         del branch[last_key]
-
-#     def __iter__(self, d=None, prepath=()):
-#         if d == None:
-#             d = self.d
-#         for k, v in d.items():
-#             if hasattr(v, "items"):
-#                 for keys in self.__iter__(d=v, prepath=prepath + (k,)):
-#                     yield keys
-#             else:
-#                 yield prepath + (k,)
-
-#     def __len__(self):
-#         return sum(1 for _ in self)
-
-#     def __str__(self):
-#         return str(self.d)
-
-#     def __repr__(self):
-#         return repr(self.d)
-
-# def one_hot(x, alphabet):
-#     # FIXME: alphabet must be tuple
-
-#     t = torch.zeros(size=(len(x), len(alphabet)))
-
-#     for i, c in enumerate(x):
-#         z[i, alphabet.index(c)] = 1
-
-#     return z
+    try:
+        yield
+    finally:
+        np.random.set_state(np_state)
+        torch.random.set_rng_state(torch_state)
