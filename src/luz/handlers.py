@@ -42,35 +42,27 @@ class Handler:
 
     def batch_started(self, **kwargs):
         pass
-    
+
     def batch_ended(self, **kwargs):
         pass
-    
+
     def epoch_started(self, **kwargs):
         pass
-    
+
     def epoch_ended(self, **kwargs):
         pass
 
     def testing_started(self, **kwargs):
         pass
-    
+
     def testing_ended(self, **kwargs):
         pass
-    
+
     def training_started(self, **kwargs):
         pass
-    
+
     def training_ended(self, **kwargs):
         pass
-
-    # # FIXME: Fix this
-    # def state_dict(self):
-    #     return {}
-    #
-    # # FIXME: Fix this
-    # def load_state_dict(self, state_dict):
-    #     pass
 
 
 class Accuracy(Handler):
@@ -303,13 +295,15 @@ class Loss(Handler):
         **kwargs: Any,
     ) -> None:
         if flag == luz.Flag.TRAINING:
-            # NOTE: it's very important to add loss.item() to avoid a memory leak!
+            # NOTE: it's very important to add loss.item() (as opposed to loss) to avoid a memory leak!
             self.running_loss += loss.item()  # *loader.batch_size
             total = len(loader.sampler) / loader.batch_size
             batch_interval = int(total * self.print_interval)
             cur = ind + 1
             if cur % batch_interval == 0 or cur == total:
-                print(f"[Epoch {epoch}]: Average running loss: {self.running_loss / cur}.")
+                print(
+                    f"[Epoch {epoch}] Average running loss: {self.running_loss / cur}."
+                )
 
 
 class Progress(Handler):
@@ -389,45 +383,3 @@ class Timer(Handler):
         self.end_time = datetime.datetime.now().replace(microsecond=0)
 
         print(f"[Epoch {epoch}]: {self.end_time-self.start_time} to train")
-
-
-#
-# class Metric():
-#     def __init__(self):
-#         # initialize any arrays, do any precomputing, etc
-#         pass
-#
-#     # FIXME: Fix this
-#     def state_dict(self):
-#         return {}
-#
-#     # FIXME: Fix this
-#     def load_state_dict(self, state_dict):
-#         pass
-#
-#     def batch_started(self, **kwargs):
-#         pass
-#
-#     def batch_ended(self, **kwargs):
-#         pass
-#
-#     def epoch_started(self, **kwargs):
-#         pass
-#
-#     def epoch_ended(self, **kwargs):
-#         pass
-#
-#     def training_started(self, **kwargs):
-#         pass
-#
-#     def training_ended(self, **kwargs):
-#         pass
-#
-#     def update(self, x, y, predicted):
-#         # for maximum memory efficiency, this is where the metric should be computed in real-time, so that the entire dataset does not need to be held in memory at once
-#         # if this is not possible, then this is where the array which holds the necessary data should be updated
-#         pass
-#
-#     def compute(self):
-#         # perform any final computations to produce the metric
-#         pass
