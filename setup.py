@@ -120,6 +120,7 @@ class DeployConda(setuptools.Command):
 
     def run(self):
         package_name = self.distribution.metadata.name
+        yes = subprocess.Popen(["yes"], stdout=subprocess.PIPE)
         subprocess.run(
             [
                 "anaconda",
@@ -128,11 +129,10 @@ class DeployConda(setuptools.Command):
                 self.username,
                 "--password",
                 self.password,
-            ]
+            ],
+            stdin=yes.stdout,
         )
-        # subprocess.run(
-        #     ["anaconda", "remove", "-f", self.anaconda_username + "/" + package_name]
-        # )
+
         pwd = pathlib.Path(self.build_dir).absolute()
         installed_package_info = subprocess.check_output(
             [
