@@ -10,6 +10,7 @@ import math
 import numpy as np
 import operator
 import pathlib
+import random
 import torch
 
 
@@ -117,6 +118,7 @@ def memoize(func: T) -> T:
 def set_seed(seed: int) -> None:
     torch.manual_seed(seed)
     np.random.seed(seed)
+    random.seed(seed)
 
 
 def string_to_class(class_str: str) -> Any:
@@ -154,6 +156,7 @@ def string_to_class(class_str: str) -> Any:
 @contextlib.contextmanager
 def temporary_seed(seed: int) -> None:
     # adapted from https://stackoverflow.com/a/49557127
+    random_state = random.getstate()
     np_state = np.random.get_state()
     torch_state = torch.random.get_rng_state()
 
@@ -162,5 +165,6 @@ def temporary_seed(seed: int) -> None:
     try:
         yield
     finally:
+        random.setstate(random_state)
         np.random.set_state(np_state)
         torch.random.set_rng_state(torch_state)
