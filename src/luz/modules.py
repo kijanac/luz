@@ -10,7 +10,7 @@ import collections
 import networkx as nx
 import torch
 
-__all__ = ["Concatenate","ElmanRNN", "FC", "FCRNN", "Module", "Reshape", "WAVE"]
+__all__ = ["Concatenate", "ElmanRNN", "FC", "FCRNN", "Module", "Reshape", "WAVE"]
 
 
 class Module(torch.nn.Module):
@@ -22,13 +22,15 @@ class Module(torch.nn.Module):
     def forward(self, *args: torch.Tensor, **kwargs: torch.Tensor) -> torch.Tensor:
         return self.activation(self.module(*args, **kwargs))
 
+
 class Concatenate(torch.nn.Module):
     def __init__(self, dim: Optional[int] = 0) -> None:
         super().__init__()
         self.dim = dim
 
-    def forward(self, *x: torch.Tensor) -> torch.Tensor:
-        return torch.cat(x,dim=self.dim)
+    def forward(self, *tensors: torch.Tensor) -> torch.Tensor:
+        return torch.cat(tensors, dim=self.dim)
+
 
 class ElmanRNN(torch.nn.Module):
     def __init__(
@@ -132,6 +134,8 @@ class WAVE(torch.nn.Module):
         self.C_to_A = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
         self.T_to_B = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
         self.C_to_B = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
+        self.softmax_mix = Module(Concatenate(dim=1), torch.nn.Softmax(dim=1))
+        self.softsign_mix = Module(Concatenate(dim=1), torch.nn.Softsign())
         self.W = torch.randn(size=(self.d, 1))
         self.W_u = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
         self.W_o = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
@@ -204,15 +208,10 @@ class WAVE(torch.nn.Module):
         input_T = torch.cat([tree, state.expand_as(tree)], dim=0).t()
         input_C = torch.cat([cross, state.expand_as(cross)], dim=0).t()
 
-        A = torch.nn.functional.softmax(
-            torch.cat(
-                tensors=[self.T_to_A(input_T).t(), self.C_to_A(input_C).t()], dim=1,
-            ),
-            dim=1,
+        A = self.softmax_mix(
+            self.T_to_A(input_T).t(), self.C_to_A(input_C).t()
         ) * self.W.expand_as(neighbors)
 
-        B = torch.nn.functional.softsign(
-            torch.cat([self.T_to_B(input_T).t(), self.C_to_B(input_C).t()], dim=1,)
-        )
+        B = self.softsign_mix(self.T_to_B(input_T).t(), self.C_to_B(input_C).t())
 
         return torch.sum((A + B) * neighbors, dim=1).unsqueeze(1)
