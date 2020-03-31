@@ -10,7 +10,7 @@ import collections
 import networkx as nx
 import torch
 
-__all__ = ["ElmanRNN", "FC", "FCRNN", "Module", "Reshape", "WAVE"]
+__all__ = ["Concatenate","ElmanRNN", "FC", "FCRNN", "Module", "Reshape", "WAVE"]
 
 
 class Module(torch.nn.Module):
@@ -22,6 +22,13 @@ class Module(torch.nn.Module):
     def forward(self, *args: torch.Tensor, **kwargs: torch.Tensor) -> torch.Tensor:
         return self.activation(self.module(*args, **kwargs))
 
+class Concatenate(torch.nn.Module):
+    def __init__(self, dim: Optional[int] = 0) -> None:
+        super().__init__()
+        self.dim = dim
+
+    def forward(self, *x: torch.Tensor) -> torch.Tensor:
+        return torch.cat(x,dim=self.dim)
 
 class ElmanRNN(torch.nn.Module):
     def __init__(
@@ -106,11 +113,11 @@ class FCRNN(torch.nn.Module):
 
 
 class Reshape(torch.nn.Module):
-    def __init__(self, out_shape):
+    def __init__(self, out_shape: Iterable[int]) -> None:
         super().__init__()
         self.shape = tuple(out_shape)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return x.view(self.shape)
 
 
