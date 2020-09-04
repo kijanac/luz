@@ -1,13 +1,16 @@
 from __future__ import annotations
-from typing import Any, Iterable, Iterator, Optional, Tuple, Union
+from typing import Any, Callable, Iterable, Iterator, Optional, Tuple, Union
 
 import itertools
 import luz
 import math
+import numpy as np
 import pathlib
 import torch
 
 __all__ = [
+    "default_collate",
+    "graph_collate",
     "Data",
     "Dataset",
     # "ChainDataset",
@@ -19,6 +22,31 @@ __all__ = [
     "WrapperDataset",
 ]
 
+def default_collate(batch: Iterable[luz.Data]) -> luz.Data:
+    kw = {
+        k: torch.stack([torch.as_tensor(sample[k]) for sample in batch], dim=0)
+        for k in batch[0].keys
+    }
+
+    return Data(**kw)
+
+def graph_collate(batch: Iterable[luz.Data]) -> luz.Data:
+    node_counts = [sample.x.shape[0] for sample in batch]
+    edge_index_offsets = np.cumsum(node_counts) - node_counts[0]
+
+    kw = {}
+
+    for k in batch[0].keys:
+        if k == 'x' or k == 'edge_attr':
+            kw[k] = torch.cat([torch.as_tensor(sample[k]) for sample in batch],dim=0)
+        elif k == 'edge_index':
+            kw[k] = torch.cat([torch.as_tensor(sample[k] + offset) for sample,offset in zip(batch,edge_index_offsets)],dim=1)
+        else:
+            kw[k] = torch.stack([torch.as_tensor(sample[k]) for sample in batch],dim=0)
+
+    kw['batch'] = torch.cat([torch.full((nc,),i,dtype=torch.long) for i,nc in enumerate(node_counts)])
+
+    return Data(**kw)
 
 class Data:
     def __init__(
@@ -49,15 +77,16 @@ class Data:
 
 
 class BaseDataset:
+    def __init__(self) -> None:
+        self._collate = default_collate
+
     def _collate(self, batch: Iterable[luz.Data]) -> luz.Data:
-        b, *_ = batch
-        kw = {
-            k: torch.stack([torch.as_tensor(sample[k]) for sample in batch], dim=0)
-            for k in b.keys
-        }
+        return default_collate(batch)
 
-        return Data(**kw)
-
+    def use_collate(self, collate: Callable[Iterable[luz.Data],luz.Data]) -> luz.BaseDataset:
+        self._collate = collate
+        return self
+    
     def loader(
         self,
         batch_size: Optional[int] = 1,
@@ -84,19 +113,19 @@ class BaseDataset:
     def __add__(self, other: luz.Dataset) -> luz.ConcatDataset:
         return ConcatDataset([self, other])
 
-    def subset(self, indices):
+    def subset(self, indices: Iterable[int]) -> luz.Subset:
         return Subset(dataset=self, indices=indices)
 
     def random_split(self, lengths: Iterable[int]) -> Tuple[BaseDataset]:
         # adapted from https://pytorch.org/docs/stable/_modules/torch/utils/data/dataset.html#random_split
         indices = torch.randperm(sum(lengths)).tolist()
         return tuple(
-            Subset(self, indices[offset - l : offset])
+            Subset(dataset=self, indices=indices[offset - l : offset])
             for offset, l in zip(itertools.accumulate(lengths), lengths)
         )
 
 
-class Dataset(BaseDataset, torch.utils.data.Dataset):
+class Dataset(torch.utils.data.Dataset, BaseDataset):
     """
     A Dataset is an object which contains, or at least can systematically access, points from some domain and optionally their associated labels.
     """
@@ -114,8 +143,7 @@ class Dataset(BaseDataset, torch.utils.data.Dataset):
 class ConcatDataset(BaseDataset, torch.utils.data.ConcatDataset):
     pass
 
-
-class Subset(BaseDataset, torch.utils.data.Subset):
+class Subset(torch.utils.data.Subset, BaseDataset):
     pass
 
 
@@ -139,7 +167,7 @@ class OnDiskDataset(BaseDataset, torch.utils.data.Dataset):
 
 
 class UnpackDataset(BaseDataset, torch.utils.data.Dataset):
-    def __init__(self, keys, dataset) -> None:
+    def __init__(self, keys: Iterable[str], dataset: torch.utils.data.Dataset) -> None:
         self.keys = keys
         self.dataset = dataset
 
