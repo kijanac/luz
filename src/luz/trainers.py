@@ -62,7 +62,7 @@ class Trainer:
         self.migrate(predictor, device)
 
         if train:
-            # NOTE: must come after model.to
+            # NOTE: must come after migrate
             optimizer = self.optimizer.link(predictor=predictor)
 
         loader = dataset.loader(**self.loader_kwargs)
