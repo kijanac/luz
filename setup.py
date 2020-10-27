@@ -145,7 +145,9 @@ class DeployConda(setuptools.Command):
                 "--json",
             ]
         )
-        [d,] = json.loads(installed_package_info)[package_name]
+        [d,] = json.loads(
+            installed_package_info
+        )[package_name]
         url = re.match(r"file://(?P<url>.*)", d["url"]).group("url")
         subprocess.run(["anaconda", "upload", url])
 
