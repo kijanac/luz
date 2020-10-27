@@ -12,7 +12,11 @@ class Learner:
     """
 
     def __init__(
-        self, trainer: luz.Trainer, cls: Type[torch.nn.Module], *args, **kwargs,
+        self,
+        trainer: luz.Trainer,
+        cls: Type[torch.nn.Module],
+        *args,
+        **kwargs,
     ) -> None:
         self.cls = cls
         self.trainer = trainer
