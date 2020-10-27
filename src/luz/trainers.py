@@ -78,7 +78,10 @@ class Trainer:
             self._call_event(event=luz.Event.TRAINING_STARTED)
         else:
             self.state = dict(
-                flag=luz.Flag.TESTING, trainer=self, predictor=predictor, loader=loader,
+                flag=luz.Flag.TESTING,
+                trainer=self,
+                predictor=predictor,
+                loader=loader,
             )
             self._call_event(event=luz.Event.TESTING_STARTED)
 
