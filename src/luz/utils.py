@@ -15,10 +15,17 @@ import torch
 
 
 __all__ = [
+    "batchwise_edge_mean",
+    "batchwise_edge_sum",
+    "batchwise_node_mean",
+    "batchwise_node_sum",
     "evaluate_expression",
     "expand_path",
     "int_length",
+    "masked_softmax",
     "memoize",
+    "nodewise_edge_mean",
+    "nodewise_edge_sum",
     "set_seed",
     "string_to_class",
     "temporary_seed",
@@ -46,6 +53,46 @@ ops = {
 }
 
 
+def batchwise_edge_mean(
+    edges: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor
+) -> torch.Tensor:
+    N_e, *_ = edges.shape
+    s, r = edge_index
+    M = torch.zeros(batch[r].max() + 1, N_e)
+    M[batch[r], torch.arange(N_e)] = 1
+    M = torch.nn.functional.normalize(M, p=1, dim=1)
+
+    return torch.matmul(M, edges)
+
+
+def batchwise_edge_sum(
+    edges: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor
+) -> torch.Tensor:
+    N_e, *_ = edges.shape
+    s, r = edge_index
+    M = torch.zeros(batch[r].max() + 1, N_e)
+    M[batch[r], torch.arange(N_e)] = 1
+
+    return torch.matmul(M, edges)
+
+
+def batchwise_node_mean(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
+    N_v, *_ = nodes.shape
+    M = torch.zeros(batch.max() + 1, N_v)
+    M[batch, torch.arange(N_v)] = 1
+    M = torch.nn.functional.normalize(M, p=1, dim=1)
+
+    return torch.matmul(M, nodes)
+
+
+def batchwise_node_sum(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
+    N_v, *_ = nodes.shape
+    M = torch.zeros(batch.max() + 1, N_v)
+    M[batch, torch.arange(N_v)] = 1
+
+    return torch.matmul(M, nodes)
+
+
 def evaluate_expression(expression: str) -> Any:
     node = ast.parse(expression, mode="eval").body
 
@@ -60,7 +107,8 @@ def _evaluate_operators(node) -> Any:
     # <left> <operator> <right>
     elif isinstance(node, ast.BinOp):
         return ops[type(node.op)](
-            _evaluate_operators(node.left), _evaluate_operators(node.right),
+            _evaluate_operators(node.left),
+            _evaluate_operators(node.right),
         )
     # <operator> <operand> e.g., -1
     elif isinstance(node, ast.UnaryOp):
@@ -98,6 +146,12 @@ def int_length(n: int) -> int:
         return int(math.log10(-n)) + 2
 
 
+def masked_softmax(
+    x: torch.Tensor, M: torch.Tensor, *args: Any, **kwargs: Any
+) -> torch.Tensor:
+    return torch.softmax((M * x).masked_fill(M == 0, -float("inf")), *args, **kwargs)
+
+
 T = Callable[..., Any]
 
 
@@ -113,6 +167,25 @@ def memoize(func: T) -> T:
         return func.cache[k]
 
     return memoized
+
+
+def nodewise_edge_mean(edges: torch.Tenso, edge_index):
+    N_e, *_ = edges.shape
+    s, r = edge_index
+    M = torch.zeros(r.max() + 1, N_e)
+    M[r, torch.arange(N_e)] = 1
+    M = torch.nn.functional.normalize(M, p=1, dim=1)
+
+    return torch.matmul(M, edges)
+
+
+def nodewise_edge_sum(edges, edge_index):
+    N_e, *_ = edges.shape
+    s, r = edge_index
+    M = torch.zeros(r.max() + 1, N_e)
+    M[r, torch.arange(N_e)] = 1
+
+    return torch.matmul(M, edges)
 
 
 def set_seed(seed: int) -> None:
