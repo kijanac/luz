@@ -10,17 +10,31 @@ import collections
 import networkx as nx
 import torch
 
-__all__ = ["Concatenate", "ElmanRNN", "FC", "FCRNN", "GraphNetwork", "Module", "Reshape", "WAVE"]
+__all__ = [
+    "Concatenate",
+    "ElmanRNN",
+    "FC",
+    "FCRNN",
+    "GraphNetwork",
+    "Module",
+    "Reshape",
+    "WAVE",
+]
 
 
 class Module(torch.nn.Module):
-    def __init__(self, module: torch.nn.Module, activation: Optional[Callable[...,torch.Tensor]] = None) -> None:
+    def __init__(
+        self,
+        module: torch.nn.Module,
+        activation: Optional[Callable[..., torch.Tensor]] = None,
+    ) -> None:
         super().__init__()
         self.module = module
         self.activation = activation or (lambda x: x)
 
     def forward(self, *args: torch.Tensor, **kwargs: torch.Tensor) -> torch.Tensor:
         return self.activation(self.module(*args, **kwargs))
+
 
 class Concatenate(torch.nn.Module):
     def __init__(self, dim: Optional[int] = 0) -> None:
@@ -112,6 +126,7 @@ class FCRNN(torch.nn.Module):
     def _init_hidden(self):
         return torch.zeros(1, self.hidden_size)
 
+
 # class GraphNetwork(torch.nn.Module):
 #     def __init__(self, node_dim: int, edge_dim: int, global_dim: int, num_layers: Optional[int] = 1) -> None:
 #         super().__init__()
@@ -135,7 +150,7 @@ class FCRNN(torch.nn.Module):
 #             u = self.update_global(aggregated_node,aggregated_edge,batch,u).reshape(u.shape)
 
 #         return nodes,edges,edge_index,u
-        
+
 #     def update_edges(self, edges: torch.Tensor, edge_index: torch.Tensor, nodes: torch.Tensor, batch: torch.Tensor, u: torch.Tensor) -> torch.Tensor:
 #         # output.shape = (N_e,edge_dim)
 #         raise NotImplementedError
@@ -160,30 +175,67 @@ class FCRNN(torch.nn.Module):
 #         # output.shape = (1,global_dim)
 #         raise NotImplementedError
 
+
 class GraphNetwork(torch.nn.Module):
-    def __init__(self, edge_model, node_model, global_model, num_layers: Optional[int] = 1) -> None:
+    def __init__(
+        self,
+        edge_model: Optional[torch.nn.Module] = None,
+        node_model: Optional[torch.nn.Module] = None,
+        global_model: Optional[torch.nn.Module] = None,
+        num_layers: Optional[int] = 1,
+    ) -> None:
         super().__init__()
         self.edge_model = edge_model
         self.node_model = node_model
         self.global_model = global_model
         self.num_layers = num_layers
 
-    def forward(self, nodes: torch.Tensor, edges: torch.Tensor, edge_index: torch.Tensor, batch: Optional[torch.Tensor] = None, u: Optional[torch.Tensor] = None) -> torch.Tensor:
+    def forward(
+        self,
+        nodes: torch.Tensor,
+        edge_index: torch.Tensor,
+        edges: Optional[torch.Tensor] = None,
+        u: Optional[torch.Tensor] = None,
+        batch: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
         if batch is None:
             N_v, *_ = nodes.shape
-            batch = torch.zeros((N_v,),dtype=torch.long)
-            
+            batch = torch.zeros((N_v,), dtype=torch.long)
+
         for _ in range(self.num_layers):
-            edges = self.update_edges(edges,edge_index,nodes,batch,u).reshape(edges.shape)
+            if self.edge_model is not None:
+                edges = self.edge_model(nodes, edge_index, edges, u, batch).reshape(
+                    edges.shape
+                )
 
-            aggregated_edges = self.aggregate_edges_local(nodes,edges,edge_index,batch,u)
-            nodes = self.update_nodes(nodes,aggregated_edges,edge_index,batch,u).reshape(nodes.shape)
+            if self.node_model is not None:
+                nodes = self.node_model(nodes, edge_index, edges, u, batch).reshape(
+                    nodes.shape
+                )
 
-            aggregated_node = self.aggregate_nodes(nodes,edge_index,batch)
-            aggregated_edge = self.aggregate_edges(edges,edge_index,batch)
-            u = self.update_global(aggregated_node,aggregated_edge,batch,u).reshape(u.shape)
+            if self.global_model is not None:
+                u = self.global_model(nodes, edge_index, edges, u, batch).reshape(
+                    u.shape
+                )
 
-        return nodes,edges,edge_index,u
+        return nodes, edge_index, edges, u, batch
+
+    # def forward(self, nodes: torch.Tensor, edges: torch.Tensor, edge_index: torch.Tensor, batch: Optional[torch.Tensor] = None, u: Optional[torch.Tensor] = None) -> torch.Tensor:
+    #     if batch is None:
+    #         N_v, *_ = nodes.shape
+    #         batch = torch.zeros((N_v,),dtype=torch.long)
+
+    #     for _ in range(self.num_layers):
+    #         edges = self.update_edges(edges,edge_index,nodes,batch,u).reshape(edges.shape)
+
+    #         aggregated_edges = self.aggregate_edges_local(nodes,edges,edge_index,batch,u)
+    #         nodes = self.update_nodes(nodes,aggregated_edges,edge_index,batch,u).reshape(nodes.shape)
+
+    #         aggregated_node = self.aggregate_nodes(nodes,edge_index,batch)
+    #         aggregated_edge = self.aggregate_edges(edges,edge_index,batch)
+    #         u = self.update_global(aggregated_node,aggregated_edge,batch,u).reshape(u.shape)
+
+    #     return nodes,edges,edge_index,u
 
 
 class Reshape(torch.nn.Module):
@@ -209,13 +261,19 @@ class WAVE(torch.nn.Module):
         self.softmax_mix = Module(Concatenate(dim=1), torch.nn.Softmax(dim=1))
         self.softsign_mix = Module(Concatenate(dim=1), torch.nn.Softsign())
         self.W = torch.randn(size=(self.d, 1))
-        self.W_u = Module(torch.nn.Linear(in_features=2 * self.d, out_features=self.d),torch.nn.Sigmoid())
-        self.W_o = Module(torch.nn.Linear(in_features=2 * self.d, out_features=self.d),torch.nn.ReLU())
+        self.W_u = Module(
+            torch.nn.Linear(in_features=2 * self.d, out_features=self.d),
+            torch.nn.Sigmoid(),
+        )
+        self.W_o = Module(
+            torch.nn.Linear(in_features=2 * self.d, out_features=self.d),
+            torch.nn.ReLU(),
+        )
 
     def forward(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
         # FIXME: is this really the only way to handle batches of disjoint graphs?
         out = []
-        for _x,_edge_index in zip(x,edge_index):
+        for _x, _edge_index in zip(x, edge_index):
             traversal_order = self._traverse_graph(_x, _edge_index)
 
             lengths = tuple(len(l) for l in traversal_order)
@@ -229,7 +287,7 @@ class WAVE(torch.nn.Module):
 
             out.append(_x.t())
 
-        return torch.stack(out,dim=0)
+        return torch.stack(out, dim=0)
 
     def _traverse_graph(self, x: torch.Tensor, edge_index: torch.Tensor) -> Tuple[int]:
         # FIXME: if a graph has nodes with no edges, this leads to an error inside of forward
@@ -274,8 +332,8 @@ class WAVE(torch.nn.Module):
                 o = self.W_o(torch.cat(tensors=[m, s], dim=0).t()).t()
 
                 # NOTE: subtract s to replace the column in x with the update
-                update[:,i:j][:, k : k + 1] = u * o + (1 - u) * m - s
-            
+                update[:, i:j][:, k : k + 1] = u * o + (1 - u) * m - s
+
             x = x + update
             offset += t
 
