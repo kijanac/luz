@@ -44,7 +44,7 @@ def graph_collate(batch: Iterable[luz.Data]) -> luz.Data:
         elif k == "edge_index":
             kw[k] = torch.cat(
                 [
-                    torch.as_tensor(sample[k] + offset)
+                    torch.as_tensor(sample[k] + offset, dtype=torch.long)
                     for sample, offset in zip(batch, edge_index_offsets)
                 ],
                 dim=1,
