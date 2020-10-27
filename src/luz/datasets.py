@@ -22,6 +22,7 @@ __all__ = [
     "WrapperDataset",
 ]
 
+
 def default_collate(batch: Iterable[luz.Data]) -> luz.Data:
     kw = {
         k: torch.stack([torch.as_tensor(sample[k]) for sample in batch], dim=0)
@@ -30,6 +31,7 @@ def default_collate(batch: Iterable[luz.Data]) -> luz.Data:
 
     return Data(**kw)
 
+
 def graph_collate(batch: Iterable[luz.Data]) -> luz.Data:
     node_counts = [sample.x.shape[0] for sample in batch]
     edge_index_offsets = np.cumsum(node_counts) - node_counts[0]
@@ -37,16 +39,25 @@ def graph_collate(batch: Iterable[luz.Data]) -> luz.Data:
     kw = {}
 
     for k in batch[0].keys:
-        if k == 'x' or k == 'edge_attr':
-            kw[k] = torch.cat([torch.as_tensor(sample[k]) for sample in batch],dim=0)
-        elif k == 'edge_index':
-            kw[k] = torch.cat([torch.as_tensor(sample[k] + offset) for sample,offset in zip(batch,edge_index_offsets)],dim=1)
+        if k == "x" or k == "edge_attr":
+            kw[k] = torch.cat([torch.as_tensor(sample[k]) for sample in batch], dim=0)
+        elif k == "edge_index":
+            kw[k] = torch.cat(
+                [
+                    torch.as_tensor(sample[k] + offset)
+                    for sample, offset in zip(batch, edge_index_offsets)
+                ],
+                dim=1,
+            )
         else:
-            kw[k] = torch.stack([torch.as_tensor(sample[k]) for sample in batch],dim=0)
+            kw[k] = torch.stack([torch.as_tensor(sample[k]) for sample in batch], dim=0)
 
-    kw['batch'] = torch.cat([torch.full((nc,),i,dtype=torch.long) for i,nc in enumerate(node_counts)])
+    kw["batch"] = torch.cat(
+        [torch.full((nc,), i, dtype=torch.long) for i, nc in enumerate(node_counts)]
+    )
 
     return Data(**kw)
+
 
 class Data:
     def __init__(
@@ -83,10 +94,12 @@ class BaseDataset:
     def _collate(self, batch: Iterable[luz.Data]) -> luz.Data:
         return default_collate(batch)
 
-    def use_collate(self, collate: Callable[Iterable[luz.Data],luz.Data]) -> luz.BaseDataset:
+    def use_collate(
+        self, collate: Callable[Iterable[luz.Data], luz.Data]
+    ) -> luz.BaseDataset:
         self._collate = collate
         return self
-    
+
     def loader(
         self,
         batch_size: Optional[int] = 1,
@@ -142,6 +155,7 @@ class Dataset(torch.utils.data.Dataset, BaseDataset):
 
 class ConcatDataset(BaseDataset, torch.utils.data.ConcatDataset):
     pass
+
 
 class Subset(torch.utils.data.Subset, BaseDataset):
     pass
