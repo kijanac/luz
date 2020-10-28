@@ -39,7 +39,7 @@ def graph_collate(batch: Iterable[luz.Data]) -> luz.Data:
     kw = {}
 
     for k in batch[0].keys:
-        if k == "x" or k == "edge_attr":
+        if k in ("x", "edge_attr", "y"):
             kw[k] = torch.cat([torch.as_tensor(sample[k]) for sample in batch], dim=0)
         elif k == "edge_index":
             kw[k] = torch.cat(
