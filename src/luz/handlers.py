@@ -307,13 +307,15 @@ class Loss(Handler):
 
 
 class Progress(Handler):
-    def __init__(self, print_interval: Optional[float] = 0.25) -> None:
+    def __init__(
+        self, print_interval: Optional[float] = 0.25, bar_length: Optional[int] = 30
+    ) -> None:
         if print_interval <= 0 or print_interval > 1:
             raise ValueError(
                 "Print interval must be a positive number between 0.0 and 1.0."
             )
 
-        self.bar_length = 30
+        self.bar_length = bar_length
         self.print_interval = print_interval
 
     def batch_ended(
@@ -325,15 +327,17 @@ class Progress(Handler):
         **kwargs: Any,
     ) -> None:
         if flag == luz.Flag.TRAINING:
-            total = len(loader.sampler) / loader.batch_size
-            batch_interval = max(int(total * self.print_interval), 1)
-            cur = ind + 1
-            if cur % batch_interval == 0 or cur == total:
-                progress = cur / total
+            progress = (ind + 1) / len(loader)
+
+            if int(progress / self.print_interval) > self._last or progress == 1:
                 num_eqs = int(progress * self.bar_length)
                 num_spaces = self.bar_length - num_eqs
                 bar = "=" * num_eqs + ">" + " " * num_spaces
                 print(f"[Epoch {epoch}]: [{bar}] {int(100*progress)}%")
+                self._last += 1
+
+    def epoch_started(self, **kwargs: Any) -> None:
+        self._last = 0
 
     def training_started(self, **kwargs: Any) -> None:
         print("Training started.")
@@ -349,7 +353,7 @@ class Progress(Handler):
 
 
 class RVP(Handler):
-    def __init__(self):
+    def __init__(self) -> None:
         self.predicted = []
         self.residual = []
 
