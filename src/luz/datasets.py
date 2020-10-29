@@ -34,7 +34,8 @@ def default_collate(batch: Iterable[luz.Data]) -> luz.Data:
 
 def graph_collate(batch: Iterable[luz.Data]) -> luz.Data:
     node_counts = [sample.x.shape[0] for sample in batch]
-    edge_index_offsets = np.cumsum(node_counts) - node_counts[0]
+    edge_index_offsets = np.roll(np.cumsum(node_counts))
+    edge_index_offsets[0] = 0
 
     kw = {}
 
