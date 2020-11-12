@@ -1,14 +1,18 @@
 from __future__ import annotations
-from typing import Any, Callable, Optional, Type
+from typing import Optional, Type, Union
 
 import luz
+import torch
 
 __all__ = ["Learner"]
 
 
 class Learner:
     """
-    A Learner is an object which takes a dataset as input and produces a predictor as output. Learners are distinguished by the different protocols they use to construct a predictor from a given dataset.
+    A Learner is an object which takes a dataset as input
+    and produces a predictor as output. Learners are
+    distinguished by the different protocols they use
+    to construct a predictor from a given dataset.
     """
 
     def __init__(
