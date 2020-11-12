@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, Callable, Type
 
 import luz
+import torch
 
 __all__ = ["Optimizer"]
 
