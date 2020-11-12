@@ -293,7 +293,7 @@ def release(release_type, remote="origin"):
     subprocess.run(["git", "push", remote, "v" + version])
 
 
-def clean(env_name):
+def clean(env_name=None):
     _remove_paths(
         pathlib.Path("build"),
         pathlib.Path("conda-build"),
@@ -308,7 +308,8 @@ def clean(env_name):
         *pathlib.Path(".").glob(".coverage*"),
         *pathlib.Path(".").rglob("__pycache__"),
     )
-    subprocess.run(["conda", "env", "remove", "-n", env_name])
+    if env_name is not None:
+        subprocess.run(["conda", "env", "remove", "-n", env_name])
 
 
 if __name__ == "__main__":
