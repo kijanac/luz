@@ -333,6 +333,7 @@ if __name__ == "__main__":
         build_conda=build_conda,
         publish=publish,
         clean=clean,
+        release=release,
     )
 
     if args.cmd == "init":
