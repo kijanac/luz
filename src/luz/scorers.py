@@ -37,7 +37,7 @@ class CrossValidationScorer(Scorer):
         test_losses = []
         for fit_dataset, test_dataset in self._split_dataset(dataset):
             with luz.temporary_seed(
-                fold_seed
+                self.fold_seed
             ) if self.fold_seed is not None else contextlib.nullcontext():
                 _, score = learner.learn(
                     dataset=fit_dataset, test_dataset=test_dataset, device=device
@@ -84,9 +84,9 @@ class HoldoutValidationScorer(Scorer):
         )
 
     def _split_dataset(self, dataset: luz.Dataset) -> Tuple[luz.Dataset, luz.Dataset]:
-        l = np.random.permutation(len(dataset))
-        ind = round(float(f"{self.holdout_fraction}e{luz.int_length(len(l))-1}"))
-        holdout, remainder = np.split(l, [ind])
+        lens = np.random.permutation(len(dataset))
+        ind = round(float(f"{self.holdout_fraction}e{luz.int_length(len(lens))-1}"))
+        holdout, remainder = np.split(lens, [ind])
 
         fit_dataset = dataset.subset(remainder)
         test_dataset = dataset.subset(holdout)
