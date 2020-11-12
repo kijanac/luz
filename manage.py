@@ -187,7 +187,7 @@ def build_conda(*build_channels):
         ["conda", "build", "debug", str(pathlib.Path(".").resolve())]
         + _interleave("-c", build_channels)
     )
-        
+
 
 def publish(pypi_token, conda_token):
     import toml
@@ -227,8 +227,8 @@ def _changelog_helper(tag, repo, previous_tag=None):
         [
             "git",
             "log",
-            f"{previous_tag}...{tag}",
-            f"--pretty=* %s (`%h <{repo}/commit/%H>`__)",
+            previous_tag + "..." + tag,
+            "--pretty=* %s (`%h <" + repo + "/commit/%H>`__)",
             "--no-merges",
         ],
         text=True,
@@ -237,7 +237,9 @@ def _changelog_helper(tag, repo, previous_tag=None):
     lines = []
     lines.append(version_header)
     lines.append("-" * len(version_header) + "\n")
-    lines.extend([l for l in gitlog.splitlines() if re.search(r"feat:|fix:", str(l))])
+    lines.extend(
+        [line for line in gitlog.splitlines() if re.search(r"feat:|fix:", line)]
+    )
     lines.append("\n")
 
     return lines
@@ -287,8 +289,8 @@ def release(release_type, remote="origin"):
 
     # CREATE AND PUSH TAG
 
-    subprocess.run(["git", "tag", "-a", "v" + version, "-m", "'" + tag + "'"])
-    subprocess.run(["git", "push", remote, tag])
+    subprocess.run(["git", "tag", "-a", "v" + version, "-m", "'v" + version + "'"])
+    subprocess.run(["git", "push", remote, "v" + version])
 
 
 def clean(env_name):
@@ -314,8 +316,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("cmd", type=str)
-    #parser.add_argument("--pypi-token",type=str)
-    #parser.add_argument("--conda-token",type=str)
+    # parser.add_argument("--pypi-token",type=str)
+    # parser.add_argument("--conda-token",type=str)
     parser.add_argument("pos_args", nargs="*")
     parser.add_argument("--conda_sub", type=json.loads)
     args = parser.parse_args()
