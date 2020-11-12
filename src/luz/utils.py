@@ -9,6 +9,7 @@ import importlib
 import math
 import numpy as np
 import operator
+import os
 import pathlib
 import random
 import torch
@@ -23,6 +24,7 @@ __all__ = [
     "expand_path",
     "int_length",
     "masked_softmax",
+    "mkdir_safe",
     "memoize",
     "nodewise_edge_mean",
     "nodewise_edge_sum",
@@ -152,6 +154,11 @@ def masked_softmax(
     return torch.softmax((M * x).masked_fill(M == 0, -float("inf")), *args, **kwargs)
 
 
+def mkdir_safe(directory: str) -> None:
+    with contextlib.suppress(FileExistsError):
+        os.makedirs(directory)
+
+
 T = Callable[..., Any]
 
 
@@ -200,29 +207,35 @@ def string_to_class(class_str: str) -> Any:
     Parameters
     ----------
     default_source
-        The source (i.e. module and submodule names) which will be used if class_str contains no periods.
+        The source (i.e. module and submodule names) which
+        will be used if class_str contains no periods.
     class_str
-        The string specifying the name of a Python class. If class_str contains periods, then it is assumed that
-        class_str contains the full module and submodule structure, and default_source will be ignored.
+        The string specifying the name of a Python class.
+        If class_str contains periods, then it is assumed
+        that class_str contains the full module and
+        submodule structure, and default_source will be ignored.
 
     Returns
     -------
     class object
-        The class object (i.e. the class which can be called to create an instance of said class)
+        The class object (i.e. the class which can be
+        called to create an instance of said class)
         corresponding to the provided string.
 
     """
     try:
         split_name = class_str.rsplit(".", 1)
     except AttributeError:
-        # means that class_str doesn't have rsplit function - probably was passed as None
+        # means that class_str doesn't have
+        # rsplit function - probably was passed as None
         return None
 
     try:
         source_path, class_name = split_name
         return getattr(importlib.import_module(source_path), class_name)
     except ValueError:
-        # couldn't unpack split_name, so len(split_name) < 2 - probably = 1, no '.' in class_str so assume builtin
+        # couldn't unpack split_name, so len(split_name) < 2
+        # - probably = 1, no '.' in class_str so assume builtin
         return getattr(importlib.import_module("builtins"), class_str)
 
 
