@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, Iterable, Optional, Tuple, Union
+from typing import Callable, Iterable, Optional, Tuple, Union
 
 __all__ = ["Trainer", "SupervisedTrainer"]
 
@@ -113,7 +113,8 @@ class Trainer:
                     running_loss += self.run_batch(predictor, data, target, device)
                 # from https://coolnesss.github.io/2019-02-05/pytorch-gotchas
                 # All of the variables defined above are now out of scope!
-                # On CPU, they are already deallocated. On GPU, they will be deallocated soon.
+                # On CPU, they are already deallocated.
+                # On GPU, they will be deallocated soon.
 
                 # Make sure deallocation has taken place
                 if torch.cuda.is_available():
