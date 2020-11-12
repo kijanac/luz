@@ -4,6 +4,7 @@ from typing import Any, Iterable, Optional
 import abc
 import collections
 import luz
+import networkx
 import numpy as np
 import torch
 
