@@ -1,16 +1,18 @@
 from __future__ import annotations
-from typing import Any, Iterable, Optional
+from typing import Optional
 
 import copy
 import contextlib
 import torch
+import luz
 
 __all__ = ["Predictor"]
 
 
 class Predictor:
     """
-    A Predictor is an object which takes objects from a domain set and predicts the corresponding values from a label set.
+    A Predictor is an object which takes objects from a domain set
+    and predicts the corresponding values from a label set.
 
     Attributes:
         model (torch.nn.Module): PyTorch module used for prediction.
