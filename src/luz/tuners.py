@@ -38,13 +38,18 @@ class Pin:
         self.tuner = tuner
 
     def __call__(self) -> Any:
-        # NOTE: this sorting should ensure that longer variable names are substituted first,
-        # which should prevent partial variable name clobbering
+        # NOTE: this sorting should ensure that longer
+        # variable names are substituted first, which
+        # should prevent partial variable name clobbering
         pattern = "|".join(sorted(self.tuner.values, key=len)[::-1])
-        replacement = lambda m: str(self.tuner.values[re.escape(m.group(0))])
+
+        def replacement(m):
+            return str(self.tuner.values[re.escape(m.group(0))])
+
         expression = re.sub(pattern=pattern, repl=replacement, string=self.equation)
 
-        # parse pin equation string into operators and evaluate operators to obtain the pin value
+        # parse pin equation string into operators and
+        # evaluate operators to obtain the pin value
         return luz.evaluate_expression(expression)
 
 
@@ -135,9 +140,6 @@ class Tuner:
         raise NotImplementedError
 
     def get_sample(self):
-        raise NotImplementedError
-
-    def sample(self, tuning_parameters):
         raise NotImplementedError
 
 
