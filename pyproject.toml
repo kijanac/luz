@@ -1,0 +1,40 @@
+[build-system]
+requires = [ "poetry-core>=1.0.0",]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "luz"
+version = "3.2.1"
+description = "blahblah"
+authors = [ "Ki-Jana Carter <kijana@mit.edu>",]
+license = "MIT"
+readme = "README.rst"
+repository = "https://github.com/kijanac/luz"
+homepage = "https://github.com/kijanac/luz"
+
+[tool.poetry2conda]
+name = "luz"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+matplotlib = "^3.3.2"
+torch = "^1.7.0"
+networkx = "^2.5"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+flake8 = "^3.8.4"
+poetry2conda = "^0.3.0"
+"ruamel.yaml" = "^0.16.12"
+toml = "^0.10.2"
+pytest = "^6.1.2"
+pytest-cov = "^2.10.1"
+
+[tool.pytest.ini_options]
+minversion = 6.0
+addopts = "-x -v --cov --cov-report=xml"
+testpaths = "tests"
+
+[tool.poetry2conda.dependencies.torch]
+name = "pytorch"
+channel = "pytorch"
