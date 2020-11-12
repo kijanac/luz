@@ -1,7 +1,8 @@
 """
 
-Contains callback objects which perform various function during the training process. Every callback
-should inherit the Callback class.
+Contains callback objects which perform various functions
+during the training process. Every callback should inherit
+the Callback class.
 
 """
 
@@ -9,14 +10,15 @@ should inherit the Callback class.
 # FIXME: Type annotate every handler here
 
 from __future__ import annotations
-from typing import Optional, Set
+from typing import Any, Optional
 
 import datetime
+import luz
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-import matplotlib.transforms as mtransforms
-import luz
-import numpy as np
+
+# import matplotlib.transforms as mtransforms
+import os
 import torch
 
 __all__ = [
@@ -93,9 +95,9 @@ class Accuracy(Handler):
         ]  # FIXME: assumes the first dimension is the batch size - is this always true?
 
     def training_ended(self, epoch, **kwargs):
-        print(
-            f"[Epoch {epoch}] Classification accuracy: {self.num_correct/self.num_points}"
-        )
+        acc = self.num_correct / self.num_points
+        s = f"[Epoch {epoch}] Classification accuracy: {acc}"
+        print(s)
 
 
 class AVP(Handler):
@@ -132,15 +134,7 @@ class Checkpoint(Handler):
         self.model_name = model_name
         self.save_dir = luz.utils.expand_path(path=save_dir)
 
-        # try:
-        #     os.makedirs(self.save_dir)
-        # except FileExistsError:
-        #     pass
-        try:
-            os.makedirs(self.save_dir)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
+        luz.mkdir_safe(self.save_dir)
 
         self.save_interval = save_interval
 
@@ -196,7 +190,8 @@ class DurbinWatson(Handler):
 
 class EarlyStopping(Handler):
     def __init__(self, monitor="val_loss", delta_thresh=0.0, patience=5):
-        # FIXME: This might not work with the revised scorer scheme - investigate and repair/rewrite this whole class
+        # FIXME: This might not work with the revised scorer
+        # scheme - investigate and repair/rewrite this whole class
 
         if delta_thresh < 0:
             raise ValueError("Threshold value must be nonnegative.")
@@ -295,8 +290,9 @@ class Loss(Handler):
         **kwargs: Any,
     ) -> None:
         if flag == luz.Flag.TRAINING:
-            # NOTE: it's very important to add loss.item() (as opposed to loss) to avoid a memory leak!
-            self.running_loss += loss.item()  # *loader.batch_size
+            # NOTE: it's very important to add loss.item()
+            # (as opposed to loss) to avoid a memory leak!
+            self.running_loss += loss.item()
             total = len(loader.sampler) / loader.batch_size
             batch_interval = int(total * self.print_interval)
             cur = ind + 1
