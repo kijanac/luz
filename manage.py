@@ -53,6 +53,46 @@ def _remove_paths(self, *paths):
                 continue
 
 
+def _changelog_helper(tag, repo, previous_tag=None):
+    if previous_tag is None:
+        return []
+
+    version_header = (
+        "`Version "
+        + tag[1:]
+        + " <"
+        + repo
+        + "/compare/"
+        + previous_tag
+        + "..."
+        + tag
+        + ">`__"
+    )
+    gitlog = subprocess.check_output(
+        [
+            "git",
+            "log",
+            previous_tag + "..." + tag,
+            "--pretty=* %s (`%h <" + repo + "/commit/%H>`__)",
+            "--no-merges",
+        ],
+        text=True,
+    )
+
+    lines = []
+    lines.append(version_header)
+    lines.append("-" * len(version_header) + "\n")
+    lines.extend(
+        [line for line in gitlog.splitlines() if re.search(r"feat:|fix:", line)]
+    )
+    lines.append("\n")
+
+    return lines
+
+
+# COMMAND LINE FUNCTIONS
+
+
 def setup(env_name):
     subprocess.run(
         ["conda", "create", "-n", env_name, "python=3"]
@@ -103,7 +143,7 @@ def init(repo, homepage=None, conda_sub={}, readme="README.rst"):
 
 
 def lint():
-    subprocess.run(["black", "src", "tests", "examples"])
+    subprocess.run(["black", "src", "tests", "examples", "manage.py"])
     subprocess.check_call(
         [
             "flake8",
@@ -206,43 +246,6 @@ def publish(pypi_token, conda_token):
 
 def push(remote="origin"):
     subprocess.run(["git", "push", remote])
-
-
-def _changelog_helper(tag, repo, previous_tag=None):
-    if previous_tag is None:
-        return []
-
-    version_header = (
-        "`Version "
-        + tag[1:]
-        + " <"
-        + repo
-        + "/compare/"
-        + previous_tag
-        + "..."
-        + tag
-        + ">`__"
-    )
-    gitlog = subprocess.check_output(
-        [
-            "git",
-            "log",
-            previous_tag + "..." + tag,
-            "--pretty=* %s (`%h <" + repo + "/commit/%H>`__)",
-            "--no-merges",
-        ],
-        text=True,
-    )
-
-    lines = []
-    lines.append(version_header)
-    lines.append("-" * len(version_header) + "\n")
-    lines.extend(
-        [line for line in gitlog.splitlines() if re.search(r"feat:|fix:", line)]
-    )
-    lines.append("\n")
-
-    return lines
 
 
 def release(release_type, remote="origin"):
