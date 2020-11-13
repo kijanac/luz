@@ -260,6 +260,8 @@ def release(release_type, remote="origin"):
     subprocess.run(["git", "add", "pyproject.toml"])
     subprocess.run(["git", "commit", "-m", '"chore: Update version number"'])
 
+    subprocess.run(["git", "tag", "-a", "v" + version, "-m", "'v" + version + "'"])
+
     # UPDATE CHANGELOG
 
     first_commit, *_ = subprocess.check_output(
@@ -279,6 +281,8 @@ def release(release_type, remote="origin"):
 
     with open(pathlib.Path("CHANGELOG.rst"), "w") as f:
         f.write(changelog)
+
+    subprocess.run(["git", "tag", "-d", "v" + version])
 
     subprocess.run(["git", "add", "CHANGELOG.rst"])
     subprocess.run(["git", "commit", "-m", '"chore: Update changelog"'])
