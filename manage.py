@@ -101,6 +101,10 @@ def setup(env_name):
         + ["-y"]
     )
 
+    subprocess.run(["conda", "run", "-n", env_name, "poetry", "install", "--no-root"])
+
+    pathlib.Path("poetry.lock").unlink()
+
 
 def init(repo, homepage=None, conda_sub={}, readme="README.rst"):
     # INTERACTIVE POETRY INIT
