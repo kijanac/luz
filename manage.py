@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import pathlib
 import re
 import subprocess
@@ -20,6 +21,20 @@ dev_packages_py = ["black", "flake8", "poetry2conda", "ruamel.yaml", "toml"]
 test_packages_py = ["pytest", "pytest-cov"]
 
 # HELPER FUNCTIONS
+
+
+def _parse_pyproject():
+    import toml
+
+    with open(pathlib.Path("pyproject.toml"), "r") as f:
+        return toml.load(f)
+
+
+def _write_pyproject(d):
+    import toml
+
+    with open(pathlib.Path("pyproject.toml"), "w") as f:
+        toml.dump(d, f)
 
 
 def _interleave(s, args):
@@ -114,14 +129,9 @@ def init(repo, homepage=None, conda_sub={}, readme="README.rst"):
 
     # MANUALLY MODIFY PYPROJECT.TOML
 
-    p = pathlib.Path("pyproject.toml")
+    d = _parse_pyproject()
 
-    import toml
-
-    with open(p, "r") as f:
-        d = toml.load(f)
-
-    # POETRY OPTIONAL ENTRIES
+    # WRITE POETRY OPTIONAL ENTRIES
 
     d["tool"]["poetry"]["readme"] = readme
     d["tool"]["poetry"]["repository"] = repo
@@ -129,7 +139,7 @@ def init(repo, homepage=None, conda_sub={}, readme="README.rst"):
         d["tool"]["poetry"]["repository"] if homepage is None else homepage
     )
 
-    # PYTEST
+    # WRITE PYTEST CONFIG
 
     d["tool"]["pytest"] = dict(
         ini_options=dict(
@@ -137,20 +147,92 @@ def init(repo, homepage=None, conda_sub={}, readme="README.rst"):
         )
     )
 
-    # POETRY2CONDA
+    # WRITE POETRY2CONDA CONFIG
 
     d["tool"]["poetry2conda"] = dict(name=d["tool"]["poetry"]["name"])
     d["tool"]["poetry2conda"]["dependencies"] = conda_sub
 
-    with open(p, "w") as f:
-        toml.dump(d, f)
+    _write_pyproject(d)
+
+    # RUN SPHINX-QUICKSTART TO SETUP DOCS FOLDER
+
+    author, *_ = d["tool"]["poetry"]["authors"]
+    *author_name, author_email = author.split()
+    author_name = " ".join(author_name)
+
+    template_vars = dict(
+        module_path=pathlib.Path("src").resolve(),
+        name=d["tool"]["poetry"]["name"],
+        year=str(datetime.datetime.now().year),
+        author="'" + author_name + "'",
+        version=d["tool"]["poetry"]["version"],
+        release=d["tool"]["poetry"]["version"],
+        add_module_names=False,
+        html_theme="nature",
+        use_napoleon_params=True,
+    )
+
+    template_params = []
+    for k, v in template_vars.items():
+        template_params.append("-d")
+        template_params.append(k + "=" + str(v))
+
+    extensions = [
+        "sphinx.ext.napoleon",
+        "sphinx.ext.autodoc",
+        "sphinx_autodoc_typehints",
+    ]
+
+    subprocess.run(
+        [
+            "sphinx-quickstart",
+            "docs",
+            "--sep",
+            "-p",
+            "luz",
+            "-a",
+            author_name,
+            "-r",
+            d["tool"]["poetry"]["version"],
+            "-l",
+            "en",
+            "--extensions",
+            ",".join(extensions),
+            "-t",
+            pathlib.Path("sphinx-templates").resolve(),
+            *template_params,
+        ]
+    )
+
+
+def doc():
+    d = _parse_pyproject()
+
+    name = d["tool"]["poetry"]["name"]
+
+    subprocess.run(
+        [
+            "sphinx-apidoc",
+            pathlib.Path("src", name).resolve(),
+            "-f",
+            "-e",
+            "-o",
+            pathlib.Path("docs", "source").resolve(),
+            "-t",
+            pathlib.Path("sphinx-templates").resolve(),
+        ]
+    )
+
+    subprocess.run(["make", "-C", "docs", "clean", "html", "latexpdf"])
 
 
 def lint():
-    subprocess.run(["black", "src", "tests", "examples", "manage.py"])
+    paths_to_lint = ["src", "tests", "examples", "manage.py"]
+    subprocess.run(["black", *paths_to_lint])
     subprocess.check_call(
         [
             "flake8",
+            *paths_to_lint,
             "--max-line-length",
             "88",
             "--extend-ignore",
@@ -177,14 +259,10 @@ def build():
 
 def build_conda(*build_channels):
     import ruamel.yaml
-    import toml
 
     # READ PYPROJECT.TOML
 
-    with open(pathlib.Path("pyproject.toml"), "r") as f:
-        d = toml.load(f)
-
-    d = d["tool"]["poetry"]
+    d = _parse_pyproject()["tool"]["poetry"]
 
     # TARBALL PATH
 
@@ -234,12 +312,9 @@ def build_conda(*build_channels):
 
 
 def publish(pypi_token, conda_token):
-    import toml
-
     # READ PYPROJECT.TOML
 
-    with open(pathlib.Path("pyproject.toml"), "r") as f:
-        d = toml.load(f)["tool"]["poetry"]
+    d = _parse_pyproject()["tool"]["poetry"]
 
     if pypi_token is not None:
         subprocess.run(["poetry", "config", "pypi-token.pypi", pypi_token])
@@ -248,21 +323,14 @@ def publish(pypi_token, conda_token):
         subprocess.run(["anaconda", "--token", conda_token, "upload", d["name"]])
 
 
-def push(remote="origin"):
-    subprocess.run(["git", "push", remote])
-
-
 def release(release_type, remote="origin"):
-    import toml
-
     subprocess.check_call(["poetry", "version", release_type])
 
     # GET VERSION NUMBER
 
-    with open(pathlib.Path("pyproject.toml"), "r") as f:
-        d = toml.load(f)
-        repo = str(d["tool"]["poetry"]["repository"])
-        version = str(d["tool"]["poetry"]["version"])
+    d = _parse_pyproject()
+    repo = str(d["tool"]["poetry"]["repository"])
+    version = str(d["tool"]["poetry"]["version"])
 
     subprocess.run(["git", "add", "pyproject.toml"])
     subprocess.run(["git", "commit", "-m", '"chore: Update version number"'])
@@ -337,6 +405,7 @@ if __name__ == "__main__":
     funcs = dict(
         setup=setup,
         init=init,
+        doc=doc,
         lint=lint,
         install=install,
         test=test,
