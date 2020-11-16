@@ -20,5 +20,5 @@ conda/build
 *.egg-info
 
 # Docs folder
-docs
+docs/*
 !docs/build/html
