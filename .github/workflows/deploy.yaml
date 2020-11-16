@@ -19,19 +19,19 @@ jobs:
       run: $(conda info --base)/bin/python3 manage.py setup dev
 
     - name: Lint code
-      run: $(conda info --base)/envs/dev/bin/python manage.py lint
+      run: conda run -n dev python manage.py lint
 
     - name: Install package (editable)
-      run: $(conda info --base)/envs/dev/bin/python manage.py install
+      run: conda run -n dev python manage.py install
 
     - name: Run tests on editable install
-      run: $(conda info --base)/envs/dev/bin/python manage.py test ${{ secrets.CODECOV_TOKEN }}
+      run: conda run -n dev python manage.py test ${{ secrets.CODECOV_TOKEN }}
 
     - name: Build sdist and wheel
-      run: $(conda info --base)/envs/dev/bin/python manage.py build
+      run: conda run -n dev python manage.py build
 
     - name: Build conda package
-      run: $(conda info --base)/envs/dev/bin/python manage.py build_conda
+      run: conda run -n dev python manage.py build_conda
 
     - name: Deploy to PyPI and Anaconda
-      run: $(conda info --base)/envs/dev/bin/python manage.py publish ${{ secrets.PYPI_TOKEN }} ${{ secrets.CONDA_TOKEN }}
+      run: conda run -n dev python manage.py publish ${{ secrets.PYPI_TOKEN }} ${{ secrets.CONDA_TOKEN }}

@@ -20,10 +20,10 @@ jobs:
       run: $(conda info --base)/bin/python3 manage.py setup dev
 
     - name: Lint code
-      run: $(conda info --base)/envs/dev/bin/python manage.py lint
+      run: conda run -n dev python manage.py lint
 
     - name: Install package (editable)
-      run: $(conda info --base)/envs/dev/bin/python manage.py install
+      run: conda run -n dev python manage.py install
 
     - name: Run tests on editable install
-      run: $(conda info --base)/envs/dev/bin/python test
+      run: conda run -n dev python test
