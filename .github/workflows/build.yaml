@@ -26,4 +26,4 @@ jobs:
       run: conda run -n dev python manage.py install
 
     - name: Run tests on editable install
-      run: conda run -n dev python test
+      run: conda run -n dev python manage.py test
