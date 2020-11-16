@@ -252,7 +252,7 @@ def doc():
 
 
 def lint():
-    paths_to_lint = ["src", "tests", "examples"]
+    paths_to_lint = ["src", "tests"]#, "examples"]
     subprocess.run(["black", *paths_to_lint])
     subprocess.check_call(
         [
