@@ -387,6 +387,13 @@ def release(release_type, remote="origin"):
     subprocess.run(["git", "add", "CHANGELOG.rst"])
     subprocess.run(["git", "commit", "-m", '"chore: Update changelog"'])
 
+    # UPDATE DOCUMENTATION
+
+    doc()
+
+    subprocess.run(["git", "add", pathlib.Path("docs", "build", "html").resolve()])
+    subprocess.run(["git", "commit", "-m", '"docs: Update documentation"'])
+
     # PUSH MASTER
 
     subprocess.run(["git", "push", remote, "master"])
