@@ -4,6 +4,9 @@ __pycache__/
 # Pytest cache files
 .pytest_cache/
 
+# Visual Studio Code config file
+.vscode
+
 # Pytest coverage file
 .coverage
 
