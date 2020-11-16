@@ -121,7 +121,7 @@ def setup(env_name):
     pathlib.Path("poetry.lock").unlink()
 
 
-def init(repo, homepage=None, conda_sub={}, readme="README.rst"):
+def init(repo=None, homepage=None, conda_sub={}, readme="README.rst"):
     # INTERACTIVE POETRY INIT
     subprocess.run(["poetry", "init"])
 
@@ -134,10 +134,14 @@ def init(repo, homepage=None, conda_sub={}, readme="README.rst"):
     # WRITE POETRY OPTIONAL ENTRIES
 
     d["tool"]["poetry"]["readme"] = readme
-    d["tool"]["poetry"]["repository"] = repo
-    d["tool"]["poetry"]["homepage"] = (
-        d["tool"]["poetry"]["repository"] if homepage is None else homepage
-    )
+
+    if repo is not None:
+        d["tool"]["poetry"]["repository"] = repo
+
+    if homepage is not None:
+        d["tool"]["poetry"]["homepage"] = homepage
+    elif repo is not None:
+        d["tool"]["poetry"]["repository"]
 
     # WRITE PYTEST CONFIG
 
