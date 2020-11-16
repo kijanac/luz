@@ -158,6 +158,12 @@ def init(repo=None, homepage=None, conda_sub={}, readme="README.rst"):
 
     _write_pyproject(d)
 
+    init_doc()
+
+
+def init_doc():
+    d = _parse_pyproject()
+
     # RUN SPHINX-QUICKSTART TO SETUP DOCS FOLDER
 
     author, *_ = d["tool"]["poetry"]["authors"]
@@ -409,6 +415,7 @@ if __name__ == "__main__":
     funcs = dict(
         setup=setup,
         init=init,
+        init_doc=init_doc,
         doc=doc,
         lint=lint,
         install=install,
