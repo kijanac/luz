@@ -1,7 +1,0 @@
-luz.datasets module
-===================
-
-.. automodule:: luz.datasets
-   :members:
-   :undoc-members:
-   :show-inheritance:

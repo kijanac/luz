@@ -1,7 +1,0 @@
-luz.learners module
-===================
-
-.. automodule:: luz.learners
-   :members:
-   :undoc-members:
-   :show-inheritance:

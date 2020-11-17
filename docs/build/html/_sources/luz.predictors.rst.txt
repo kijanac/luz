@@ -1,7 +1,0 @@
-luz.predictors module
-=====================
-
-.. automodule:: luz.predictors
-   :members:
-   :undoc-members:
-   :show-inheritance:

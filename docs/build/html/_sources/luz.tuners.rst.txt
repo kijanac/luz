@@ -1,7 +1,0 @@
-luz.tuners module
-=================
-
-.. automodule:: luz.tuners
-   :members:
-   :undoc-members:
-   :show-inheritance:
