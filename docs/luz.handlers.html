@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>luz.handlers module &#8212; luz 3.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="luz.learners module" href="luz.learners.html" />
+    <link rel="prev" title="luz.flags module" href="luz.flags.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="luz.learners.html" title="luz.learners module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="luz.flags.html" title="luz.flags module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >luz</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="luz.html" accesskey="U">luz package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">luz.handlers module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-luz.handlers">
+<span id="luz-handlers-module"></span><h1>luz.handlers module<a class="headerlink" href="#module-luz.handlers" title="Permalink to this headline">¶</a></h1>
+<p>Contains callback objects which perform various functions
+during the training process. Every callback should inherit
+the Callback class.</p>
+<dl class="py class">
+<dt id="luz.handlers.Handler">
+<em class="property">class </em><code class="sig-name descname">Handler</code><a class="headerlink" href="#luz.handlers.Handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="luz.handlers.Handler.batch_ended">
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.batch_ended" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Handler.batch_started">
+<code class="sig-name descname">batch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.batch_started" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Handler.epoch_ended">
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Handler.epoch_started">
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.epoch_started" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Handler.testing_ended">
+<code class="sig-name descname">testing_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.testing_ended" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Handler.testing_started">
+<code class="sig-name descname">testing_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.testing_started" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Handler.training_ended">
+<code class="sig-name descname">training_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.training_ended" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Handler.training_started">
+<code class="sig-name descname">training_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.training_started" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.handlers.Loss">
+<em class="property">class </em><code class="sig-name descname">Loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_interval</span><span class="o">=</span><span class="default_value">0.25</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
+<dl class="py method">
+<dt id="luz.handlers.Loss.batch_ended">
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="n">loader</span></em>, <em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="n">loss</span></em>, <em class="sig-param"><span class="n">ind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss.batch_ended" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Loss.epoch_started">
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss.epoch_started" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.handlers.Progress">
+<em class="property">class </em><code class="sig-name descname">Progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_interval</span><span class="o">=</span><span class="default_value">0.25</span></em>, <em class="sig-param"><span class="n">bar_length</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
+<dl class="py method">
+<dt id="luz.handlers.Progress.batch_ended">
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loader</span></em>, <em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="n">ind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.batch_ended" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Progress.epoch_started">
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.epoch_started" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Progress.testing_ended">
+<code class="sig-name descname">testing_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.testing_ended" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Progress.testing_started">
+<code class="sig-name descname">testing_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.testing_started" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Progress.training_ended">
+<code class="sig-name descname">training_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.training_ended" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Progress.training_started">
+<code class="sig-name descname">training_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.training_started" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.handlers.Timer">
+<em class="property">class </em><code class="sig-name descname">Timer</code><a class="headerlink" href="#luz.handlers.Timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
+<dl class="py method">
+<dt id="luz.handlers.Timer.epoch_ended">
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Timer.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Timer.epoch_started">
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Timer.epoch_started" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="luz.flags.html"
+                        title="previous chapter">luz.flags module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="luz.learners.html"
+                        title="next chapter">luz.learners module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/luz.handlers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="luz.learners.html" title="luz.learners module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="luz.flags.html" title="luz.flags module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >luz</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="luz.html" >luz package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">luz.handlers module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

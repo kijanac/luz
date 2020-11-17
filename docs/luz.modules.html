@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>luz.modules module &#8212; luz 3.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="luz.optimizer module" href="luz.optimizer.html" />
+    <link rel="prev" title="luz.learners module" href="luz.learners.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="luz.optimizer.html" title="luz.optimizer module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="luz.learners.html" title="luz.learners module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >luz</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="luz.html" accesskey="U">luz package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">luz.modules module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-luz.modules">
+<span id="luz-modules-module"></span><h1>luz.modules module<a class="headerlink" href="#module-luz.modules" title="Permalink to this headline">¶</a></h1>
+<p>Custom PyTorch modules. Each class must implement torch.nn.Module,
+and therefore must have an __init__ method and a forward method.</p>
+<dl class="py class">
+<dt id="luz.modules.Concatenate">
+<em class="property">class </em><code class="sig-name descname">Concatenate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="luz.modules.Concatenate.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">tensors</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Concatenate.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.Concatenate.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Concatenate.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.ElmanRNN">
+<em class="property">class </em><code class="sig-name descname">ElmanRNN</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_size</span></em>, <em class="sig-param"><span class="n">hidden_size</span></em>, <em class="sig-param"><span class="n">num_layers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nonlinearity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch_first</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dropout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bidirectional</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h0</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.ElmanRNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="luz.modules.ElmanRNN.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.ElmanRNN.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.ElmanRNN.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.ElmanRNN.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.FC">
+<em class="property">class </em><code class="sig-name descname">FC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_features</span></em>, <em class="sig-param"><span class="n">out_features</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">hidden_features</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.FC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="luz.modules.FC.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.FC.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.FC.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.FC.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.FCRNN">
+<em class="property">class </em><code class="sig-name descname">FCRNN</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_size</span></em>, <em class="sig-param"><span class="n">hidden_size</span></em>, <em class="sig-param"><span class="n">output_size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.FCRNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="luz.modules.FCRNN.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.FCRNN.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.FCRNN.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.FCRNN.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.GraphNetwork">
+<em class="property">class </em><code class="sig-name descname">GraphNetwork</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">global_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_layers</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="luz.modules.GraphNetwork.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">edges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">u</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphNetwork.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.GraphNetwork.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.GraphNetwork.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.Module">
+<em class="property">class </em><code class="sig-name descname">Module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="luz.modules.Module.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.Module.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Module.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.Reshape">
+<em class="property">class </em><code class="sig-name descname">Reshape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">out_shape</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Reshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="luz.modules.Reshape.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Reshape.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.Reshape.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Reshape.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.WAVE">
+<em class="property">class </em><code class="sig-name descname">WAVE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atom_feature_size</span></em>, <em class="sig-param"><span class="n">num_passes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.WAVE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="luz.modules.WAVE.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.WAVE.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.WAVE.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.WAVE.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="luz.learners.html"
+                        title="previous chapter">luz.learners module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="luz.optimizer.html"
+                        title="next chapter">luz.optimizer module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/luz.modules.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="luz.optimizer.html" title="luz.optimizer module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="luz.learners.html" title="luz.learners module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >luz</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="luz.html" >luz package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">luz.modules module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

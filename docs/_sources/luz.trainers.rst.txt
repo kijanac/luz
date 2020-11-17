@@ -1,0 +1,7 @@
+luz.trainers module
+===================
+
+.. automodule:: luz.trainers
+   :members:
+   :undoc-members:
+   :show-inheritance:

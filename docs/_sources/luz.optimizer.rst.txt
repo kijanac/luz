@@ -1,0 +1,7 @@
+luz.optimizer module
+====================
+
+.. automodule:: luz.optimizer
+   :members:
+   :undoc-members:
+   :show-inheritance:
