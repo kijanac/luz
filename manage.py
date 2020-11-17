@@ -254,6 +254,9 @@ def doc():
 
     _remove_paths(pathlib.Path("sphinx-templates"))
 
+    for p in pathlib.Path("docs","build","html").glob("*"):
+        p.rename(pathlib.Path("docs").joinpath(p.name))
+
 
 def lint():
     paths_to_lint = ["src", "tests"]  # , "examples"]
@@ -399,7 +402,7 @@ def release(release_type, remote="origin"):
 
     doc()
 
-    subprocess.run(["git", "add", pathlib.Path("docs", "build", "html").resolve()])
+    subprocess.run(["git", "add", pathlib.Path("docs").resolve()])
     subprocess.run(["git", "commit", "-m", '"docs: Update documentation"'])
 
     # PUSH MASTER
@@ -416,7 +419,10 @@ def clean(env_name=None):
     _remove_paths(
         pathlib.Path("build"),
         pathlib.Path("conda-build"),
-        pathlib.Path("docs"),
+        pathlib.Path("docs","build"),
+        pathlib.Path("docs","source"),
+        pathlib.Path("docs","make.bat"),
+        pathlib.Path("docs","Makefile"),
         pathlib.Path("conda"),
         pathlib.Path("sphinx-templates"),
         pathlib.Path(".pytest_cache"),
