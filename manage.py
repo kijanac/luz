@@ -55,17 +55,17 @@ def _hash_tarball(tarball_path):
     return m.hexdigest()
 
 
-def _remove_paths(self, *paths):
-    import shutil
-
+def _remove_paths(*paths):
     for p in paths:
-        try:
+        if p.is_file():
             p.unlink()
-        except OSError:
-            try:
-                shutil.rmtree(p.resolve())
-            except OSError:
-                continue
+        else:
+            _remove_paths(*p.glob("*"))
+
+        try:
+            p.rmdir()
+        except FileNotFoundError:
+            continue
 
 
 def _changelog_helper(tag, repo, previous_tag=None):
@@ -231,6 +231,8 @@ def init_doc():
 
 
 def doc():
+    init_doc()
+
     d = _parse_pyproject()
 
     name = d["tool"]["poetry"]["name"]
@@ -250,9 +252,11 @@ def doc():
 
     subprocess.run(["make", "-C", "docs", "clean", "html", "latexpdf"])
 
+    _remove_paths(pathlib.Path("sphinx-templates"))
+
 
 def lint():
-    paths_to_lint = ["src", "tests"]#, "examples"]
+    paths_to_lint = ["src", "tests"]  # , "examples"]
     subprocess.run(["black", *paths_to_lint])
     subprocess.check_call(
         [
@@ -283,6 +287,8 @@ def build():
 
 
 def build_conda(*build_channels):
+    init_conda()
+
     import ruamel.yaml
 
     # READ PYPROJECT.TOML
@@ -334,6 +340,8 @@ def build_conda(*build_channels):
         ["conda", "build", "debug", str(pathlib.Path(".").resolve())]
         + _interleave("-c", build_channels)
     )
+
+    _remove_paths(pathlib.Path("conda"))
 
 
 def publish(pypi_token, conda_token):
@@ -409,6 +417,8 @@ def clean(env_name=None):
         pathlib.Path("build"),
         pathlib.Path("conda-build"),
         pathlib.Path("docs"),
+        pathlib.Path("conda"),
+        pathlib.Path("sphinx-templates"),
         pathlib.Path(".pytest_cache"),
         pathlib.Path(".coverage"),
         pathlib.Path("coverage.xml"),
