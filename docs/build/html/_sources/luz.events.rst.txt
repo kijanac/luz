@@ -1,7 +1,0 @@
-luz.events module
-=================
-
-.. automodule:: luz.events
-   :members:
-   :undoc-members:
-   :show-inheritance:

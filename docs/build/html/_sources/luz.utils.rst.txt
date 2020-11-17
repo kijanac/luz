@@ -1,7 +1,0 @@
-luz.utils module
-================
-
-.. automodule:: luz.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:

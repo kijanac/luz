@@ -1,7 +1,0 @@
-luz
-===
-
-.. toctree::
-   :maxdepth: 4
-
-   luz
