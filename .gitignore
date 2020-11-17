@@ -23,8 +23,10 @@ conda/build
 *.egg-info
 
 # Docs folder
-docs/*
-!docs/build/html
+docs/build
+docs/source
+docs/make.bat
+docs/Makefile
 
 # Conda build folder
 conda
