@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>luz.scorers module &#8212; luz 3.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="luz.trainers module" href="luz.trainers.html" />
+    <link rel="prev" title="luz.predictors module" href="luz.predictors.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="luz.trainers.html" title="luz.trainers module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="luz.predictors.html" title="luz.predictors module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >luz</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="luz.html" accesskey="U">luz package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">luz.scorers module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-luz.scorers">
+<span id="luz-scorers-module"></span><h1>luz.scorers module<a class="headerlink" href="#module-luz.scorers" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="luz.scorers.CrossValidationScorer">
+<em class="property">class </em><code class="sig-name descname">CrossValidationScorer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_folds</span></em>, <em class="sig-param"><span class="n">fold_seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidationScorer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.scorers.Scorer</span></code></a></p>
+<dl class="py method">
+<dt id="luz.scorers.CrossValidationScorer.score">
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidationScorer.score" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.scorers.Score" title="luz.scorers.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">Score</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.scorers.HoldoutValidationScorer">
+<em class="property">class </em><code class="sig-name descname">HoldoutValidationScorer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">holdout_fraction</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.HoldoutValidationScorer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.scorers.Scorer</span></code></a></p>
+<dl class="py method">
+<dt id="luz.scorers.HoldoutValidationScorer.score">
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.HoldoutValidationScorer.score" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.scorers.Score" title="luz.scorers.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">Score</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.scorers.Score">
+<em class="property">class </em><code class="sig-name descname">Score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">score</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt id="luz.scorers.Score.predictor">
+<code class="sig-name descname">predictor</code><a class="headerlink" href="#luz.scorers.Score.predictor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.scorers.Score.score">
+<code class="sig-name descname">score</code><a class="headerlink" href="#luz.scorers.Score.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.scorers.Scorer">
+<em class="property">class </em><code class="sig-name descname">Scorer</code><a class="headerlink" href="#luz.scorers.Scorer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="luz.scorers.Scorer.score">
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Scorer.score" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.scorers.Score" title="luz.scorers.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">Score</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="luz.predictors.html"
+                        title="previous chapter">luz.predictors module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="luz.trainers.html"
+                        title="next chapter">luz.trainers module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/luz.scorers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="luz.trainers.html" title="luz.trainers module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="luz.predictors.html" title="luz.predictors module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >luz</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="luz.html" >luz package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">luz.scorers module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

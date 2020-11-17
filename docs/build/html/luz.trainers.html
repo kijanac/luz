@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>luz.trainers module &#8212; luz 3.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="luz.transforms module" href="luz.transforms.html" />
+    <link rel="prev" title="luz.scorers module" href="luz.scorers.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="luz.transforms.html" title="luz.transforms module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="luz.scorers.html" title="luz.scorers module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >luz</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="luz.html" accesskey="U">luz package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">luz.trainers module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-luz.trainers">
+<span id="luz-trainers-module"></span><h1>luz.trainers module<a class="headerlink" href="#module-luz.trainers" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="luz.trainers.SupervisedTrainer">
+<em class="property">class </em><code class="sig-name descname">SupervisedTrainer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loss</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_epoch</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">stop_epoch</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">handlers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">process_batch</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">loader_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.SupervisedTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.trainers.Trainer" title="luz.trainers.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.trainers.Trainer</span></code></a></p>
+<dl class="py method">
+<dt id="luz.trainers.SupervisedTrainer.run_batch">
+<code class="sig-name descname">run_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.SupervisedTrainer.run_batch" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.trainers.Trainer">
+<em class="property">class </em><code class="sig-name descname">Trainer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loss</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_epoch</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">stop_epoch</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">handlers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">process_batch</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">loader_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="luz.trainers.Trainer.backward">
+<code class="sig-name descname">backward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loss</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.backward" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.migrate">
+<code class="sig-name descname">migrate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.migrate" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.optimizer_step">
+<code class="sig-name descname">optimizer_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optimizer</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.optimizer_step" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.process_batch">
+<code class="sig-name descname">process_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.process_batch" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">train</span></em>, <em class="sig-param"><span class="n">val_dataset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.run" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.run_batch">
+<code class="sig-name descname">run_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.run_batch" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.set_mode">
+<code class="sig-name descname">set_mode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">train</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.set_mode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="luz.scorers.html"
+                        title="previous chapter">luz.scorers module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="luz.transforms.html"
+                        title="next chapter">luz.transforms module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/luz.trainers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="luz.transforms.html" title="luz.transforms module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="luz.scorers.html" title="luz.scorers module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >luz</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="luz.html" >luz package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">luz.trainers module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

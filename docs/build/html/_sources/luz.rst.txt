@@ -1,0 +1,30 @@
+luz package
+===========
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   luz.datasets
+   luz.events
+   luz.flags
+   luz.handlers
+   luz.learners
+   luz.modules
+   luz.optimizer
+   luz.predictors
+   luz.scorers
+   luz.trainers
+   luz.transforms
+   luz.tuners
+   luz.utils
+
+Module contents
+---------------
+
+.. automodule:: luz
+   :members:
+   :undoc-members:
+   :show-inheritance:
