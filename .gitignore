@@ -24,6 +24,7 @@ conda/build
 
 # Docs folder
 docs/*
+!docs/build/html
 
 # Conda build folder
 conda
