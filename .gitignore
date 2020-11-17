@@ -24,4 +24,10 @@ conda/build
 
 # Docs folder
 docs/*
-!docs/build/html
+!docs/source
+
+# Conda build folder
+conda
+
+# Sphinx template folder
+sphinx-templates
