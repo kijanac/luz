@@ -8,17 +8,22 @@ from __future__ import annotations
 from typing import Callable, Iterable, Optional, Tuple
 
 import collections
+import luz
 import networkx as nx
 import torch
 
 __all__ = [
     "Concatenate",
+    "Dense",
+    "DenseRNN",
     "ElmanRNN",
-    "FC",
-    "FCRNN",
+    "EdgeAttention",
     "GraphNetwork",
     "Module",
+    "MultiheadEdgeAttention",
     "Reshape",
+    "Squeeze",
+    "Unsqueeze",
     "WAVE",
 ]
 
@@ -44,6 +49,68 @@ class Concatenate(torch.nn.Module):
 
     def forward(self, *tensors: torch.Tensor) -> torch.Tensor:
         return torch.cat(tensors, dim=self.dim)
+
+
+class Dense(torch.nn.Module):
+    def __init__(self, in_features, out_features, *hidden_features):
+        super().__init__()
+        sizes = tuple((in_features, *hidden_features, out_features))
+        layers = (
+            torch.nn.Linear(in_features=n_in, out_features=n_out)
+            for n_in, n_out in zip(sizes, sizes[1:])
+        )
+        self.seq = torch.nn.Sequential(*layers)
+
+    def forward(self, x):
+        return self.seq(x)
+
+
+class DenseRNN(torch.nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super().__init__()
+
+        self.hidden_size = hidden_size
+        self.hidden = self._init_hidden()
+
+        self.i2h = torch.nn.Linear(input_size + hidden_size, hidden_size)
+        self.i2o = torch.nn.Linear(input_size + hidden_size, output_size)
+
+    def forward(self, x):
+        self.hidden = self._init_hidden()
+
+        for i in x.transpose(0, 1):
+            combined = torch.cat((i, self.hidden), 1)
+            self.hidden = self.i2h(combined)
+            output = self.i2o(combined)
+
+        return output
+
+    def _init_hidden(self):
+        return torch.zeros(1, self.hidden_size)
+
+
+class EdgeAttention(torch.nn.Module):
+    def __init__(self, d_v: int, d_e: int, d_attn: int) -> None:
+        super().__init__()
+        self.query = luz.Module(
+            torch.nn.Linear(d_v, d_attn), torch.nn.functional.leaky_relu
+        )
+        self.key = luz.Module(
+            torch.nn.Linear(d_v, d_attn), torch.nn.functional.leaky_relu
+        )
+        self.value = luz.Module(
+            torch.nn.Linear(d_e, d_attn), torch.nn.functional.leaky_relu
+        )
+
+    def forward(
+        self, nodes: torch.Tensor, edges: torch.Tensor, edge_index: torch.Tensor
+    ) -> torch.Tensor:
+        M = luz.nodewise_mask(edge_index)
+        s, r = edge_index
+        q = self.query(nodes)
+        k = self.key(nodes[s])
+        v = self.value(edges)
+        return luz.attention(q, k, M) @ v
 
 
 class ElmanRNN(torch.nn.Module):
@@ -88,44 +155,6 @@ class ElmanRNN(torch.nn.Module):
         else:
             output, hidden = self.rnn.forward(input=x)
         return output
-
-
-class FC(torch.nn.Module):
-    def __init__(self, in_features, out_features, *hidden_features):
-        super().__init__()
-        sizes = tuple((in_features, *hidden_features, out_features))
-        layers = (
-            torch.nn.Linear(in_features=n_in, out_features=n_out)
-            for n_in, n_out in zip(sizes, sizes[1:])
-        )
-        self.seq = torch.nn.Sequential(*layers)
-
-    def forward(self, x):
-        return self.seq(x)
-
-
-class FCRNN(torch.nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
-        super().__init__()
-
-        self.hidden_size = hidden_size
-        self.hidden = self._init_hidden()
-
-        self.i2h = torch.nn.Linear(input_size + hidden_size, hidden_size)
-        self.i2o = torch.nn.Linear(input_size + hidden_size, output_size)
-
-    def forward(self, x):
-        self.hidden = self._init_hidden()
-
-        for i in x.transpose(0, 1):
-            combined = torch.cat((i, self.hidden), 1)
-            self.hidden = self.i2h(combined)
-            output = self.i2o(combined)
-
-        return output
-
-    def _init_hidden(self):
-        return torch.zeros(1, self.hidden_size)
 
 
 class GraphNetwork(torch.nn.Module):
@@ -173,6 +202,27 @@ class GraphNetwork(torch.nn.Module):
         return nodes, edge_index, edges, u, batch
 
 
+class MultiheadEdgeAttention(torch.nn.Module):
+    def __init__(self, num_heads: int, d_v: int, d_e: int, d_attn: int) -> None:
+        super().__init__()
+        self.heads = []
+        self.gates = []
+
+        for _ in range(num_heads):
+            h = EdgeAttention(d_v, d_e, d_attn)
+            g = luz.Module(torch.nn.Linear(d_v, 1), torch.nn.functional.leaky_relu)
+
+            self.heads.append(h)
+            self.gates.append(g)
+
+    def forward(
+        self, nodes: torch.Tensor, edges: torch.Tensor, edge_index: torch.Tensor
+    ) -> torch.Tensor:
+        heads = torch.stack([h(nodes, edges, edge_index) for h in self.heads])
+        gates = torch.stack([g(nodes).squeeze(-1) for g in self.gates])
+        return torch.einsum("ijk, ij -> jk", heads, gates)
+
+
 class Reshape(torch.nn.Module):
     def __init__(self, out_shape: Iterable[int]) -> None:
         super().__init__()
@@ -180,6 +230,24 @@ class Reshape(torch.nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return x.view(self.shape)
+
+
+class Squeeze(torch.nn.Module):
+    def __init__(self, dim: Optional[int]) -> None:
+        super().__init__()
+        self.dim = dim
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x.squeeze(dim=self.dim)
+
+
+class Unsqueeze(torch.nn.Module):
+    def __init__(self, dim: int) -> None:
+        super().__init__()
+        self.dim = dim
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x.unsqueeze(dim=self.dim)
 
 
 class WAVE(torch.nn.Module):
