@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; luz 3.3.0 documentation</title>
+    <title>Index &#8212; luz 4.0.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -25,7 +24,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 4.0.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Index</a></li> 
       </ul>
     </div>  
@@ -68,6 +67,10 @@
       <li><a href="luz.transforms.html#luz.transforms.Argmax">Argmax (class in luz.transforms)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.utils.html#luz.utils.attention">attention() (in module luz.utils)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="B">B</h2>
@@ -94,6 +97,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.utils.html#luz.utils.batchwise_edge_sum">batchwise_edge_sum() (in module luz.utils)</a>
+</li>
+      <li><a href="luz.utils.html#luz.utils.batchwise_mask">batchwise_mask() (in module luz.utils)</a>
 </li>
       <li><a href="luz.utils.html#luz.utils.batchwise_node_mean">batchwise_node_mean() (in module luz.utils)</a>
 </li>
@@ -153,11 +158,15 @@
 </li>
       <li><a href="luz.datasets.html#luz.datasets.Subset.dataset">dataset (Subset attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.datasets.html#luz.datasets.ConcatDataset.datasets">datasets (ConcatDataset attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.datasets.html#luz.datasets.default_collate">default_collate() (in module luz.datasets)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.Dense">Dense (class in luz.modules)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.DenseRNN">DenseRNN (class in luz.modules)</a>
 </li>
       <li><a href="luz.transforms.html#luz.transforms.DigraphToTensors">DigraphToTensors (class in luz.transforms)</a>
 </li>
@@ -167,6 +176,8 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.modules.html#luz.modules.EdgeAttention">EdgeAttention (class in luz.modules)</a>
+</li>
       <li><a href="luz.modules.html#luz.modules.ElmanRNN">ElmanRNN (class in luz.modules)</a>
 </li>
       <li><a href="luz.events.html#luz.events.Event.EPOCH_ENDED">EPOCH_ENDED (Event attribute)</a>
@@ -193,8 +204,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.predictors.html#luz.predictors.Predictor.eval">eval() (Predictor method)</a>
 </li>
-      <li><a href="luz.utils.html#luz.utils.evaluate_expression">evaluate_expression() (in module luz.utils)</a>
-</li>
       <li><a href="luz.events.html#luz.events.Event">Event (class in luz.events)</a>
 </li>
       <li><a href="luz.transforms.html#luz.transforms.Expand">Expand (class in luz.transforms)</a>
@@ -207,28 +216,32 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.modules.html#luz.modules.FC">FC (class in luz.modules)</a>
-</li>
-      <li><a href="luz.modules.html#luz.modules.FCRNN">FCRNN (class in luz.modules)</a>
-</li>
       <li><a href="luz.flags.html#luz.flags.Flag">Flag (class in luz.flags)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.Concatenate.forward">forward() (Concatenate method)</a>
 
       <ul>
+        <li><a href="luz.modules.html#luz.modules.Dense.forward">(Dense method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.DenseRNN.forward">(DenseRNN method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.EdgeAttention.forward">(EdgeAttention method)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.ElmanRNN.forward">(ElmanRNN method)</a>
-</li>
-        <li><a href="luz.modules.html#luz.modules.FC.forward">(FC method)</a>
-</li>
-        <li><a href="luz.modules.html#luz.modules.FCRNN.forward">(FCRNN method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.GraphNetwork.forward">(GraphNetwork method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Module.forward">(Module method)</a>
 </li>
+        <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention.forward">(MultiheadEdgeAttention method)</a>
+</li>
         <li><a href="luz.predictors.html#luz.predictors.Predictor.forward">(Predictor method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Reshape.forward">(Reshape method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.Squeeze.forward">(Squeeze method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.Unsqueeze.forward">(Unsqueeze method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.WAVE.forward">(WAVE method)</a>
 </li>
@@ -456,6 +469,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.modules.html#luz.modules.Module">Module (class in luz.modules)</a>
 </li>
+      <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention">MultiheadEdgeAttention (class in luz.modules)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -464,9 +479,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.utils.html#luz.utils.nodewise_edge_mean">nodewise_edge_mean() (in module luz.utils)</a>
 </li>
+      <li><a href="luz.utils.html#luz.utils.nodewise_edge_sum">nodewise_edge_sum() (in module luz.utils)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.utils.html#luz.utils.nodewise_edge_sum">nodewise_edge_sum() (in module luz.utils)</a>
+      <li><a href="luz.utils.html#luz.utils.nodewise_mask">nodewise_mask() (in module luz.utils)</a>
 </li>
       <li><a href="luz.transforms.html#luz.transforms.NormalizePerTensor">NormalizePerTensor (class in luz.transforms)</a>
 </li>
@@ -564,7 +581,7 @@
 </li>
       <li><a href="luz.utils.html#luz.utils.set_seed">set_seed() (in module luz.utils)</a>
 </li>
-      <li><a href="luz.utils.html#luz.utils.string_to_class">string_to_class() (in module luz.utils)</a>
+      <li><a href="luz.modules.html#luz.modules.Squeeze">Squeeze (class in luz.modules)</a>
 </li>
       <li><a href="luz.datasets.html#luz.datasets.Subset">Subset (class in luz.datasets)</a>
 </li>
@@ -611,11 +628,13 @@
       <li><a href="luz.modules.html#luz.modules.Concatenate.training">training (Concatenate attribute)</a>
 
       <ul>
+        <li><a href="luz.modules.html#luz.modules.Dense.training">(Dense attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.DenseRNN.training">(DenseRNN attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.EdgeAttention.training">(EdgeAttention attribute)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.ElmanRNN.training">(ElmanRNN attribute)</a>
-</li>
-        <li><a href="luz.modules.html#luz.modules.FC.training">(FC attribute)</a>
-</li>
-        <li><a href="luz.modules.html#luz.modules.FCRNN.training">(FCRNN attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -627,7 +646,13 @@
       <ul>
         <li><a href="luz.modules.html#luz.modules.Module.training">(Module attribute)</a>
 </li>
+        <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention.training">(MultiheadEdgeAttention attribute)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.Reshape.training">(Reshape attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.Squeeze.training">(Squeeze attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.Unsqueeze.training">(Unsqueeze attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.WAVE.training">(WAVE attribute)</a>
 </li>
@@ -663,6 +688,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.datasets.html#luz.datasets.UnpackDataset">UnpackDataset (class in luz.datasets)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.modules.html#luz.modules.Unsqueeze">Unsqueeze (class in luz.modules)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -718,13 +747,13 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">luz 3.3.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">luz 4.0.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Index</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.1.
     </div>
   </body>
 </html>
