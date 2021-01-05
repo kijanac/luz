@@ -271,7 +271,9 @@ class MultiheadEdgeAttention(torch.nn.Module):
 
         for _ in range(num_heads):
             h = EdgeAttention(d_v, d_e, d_u, d_attn, nodewise)
-            g = luz.Module(torch.nn.Linear(d_v+d_u, 1), torch.nn.functional.leaky_relu)
+            g = luz.Module(
+                torch.nn.Linear(d_v + d_u, 1), torch.nn.functional.leaky_relu
+            )
 
             self.heads.append(h)
             self.gates.append(g)
@@ -290,7 +292,6 @@ class MultiheadEdgeAttention(torch.nn.Module):
         gates = torch.stack([g(x).squeeze(-1) for g in self.gates])
 
         return torch.einsum("ijk, ij -> jk", heads, gates)
-
 
 
 class Reshape(torch.nn.Module):
