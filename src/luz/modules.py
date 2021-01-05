@@ -18,6 +18,7 @@ __all__ = [
     "DenseRNN",
     "ElmanRNN",
     "EdgeAttention",
+    "GraphConv",
     "GraphNetwork",
     "Module",
     "MultiheadEdgeAttention",
@@ -254,6 +255,46 @@ class ElmanRNN(torch.nn.Module):
         else:
             output, hidden = self.rnn.forward(input=x)
         return output
+
+
+class GraphConv(torch.nn.Module):
+    def __init__(
+        self, d_v: int, activation: Callable[torch.Tensor, torch.Tensor]
+    ) -> None:
+        """Graph convolutional network from https://arxiv.org/abs/1609.02907.
+
+        Parameters
+        ----------
+        d_v
+            Node feature length.
+        activation
+            Activation function.
+        """
+        super().__init__()
+        self.lin = Module(torch.nn.Linear(d_v, d_v), activation)
+
+    def forward(self, nodes: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+        edge_index
+            Edge indices.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
+        N_v, _ = nodes.shape
+        A = luz.adjacency(edge_index) + torch.eye(N_v)
+        d = luz.in_degree(A).pow(-0.5)
+        d.masked_fill(d == float("inf"), 0)
+        D = torch.diag(d)
+
+        return self.lin(D @ A @ D @ nodes)
 
 
 class GraphNetwork(torch.nn.Module):
