@@ -24,11 +24,11 @@ jobs:
     - name: Make conda environment and install dependencies
       run: $(conda info --base)/bin/python3 manage/manage.py setup dev
 
-    - name: Lint code
-      run: conda run -n dev python manage/manage.py lint
-
     - name: Install package (editable)
       run: conda run -n dev python manage/manage.py install
+
+    - name: Lint code
+      run: conda run -n dev python manage/manage.py lint
 
     - name: Run tests on editable install
       run: conda run -n dev python manage/manage.py test
