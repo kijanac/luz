@@ -535,7 +535,7 @@ class WAVE(torch.nn.Module):
             lengths = tuple(len(n) for n in traversal_order)
             perm = torch.eye(sum(lengths))[[a for b in traversal_order for a in b]]
 
-            _x = torch.matmul(perm, _x).t()
+            _x = (perm @ _x).t()
 
             for _ in range(self.num_passes):
                 self._propagate(_x, lengths)
