@@ -25,6 +25,15 @@ class Scorer:
 
 class CrossValidationScorer(Scorer):
     def __init__(self, num_folds: int, fold_seed: Optional[int] = None) -> None:
+        """Object which scores a learning algorithm using cross validation.
+
+        Parameters
+        ----------
+        num_folds
+            Number of cross validation folds.
+        fold_seed
+            Seed for random fold split, by default None.
+        """
         self.num_folds = num_folds
         self.fold_seed = fold_seed
 
@@ -34,6 +43,22 @@ class CrossValidationScorer(Scorer):
         dataset: luz.Dataset,
         device: Union[torch.device, str],
     ) -> luz.Score:
+        """Learn a predictor and score it using cross validation.
+
+        Parameters
+        ----------
+        learner
+            Learning algorithm to be scored.
+        dataset
+            Dataset to use for scoring.
+        device
+            Device to use for scoring.
+
+        Returns
+        -------
+        luz.Score
+            Learned predictor and cross-validation score.
+        """
         test_losses = []
         for fit_dataset, test_dataset in self._split_dataset(dataset):
             with luz.temporary_seed(
@@ -69,6 +94,13 @@ class CrossValidationScorer(Scorer):
 
 class HoldoutValidationScorer(Scorer):
     def __init__(self, holdout_fraction: float) -> None:
+        """Object which scores a learning algorithm using the holdout method.
+
+        Parameters
+        ----------
+        holdout_fraction : float
+            Fraction of data to use as a test set for scoring.
+        """
         self.holdout_fraction = holdout_fraction
 
     def score(
@@ -77,6 +109,22 @@ class HoldoutValidationScorer(Scorer):
         dataset: luz.Dataset,
         device: Union[torch.device, str],
     ) -> luz.Score:
+        """Learn a predictor and estimate its error using the holdout method.
+
+        Parameters
+        ----------
+        learner : luz.Learner
+            Learning algorithm to be scored.
+        dataset : luz.Dataset
+            Dataset to use for scoring.
+        device : Union[torch.device, str]
+            Device to use for scoring.
+
+        Returns
+        -------
+        luz.Score
+            Learned predictor and holdout score.
+        """
         fit_dataset, test_dataset = self._split_dataset(dataset=dataset)
 
         return learner.learn(
