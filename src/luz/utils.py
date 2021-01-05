@@ -13,6 +13,7 @@ import torch
 
 
 __all__ = [
+    "adjacency",
     "attention",
     "batchwise_edge_mean",
     "batchwise_edge_sum",
@@ -20,6 +21,7 @@ __all__ = [
     "batchwise_node_mean",
     "batchwise_node_sum",
     "expand_path",
+    "in_degree",
     "int_length",
     "masked_softmax",
     "mkdir_safe",
@@ -27,9 +29,29 @@ __all__ = [
     "nodewise_edge_mean",
     "nodewise_edge_sum",
     "nodewise_mask",
+    "out_degree",
     "set_seed",
     "temporary_seed",
 ]
+
+
+def adjacency(edge_index: torch.Tensor) -> torch.Tensor:
+    """Convert edge indices to adjacency matrix.
+
+    Parameters
+    ----------
+    edge_index
+        Edge index tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        Adjacency matrix.
+    """
+    n = edge_index.max() + 1
+    A = torch.zeros((n, n)).long()
+    A[tuple(edge_index)] = 1
+    return A
 
 
 def attention(
@@ -111,6 +133,22 @@ def expand_path(path: str, dir: Optional[str] = None) -> str:
     if dir is not None:
         p = pathlib.Path(dir).joinpath(p)
     return str(p.expanduser().resolve())
+
+
+def in_degree(adjacency: torch.Tensor) -> torch.Tensor:
+    """Compute in-degrees of nodes in a graph.
+
+    Parameters
+    ----------
+    adjacency
+        Adjacency matrix.
+
+    Returns
+    -------
+    torch.Tensor
+        Nodewise in-degree tensor.
+    """
+    return adjacency.sum(dim=0)
 
 
 def int_length(n: int) -> int:
@@ -212,6 +250,22 @@ def nodewise_mask(edge_index: torch.Tensor) -> torch.Tensor:
     M[r, torch.arange(N_e)] = 1
 
     return M
+
+
+def out_degree(adjacency: torch.Tensor) -> torch.Tensor:
+    """Compute out-degrees of nodes in a graph.
+
+    Parameters
+    ----------
+    adjacency
+        Adjacency matrix.
+
+    Returns
+    -------
+    torch.Tensor
+        Nodewise out-degree tensor.
+    """
+    return adjacency.sum(dim=1)
 
 
 def set_seed(seed: int) -> None:
