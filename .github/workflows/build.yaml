@@ -12,6 +12,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+  
+    - uses: actions/checkout@v2
+      with:
+        repository: kijanac/manage-py
+        path: my-tools
 
     - name: Update conda
       run: conda update -n base -c defaults conda
