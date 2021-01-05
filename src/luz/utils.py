@@ -72,7 +72,7 @@ def batchwise_edge_mean(
     M = batchwise_mask(batch, edge_index)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
-    return torch.matmul(M, edges)
+    return M @ edges
 
 
 def batchwise_edge_sum(
@@ -80,7 +80,7 @@ def batchwise_edge_sum(
 ) -> torch.Tensor:
     M = batchwise_mask(batch, edge_index)
 
-    return torch.matmul(M, edges)
+    return M @ edges
 
 
 def batchwise_mask(
@@ -119,13 +119,13 @@ def batchwise_node_mean(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tenso
     M = batchwise_mask(batch)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
-    return torch.matmul(M, nodes)
+    return M @ nodes
 
 
 def batchwise_node_sum(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
     M = batchwise_mask(batch)
 
-    return torch.matmul(M, nodes)
+    return M @ nodes
 
 
 def expand_path(path: str, dir: Optional[str] = None) -> str:
@@ -208,7 +208,7 @@ def nodewise_edge_mean(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.T
     M = nodewise_mask(edge_index)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
-    return torch.matmul(M, edges)
+    return M @ edges
 
 
 def nodewise_edge_sum(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
@@ -228,7 +228,7 @@ def nodewise_edge_sum(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Te
     """
     M = nodewise_mask(edge_index)
 
-    return torch.matmul(M, edges)
+    return M @ edges
 
 
 def nodewise_mask(edge_index: torch.Tensor) -> torch.Tensor:
