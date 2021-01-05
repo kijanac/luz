@@ -44,15 +44,47 @@ class Module(torch.nn.Module):
 
 class Concatenate(torch.nn.Module):
     def __init__(self, dim: Optional[int] = 0) -> None:
+        """Concatenate tensors along a given dimension.
+
+        Parameters
+        ----------
+        dim
+            Concenation dimension, by default 0
+        """
         super().__init__()
         self.dim = dim
 
     def forward(self, *tensors: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        *args
+            Input tensors.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
         return torch.cat(tensors, dim=self.dim)
 
 
 class Dense(torch.nn.Module):
-    def __init__(self, in_features, out_features, *hidden_features):
+    def __init__(
+        self, in_features: int, out_features: int, *hidden_features: int
+    ) -> None:
+        """Dense feed-forward neural network.
+
+        Parameters
+        ----------
+        in_features
+            Number of input features.
+        out_features
+            Number of output features.
+        *args
+            Number of features at each hidden layer.
+        """
         super().__init__()
         sizes = tuple((in_features, *hidden_features, out_features))
         layers = (
@@ -61,12 +93,24 @@ class Dense(torch.nn.Module):
         )
         self.seq = torch.nn.Sequential(*layers)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        x
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
         return self.seq(x)
 
 
 class DenseRNN(torch.nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size: int, hidden_size: int, output_size: int) -> None:
         super().__init__()
 
         self.hidden_size = hidden_size
@@ -75,7 +119,7 @@ class DenseRNN(torch.nn.Module):
         self.i2h = torch.nn.Linear(input_size + hidden_size, hidden_size)
         self.i2o = torch.nn.Linear(input_size + hidden_size, output_size)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         self.hidden = self._init_hidden()
 
         for i in x.transpose(0, 1):
@@ -85,7 +129,7 @@ class DenseRNN(torch.nn.Module):
 
         return output
 
-    def _init_hidden(self):
+    def _init_hidden(self) -> torch.Tensor:
         return torch.zeros(1, self.hidden_size)
 
 
@@ -98,20 +142,20 @@ class EdgeAttention(torch.nn.Module):
         d_attn: int,
         nodewise: Optional[bool] = True,
     ) -> None:
-        """Module for attentive graph edge aggregation.
+        """Aggregates graph edges using attention.
 
         Parameters
         ----------
-        d_v : int
+        d_v
             Node feature length.
-        d_e : int
+        d_e
             Edge feature length.
-        d_u : int, optional
+        d_u
             Global feature length.
-        d_attn : int
+        d_attn
             Attention vector length.
-        nodewise : bool, optional
-            If true perform nodewise edge aggregation, by default True
+        nodewise
+            If True perform nodewise edge aggregation, by default True.
         """
         super().__init__()
         self.query = luz.Module(
@@ -135,6 +179,26 @@ class EdgeAttention(torch.nn.Module):
         u: torch.Tensor,
         batch: torch.Tensor,
     ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+        edges
+            Edge features.
+        edge_index
+            Edge index tensor.
+        u
+            Global features.
+        batch
+            Nodewise batch tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
         if self.nodewise:
             mask = luz.nodewise_mask(edge_index)
         else:
@@ -247,22 +311,22 @@ class MultiheadEdgeAttention(torch.nn.Module):
         d_attn: int,
         nodewise: Optional[bool] = True,
     ) -> None:
-        """Module for attentive graph edge aggregation.
+        """Aggregates graph edges using multihead attention.
 
         Parameters
         ----------
-        num_heads : int
+        num_heads
             Number of attention heads.
-        d_v : int
+        d_v
             Node feature length.
-        d_e : int
+        d_e
             Edge feature length.
-        d_u : int, optional
+        d_u
             Global feature length.
-        d_attn : int
+        d_attn
             Attention vector length.
-        nodewise : bool, optional
-            If true perform nodewise edge aggregation, by default True
+        nodewise
+            If True perform nodewise edge aggregation, by default True.
         """
         super().__init__()
         self.concat = luz.Concatenate(dim=1)
@@ -286,6 +350,26 @@ class MultiheadEdgeAttention(torch.nn.Module):
         u: torch.Tensor,
         batch: torch.Tensor,
     ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+        edges
+            Edge features.
+        edge_index
+            Edge index tensor.
+        u
+            Global features.
+        batch
+            Nodewise batch tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
         x = self.concat(nodes, u[batch])
 
         heads = torch.stack([h(nodes, edges, edge_index, u, batch) for h in self.heads])
@@ -296,28 +380,85 @@ class MultiheadEdgeAttention(torch.nn.Module):
 
 class Reshape(torch.nn.Module):
     def __init__(self, out_shape: Iterable[int]) -> None:
+        """Reshape tensor.
+
+        Parameters
+        ----------
+        out_shape
+            Desired output shape.
+        """
         super().__init__()
         self.shape = tuple(out_shape)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        x
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Reshaped output tensor.
+        """
         return x.view(self.shape)
 
 
 class Squeeze(torch.nn.Module):
     def __init__(self, dim: Optional[int]) -> None:
+        """Squeeze tensor.
+
+        Parameters
+        ----------
+        dim
+            Dimension to be squeezed.
+        """
         super().__init__()
         self.dim = dim
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        x
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Squeezed output tensor.
+        """
         return x.squeeze(dim=self.dim)
 
 
 class Unsqueeze(torch.nn.Module):
     def __init__(self, dim: int) -> None:
+        """Unsqueeze tensor.
+
+        Parameters
+        ----------
+        dim
+            Dimension to be unsqueezed.
+        """
         super().__init__()
         self.dim = dim
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        x
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Unsueezed output tensor.
+        """
         return x.unsqueeze(dim=self.dim)
 
 
