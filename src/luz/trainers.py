@@ -55,6 +55,22 @@ class Trainer:
     def process_batch(
         self, batch: luz.Data
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+        """Get output and optionally target from batched data.
+
+        Parameters
+        ----------
+        batch
+            Batched data.
+
+        Returns
+        -------
+        Tuple[torch.Tensor, Optional[torch.Tensor]]
+            Output tensor and optional target tensor.
+
+        Raises
+        ------
+        NotImplementedError
+        """
         raise NotImplementedError
 
     def run_batch(
@@ -79,13 +95,13 @@ class Trainer:
 
         Parameters
         ----------
-        predictor : luz.Predictor
+        predictor
             Predictor to be trained.
-        dataset : luz.Dataset
+        dataset
             Training data.
-        device : Union[str, torch.device]
+        device
             Device to use for training.
-        train : bool
+        train
             If True, then train, else test.
         val_dataset : luz.Dataset, optional
             Validation data, by default None.
@@ -187,6 +203,26 @@ class SupervisedTrainer(Trainer):
         device: Union[str, torch.device],
         optimizer: Optional[torch.optim.Optimizer] = None,
     ) -> float:
+        """Run training algorithm on a single batch.
+
+        Parameters
+        ----------
+        predictor
+            Predictor to be trained.
+        dataset
+            Batch of training data.
+        target
+            Target tensor.
+        device
+            Device to use for training.
+        optimizer
+            Optimizer, by default None.
+
+        Returns
+        -------
+        float
+            Batch loss.
+        """
         output = predictor(data)
         loss = self.loss(output, target)
 
