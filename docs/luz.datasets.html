@@ -87,9 +87,6 @@
 <dt id="luz.datasets.Dataset">
 <em class="property">class </em><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
-<p>A Dataset is an object which contains, or at least can
-systematically access, points from some domain and
-optionally their associated labels.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -129,9 +126,16 @@ optionally their associated labels.</p>
 <dl class="py function">
 <dt id="luz.datasets.default_collate">
 <code class="sig-name descname">default_collate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.default_collate" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Collate multiple Data objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>batch</strong> (<em>Iterable</em><em>[</em><em>luz.Data</em><em>]</em>) – Data objects to be collated</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Collated Data object</p>
+</dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#luz.datasets.Data" title="luz.datasets.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
+<dd class="field-odd"><p>luz.Data</p>
 </dd>
 </dl>
 </dd></dl>
@@ -139,9 +143,16 @@ optionally their associated labels.</p>
 <dl class="py function">
 <dt id="luz.datasets.graph_collate">
 <code class="sig-name descname">graph_collate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.graph_collate" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Collate multiple Data objects containing graph data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>batch</strong> (<em>Iterable</em><em>[</em><em>luz.Data</em><em>]</em>) – Data objects to be collated</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Collated Data object</p>
+</dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#luz.datasets.Data" title="luz.datasets.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></p>
+<dd class="field-odd"><p>luz.Data</p>
 </dd>
 </dl>
 </dd></dl>
@@ -204,8 +215,8 @@ optionally their associated labels.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.1.
+        &#169; Copyright 2021.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.2.
     </div>
   </body>
 </html>

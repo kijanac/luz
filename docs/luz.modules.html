@@ -130,11 +130,11 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="py class">
 <dt id="luz.modules.EdgeAttention">
-<em class="property">class </em><code class="sig-name descname">EdgeAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_attn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAttention" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">EdgeAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_u</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">nodewise</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <dl class="py method">
 <dt id="luz.modules.EdgeAttention.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAttention.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAttention.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -245,11 +245,11 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="py class">
 <dt id="luz.modules.MultiheadEdgeAttention">
-<em class="property">class </em><code class="sig-name descname">MultiheadEdgeAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_heads</span></em>, <em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_attn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MultiheadEdgeAttention" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MultiheadEdgeAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_heads</span></em>, <em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_u</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">nodewise</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MultiheadEdgeAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <dl class="py method">
 <dt id="luz.modules.MultiheadEdgeAttention.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MultiheadEdgeAttention.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MultiheadEdgeAttention.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -451,8 +451,8 @@ registered hooks while the latter silently ignores them.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.1.
+        &#169; Copyright 2021.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.2.
     </div>
   </body>
 </html>

@@ -109,9 +109,19 @@
 <dl class="py method">
 <dt id="luz.trainers.Trainer.run">
 <code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">train</span></em>, <em class="sig-param"><span class="n">val_dataset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.run" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd><p>Run training algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>predictor</strong> (<em>luz.Predictor</em>) – Predictor to be trained.</p></li>
+<li><p><strong>dataset</strong> (<em>luz.Dataset</em>) – Training data.</p></li>
+<li><p><strong>device</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>torch.device</em><em>]</em>) – Device to use for training.</p></li>
+<li><p><strong>train</strong> (<em>bool</em>) – If True, then train, else test.</p></li>
+<li><p><strong>val_dataset</strong> (<em>luz.Dataset</em><em>, </em><em>optional</em>) – Validation data, by default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -196,8 +206,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.1.
+        &#169; Copyright 2021.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.2.
     </div>
   </body>
 </html>

@@ -74,10 +74,20 @@
 
 <dl class="py function">
 <dt id="luz.utils.batchwise_mask">
-<code class="sig-name descname">batchwise_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">edge_index</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_mask" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<code class="sig-name descname">batchwise_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">edge_index</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mask for batchwise aggregation of graph nodes or edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> (<em>torch.Tensor</em>) – Length N_v tensor of batch indices</p></li>
+<li><p><strong>edge_index</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em><em>, </em><em>optional</em>) – 2xN_e tensor of edge indices, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Mask for batchwise aggregation</p>
+</dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -125,9 +135,19 @@
 <dl class="py function">
 <dt id="luz.utils.masked_softmax">
 <code class="sig-name descname">masked_softmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">M</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.masked_softmax" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Compute softmax of a tensor using a mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>torch.Tensor</em>) – Argument of softmax</p></li>
+<li><p><strong>M</strong> (<em>torch.Tensor</em>) – Mask tensor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Masked softmax</p>
+</dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -169,12 +189,12 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>edges</strong> (<em>torch.Tensor</em>) – Nexd array of edge features</p></li>
-<li><p><strong>edge_index</strong> (<em>torch.Tensor</em>) – 2xNe array of edge indices</p></li>
+<li><p><strong>edges</strong> (<em>torch.Tensor</em>) – N_exd tensor of edge features</p></li>
+<li><p><strong>edge_index</strong> (<em>torch.Tensor</em>) – 2xN_e tensor of edge indices</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Nvxd array of nodewise summed incoming edges</p>
+<dd class="field-even"><p>N_vxd array of nodewise summed incoming edges</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>torch.Tensor</p>
@@ -185,9 +205,16 @@
 <dl class="py function">
 <dt id="luz.utils.nodewise_mask">
 <code class="sig-name descname">nodewise_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.nodewise_mask" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Create a mask for nodewise aggregation of graph edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>edge_index</strong> (<em>torch.Tensor</em>) – 2xN_e tensor of edge indices</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Mask for nodewise edge aggregation</p>
+</dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -264,8 +291,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.1.
+        &#169; Copyright 2021.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.2.
     </div>
   </body>
 </html>
