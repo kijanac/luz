@@ -90,27 +90,62 @@ class DenseRNN(torch.nn.Module):
 
 
 class EdgeAttention(torch.nn.Module):
-    def __init__(self, d_v: int, d_e: int, d_attn: int) -> None:
+    def __init__(
+        self,
+        d_v: int,
+        d_e: int,
+        d_u: int,
+        d_attn: int,
+        nodewise: Optional[bool] = True,
+    ) -> None:
+        """Module for attentive graph edge aggregation.
+
+        Parameters
+        ----------
+        d_v : int
+            Node feature length.
+        d_e : int
+            Edge feature length.
+        d_u : int, optional
+            Global feature length.
+        d_attn : int
+            Attention vector length.
+        nodewise : bool, optional
+            If true perform nodewise edge aggregation, by default True
+        """
         super().__init__()
         self.query = luz.Module(
-            torch.nn.Linear(d_v, d_attn), torch.nn.functional.leaky_relu
+            torch.nn.Linear(d_v + d_u, d_attn), torch.nn.functional.leaky_relu
         )
         self.key = luz.Module(
-            torch.nn.Linear(d_v, d_attn), torch.nn.functional.leaky_relu
+            torch.nn.Linear(d_v + d_u, d_attn), torch.nn.functional.leaky_relu
         )
         self.value = luz.Module(
-            torch.nn.Linear(d_e, d_attn), torch.nn.functional.leaky_relu
+            torch.nn.Linear(d_e + d_u, d_attn), torch.nn.functional.leaky_relu
         )
+        self.concat = Concatenate(dim=1)
+
+        self.nodewise = nodewise
 
     def forward(
-        self, nodes: torch.Tensor, edges: torch.Tensor, edge_index: torch.Tensor
+        self,
+        nodes: torch.Tensor,
+        edges: torch.Tensor,
+        edge_index: torch.Tensor,
+        u: torch.Tensor,
+        batch: torch.Tensor,
     ) -> torch.Tensor:
-        M = luz.nodewise_mask(edge_index)
+        if self.nodewise:
+            mask = luz.nodewise_mask(edge_index)
+        else:
+            mask = luz.batchwise_mask(batch, edge_index)
+
         s, r = edge_index
-        q = self.query(nodes)
-        k = self.key(nodes[s])
-        v = self.value(edges)
-        return luz.attention(q, k, M) @ v
+        q = self.query(self.concat(nodes, u[batch]))
+        k = self.key(self.concat(nodes[s], u[batch[s]]))
+        v = self.value(self.concat(edges, u[batch[s]]))
+
+        return luz.attention(q, k, mask) @ v
 
 
 class ElmanRNN(torch.nn.Module):
@@ -203,23 +238,59 @@ class GraphNetwork(torch.nn.Module):
 
 
 class MultiheadEdgeAttention(torch.nn.Module):
-    def __init__(self, num_heads: int, d_v: int, d_e: int, d_attn: int) -> None:
+    def __init__(
+        self,
+        num_heads: int,
+        d_v: int,
+        d_e: int,
+        d_u: int,
+        d_attn: int,
+        nodewise: Optional[bool] = True,
+    ) -> None:
+        """Module for attentive graph edge aggregation.
+
+        Parameters
+        ----------
+        num_heads : int
+            Number of attention heads.
+        d_v : int
+            Node feature length.
+        d_e : int
+            Edge feature length.
+        d_u : int, optional
+            Global feature length.
+        d_attn : int
+            Attention vector length.
+        nodewise : bool, optional
+            If true perform nodewise edge aggregation, by default True
+        """
         super().__init__()
+        self.concat = luz.Concatenate(dim=1)
         self.heads = []
         self.gates = []
 
         for _ in range(num_heads):
-            h = EdgeAttention(d_v, d_e, d_attn)
-            g = luz.Module(torch.nn.Linear(d_v, 1), torch.nn.functional.leaky_relu)
+            h = EdgeAttention(d_v, d_e, d_u, d_attn, nodewise)
+            g = luz.Module(
+                torch.nn.Linear(d_v + d_u, 1), torch.nn.functional.leaky_relu
+            )
 
             self.heads.append(h)
             self.gates.append(g)
 
     def forward(
-        self, nodes: torch.Tensor, edges: torch.Tensor, edge_index: torch.Tensor
+        self,
+        nodes: torch.Tensor,
+        edges: torch.Tensor,
+        edge_index: torch.Tensor,
+        u: torch.Tensor,
+        batch: torch.Tensor,
     ) -> torch.Tensor:
-        heads = torch.stack([h(nodes, edges, edge_index) for h in self.heads])
-        gates = torch.stack([g(nodes).squeeze(-1) for g in self.gates])
+        x = self.concat(nodes, u[batch])
+
+        heads = torch.stack([h(nodes, edges, edge_index, u, batch) for h in self.heads])
+        gates = torch.stack([g(x).squeeze(-1) for g in self.gates])
+
         return torch.einsum("ijk, ij -> jk", heads, gates)
 
 

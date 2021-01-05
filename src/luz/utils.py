@@ -47,8 +47,7 @@ def attention(
 def batchwise_edge_mean(
     edges: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor
 ) -> torch.Tensor:
-    N_e, *_ = edges.shape
-    M = batchwise_mask(batch, N_e, edge_index)
+    M = batchwise_mask(batch, edge_index)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
     return torch.matmul(M, edges)
@@ -57,37 +56,52 @@ def batchwise_edge_mean(
 def batchwise_edge_sum(
     edges: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor
 ) -> torch.Tensor:
-    N_e, *_ = edges.shape
-    M = batchwise_mask(batch, N_e, edge_index)
+    M = batchwise_mask(batch, edge_index)
 
     return torch.matmul(M, edges)
 
 
 def batchwise_mask(
-    batch: torch.Tensor, N: int, edge_index: Optional[torch.Tensor] = None
+    batch: torch.Tensor, edge_index: Optional[torch.Tensor] = None
 ) -> torch.Tensor:
+    """Create a mask for batchwise aggregation of graph nodes or edges.
+
+    Parameters
+    ----------
+    batch : torch.Tensor
+        Length N_v tensor of batch indices
+    edge_index : Optional[torch.Tensor], optional
+        2xN_e tensor of edge indices, by default None
+
+    Returns
+    -------
+    torch.Tensor
+        Mask for batchwise aggregation
+    """
     if edge_index is not None:
+        # masking for edge aggregation
+        _, N_e = edge_index.shape
         s, r = edge_index
-        M = torch.zeros(batch[r].max() + 1, N)
-        M[batch[r], torch.arange(N)] = 1
+        M = torch.zeros(batch[r].max() + 1, N_e)
+        M[batch[r], torch.arange(N_e)] = 1
     else:
-        M = torch.zeros(batch.max() + 1, N)
-        M[batch, torch.arange(N)] = 1
+        # masking for node aggregation
+        N_v = len(batch)
+        M = torch.zeros(batch.max() + 1, N_v)
+        M[batch, torch.arange(N_v)] = 1
 
     return M
 
 
 def batchwise_node_mean(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
-    N_v, *_ = nodes.shape
-    M = batchwise_mask(batch, N_v)
+    M = batchwise_mask(batch)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
     return torch.matmul(M, nodes)
 
 
 def batchwise_node_sum(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
-    N_v, *_ = nodes.shape
-    M = batchwise_mask(batch, N_v)
+    M = batchwise_mask(batch)
 
     return torch.matmul(M, nodes)
 
@@ -113,6 +127,20 @@ def int_length(n: int) -> int:
 def masked_softmax(
     x: torch.Tensor, M: torch.Tensor, *args: Any, **kwargs: Any
 ) -> torch.Tensor:
+    """Compute softmax of a tensor using a mask.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Argument of softmax
+    M : torch.Tensor
+        Mask tensor
+
+    Returns
+    -------
+    torch.Tensor
+        Masked softmax
+    """
     return torch.softmax((M * x).masked_fill(M == 0, -float("inf")), *args, **kwargs)
 
 
@@ -151,14 +179,14 @@ def nodewise_edge_sum(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Te
     Parameters
     ----------
     edges : torch.Tensor
-        Nexd array of edge features
+        N_exd tensor of edge features
     edge_index : torch.Tensor
-        2xNe array of edge indices
+        2xN_e tensor of edge indices
 
     Returns
     -------
     torch.Tensor
-        Nvxd array of nodewise summed incoming edges
+        N_vxd array of nodewise summed incoming edges
     """
     M = nodewise_mask(edge_index)
 
@@ -166,6 +194,18 @@ def nodewise_edge_sum(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Te
 
 
 def nodewise_mask(edge_index: torch.Tensor) -> torch.Tensor:
+    """Create a mask for nodewise aggregation of graph edges.
+
+    Parameters
+    ----------
+    edge_index : torch.Tensor
+        2xN_e tensor of edge indices
+
+    Returns
+    -------
+    torch.Tensor
+        Mask for nodewise edge aggregation
+    """
     _, N_e = edge_index.shape
     s, r = edge_index
     M = torch.zeros(r.max() + 1, N_e)

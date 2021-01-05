@@ -23,6 +23,18 @@ __all__ = [
 
 
 def default_collate(batch: Iterable[luz.Data]) -> luz.Data:
+    """Collate multiple Data objects.
+
+    Parameters
+    ----------
+    batch : Iterable[luz.Data]
+        Data objects to be collated
+
+    Returns
+    -------
+    luz.Data
+        Collated Data object
+    """
     kw = {
         k: torch.stack([torch.as_tensor(sample[k]) for sample in batch], dim=0)
         for k in batch[0].keys
@@ -32,6 +44,18 @@ def default_collate(batch: Iterable[luz.Data]) -> luz.Data:
 
 
 def graph_collate(batch: Iterable[luz.Data]) -> luz.Data:
+    """Collate multiple Data objects containing graph data.
+
+    Parameters
+    ----------
+    batch : Iterable[luz.Data]
+        Data objects to be collated
+
+    Returns
+    -------
+    luz.Data
+        Collated Data object
+    """
     node_counts = [sample.x.shape[0] for sample in batch]
     edge_index_offsets = np.roll(np.cumsum(node_counts), shift=1)
     edge_index_offsets[0] = 0
@@ -139,13 +163,14 @@ class BaseDataset:
 
 
 class Dataset(torch.utils.data.Dataset, BaseDataset):
-    """
-    A Dataset is an object which contains, or at least can
-    systematically access, points from some domain and
-    optionally their associated labels.
-    """
-
     def __init__(self, data: Iterable[luz.Data]) -> None:
+        """Object containing points from a domain, possibly with labels.
+
+        Parameters
+        ----------
+        data : Iterable[luz.Data]
+            Data objects comprising the dataset
+        """
         self.data = tuple(data)
 
     def __getitem__(self, index: int) -> luz.Data:

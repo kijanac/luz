@@ -8,13 +8,6 @@ __all__ = ["Learner"]
 
 
 class Learner:
-    """
-    A Learner is an object which takes a dataset as input
-    and produces a predictor as output. Learners are
-    distinguished by the different protocols they use
-    to construct a predictor from a given dataset.
-    """
-
     def __init__(
         self,
         trainer: luz.Trainer,
@@ -22,6 +15,15 @@ class Learner:
         *args,
         **kwargs,
     ) -> None:
+        """Protocol to learn a predictor given datasets.
+
+        Parameters
+        ----------
+        trainer : luz.Trainer
+            Training algorithm.
+        cls : Type[torch.nn.Module]
+            Predictor class.
+        """
         self.cls = cls
         self.trainer = trainer
         self.args = args
@@ -34,14 +36,23 @@ class Learner:
         val_dataset: Optional[luz.Dataset] = None,
         test_dataset: Optional[luz.Dataset] = None,
     ) -> luz.Score:
-        """
-        Learn a predictor based on a given dataset.
+        """Learn a predictor based on a given dataset.
 
-        Args:
-            dataset: Dataset which will be used to learn a predictor.
+        Parameters
+        ----------
+        dataset : luz.Dataset
+            Training dataset used to learn a predictor.
+        device : Union[str, torch.device]
+            Device to use for learning.
+        val_dataset : luz.Dataset, optional
+            Validation dataset, by default None
+        test_dataset : luz.Dataset, optional
+            Test dataset, by default None
 
-        Returns:
-            luz.Predictor: Predictor which was learned using `dataset`.
+        Returns
+        -------
+        luz.Score
+            Learned predictor and learning score.
         """
         p = luz.Predictor(self.cls(*self.args, **self.kwargs))
 

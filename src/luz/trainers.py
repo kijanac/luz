@@ -10,7 +10,7 @@ import torch
 class Trainer:
     def __init__(
         self,
-        loss=None,
+        loss: Optional[Callable[[torch.Tensor, torch.Tensor], torch.Tensor]] = None,
         optimizer: Optional[luz.Optimizer] = None,
         start_epoch: Optional[int] = 1,
         stop_epoch: Optional[int] = 2,
@@ -20,6 +20,23 @@ class Trainer:
         ] = None,
         **loader_kwargs: Union[int, bool, luz.Transform],
     ) -> None:
+        """Algorithm to train a predictor using data.
+
+        Parameters
+        ----------
+        loss
+            Loss function to be minimized during training, by default None
+        optimizer
+            Training optimizer, by default None
+        start_epoch
+            First training epoch, by default 1
+        stop_epoch
+            Last training epoch, by default 2
+        handlers
+            Handlers to run during training, by default None
+        process_batch
+            Function to get output and optionally target from data, by default None
+        """
         self.loss = loss
         self.optimizer = optimizer
         self.start_epoch = start_epoch
@@ -31,7 +48,7 @@ class Trainer:
         self.flag = None
         self.state = {}
 
-    def _call_event(self, event):
+    def _call_event(self, event: luz.Event) -> None:
         for handler in self.handlers:
             getattr(handler, event.name.lower())(**self.state)
 
@@ -58,6 +75,21 @@ class Trainer:
         train: bool,
         val_dataset: Optional[luz.Dataset] = None,
     ) -> None:
+        """Run training algorithm.
+
+        Parameters
+        ----------
+        predictor : luz.Predictor
+            Predictor to be trained.
+        dataset : luz.Dataset
+            Training data.
+        device : Union[str, torch.device]
+            Device to use for training.
+        train : bool
+            If True, then train, else test.
+        val_dataset : luz.Dataset, optional
+            Validation data, by default None.
+        """
         self.set_mode(predictor, train)
         self.migrate(predictor, device)
 
