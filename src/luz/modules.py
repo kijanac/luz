@@ -101,11 +101,13 @@ class Dense(torch.nn.Module):
         ----------
         x
             Input tensor.
+            Shape: :math:`(N, *, H_{in})`
 
         Returns
         -------
         torch.Tensor
             Output tensor.
+            Shape: :math:`(N, *, H_{out})`
         """
         return self.seq(x)
 
@@ -121,6 +123,18 @@ class DenseRNN(torch.nn.Module):
         self.i2o = torch.nn.Linear(input_size + hidden_size, output_size)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        x
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
         self.hidden = self._init_hidden()
 
         for i in x.transpose(0, 1):
@@ -280,13 +294,16 @@ class GraphConv(torch.nn.Module):
         ----------
         nodes
             Node features.
+            Shape: :math:`(N_v,d_v)`
         edge_index
             Edge indices.
+            Shape: :math:`(2,N_e)`
 
         Returns
         -------
         torch.Tensor
             Output tensor.
+            Shape: :math:`(N_v,d_v)`
         """
         N_v, _ = nodes.shape
         A = luz.adjacency(edge_index) + torch.eye(N_v)
@@ -319,6 +336,44 @@ class GraphNetwork(torch.nn.Module):
         u: Optional[torch.Tensor] = None,
         batch: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_v,d_v)`
+        edge_index
+            Edge index tensor.
+            Shape: :math:`(2,N_e)`
+        edges
+            Edge features, by default None.
+            Shape: :math:`(N_e,d_e)`
+        u
+            Global features, by default None.
+            Shape: :math:`(N_{batch},d_u)`
+        batch
+            Nodewise batch tensor, by default None.
+            Shape: :math:`(N_v,)`
+
+        Returns
+        -------
+        torch.Tensor
+            Output node feature tensor.
+            Shape: :math:`(N_v,d_v)`
+        torch.Tensor
+            Output edge index tensor.
+            Shape: :math:`(2,N_e)`
+        torch.Tensor
+            Output edge feature tensor.
+            Shape: :math:`(N_e,d_e)`
+        torch.Tensor
+            Output global feature tensor.
+            Shape: :math:`(N_{batch},d_u)`
+        torch.Tensor
+            Output batch tensor.
+            Shape: :math:`(N_v,)`
+        """
         if batch is None:
             N_v, *_ = nodes.shape
             batch = torch.zeros((N_v,), dtype=torch.long)
