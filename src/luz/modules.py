@@ -187,7 +187,7 @@ class AdditiveAttention(torch.nn.Module):
         -------
         torch.Tensor
             Output tensor.
-            Shape: :math:`(N_e,N_v)
+            Shape: :math:`(N_e,N_v)`
         """
         s, r = edge_index
         Z_i = self.Z(nodes[s])
