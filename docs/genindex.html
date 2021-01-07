@@ -32,6 +32,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -184,10 +185,14 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.transforms.html#luz.transforms.Argmax">Argmax (class in luz.transforms)</a>
+      <li><a href="luz.modules.html#luz.modules.AdditiveAttention">AdditiveAttention (class in luz.modules)</a>
+</li>
+      <li><a href="luz.utils.html#luz.utils.adjacency">adjacency() (in module luz.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.transforms.html#luz.transforms.Argmax">Argmax (class in luz.transforms)</a>
+</li>
       <li><a href="luz.utils.html#luz.utils.attention">attention() (in module luz.utils)</a>
 </li>
   </ul></td>
@@ -338,9 +343,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.flags.html#luz.flags.Flag">Flag (class in luz.flags)</a>
 </li>
-      <li><a href="luz.modules.html#luz.modules.Concatenate.forward">forward() (Concatenate method)</a>
+      <li><a href="luz.modules.html#luz.modules.AdditiveAttention.forward">forward() (AdditiveAttention method)</a>
 
       <ul>
+        <li><a href="luz.modules.html#luz.modules.Concatenate.forward">(Concatenate method)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.Dense.forward">(Dense method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.DenseRNN.forward">(DenseRNN method)</a>
@@ -348,6 +355,10 @@
         <li><a href="luz.modules.html#luz.modules.EdgeAttention.forward">(EdgeAttention method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.ElmanRNN.forward">(ElmanRNN method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.GraphConv.forward">(GraphConv method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.GraphConvAttention.forward">(GraphConvAttention method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.GraphNetwork.forward">(GraphNetwork method)</a>
 </li>
@@ -376,8 +387,12 @@
 </li>
       <li><a href="luz.datasets.html#luz.datasets.graph_collate">graph_collate() (in module luz.datasets)</a>
 </li>
+      <li><a href="luz.modules.html#luz.modules.GraphConv">GraphConv (class in luz.modules)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.modules.html#luz.modules.GraphConvAttention">GraphConvAttention (class in luz.modules)</a>
+</li>
       <li><a href="luz.modules.html#luz.modules.GraphNetwork">GraphNetwork (class in luz.modules)</a>
 </li>
       <li><a href="luz.tuners.html#luz.tuners.GridTuner">GridTuner (class in luz.tuners)</a>
@@ -405,6 +420,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.transforms.html#luz.transforms.Identity">Identity (class in luz.transforms)</a>
+</li>
+      <li><a href="luz.utils.html#luz.utils.in_degree">in_degree() (in module luz.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -615,11 +632,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.datasets.html#luz.datasets.OnDiskDataset">OnDiskDataset (class in luz.datasets)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.optimizer.html#luz.optimizer.Optimizer">Optimizer (class in luz.optimizer)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.trainers.html#luz.trainers.Trainer.optimizer_step">optimizer_step() (Trainer method)</a>
+</li>
+      <li><a href="luz.utils.html#luz.utils.out_degree">out_degree() (in module luz.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -745,9 +764,11 @@
 </li>
       <li><a href="luz.trainers.html#luz.trainers.Trainer">Trainer (class in luz.trainers)</a>
 </li>
-      <li><a href="luz.modules.html#luz.modules.Concatenate.training">training (Concatenate attribute)</a>
+      <li><a href="luz.modules.html#luz.modules.AdditiveAttention.training">training (AdditiveAttention attribute)</a>
 
       <ul>
+        <li><a href="luz.modules.html#luz.modules.Concatenate.training">(Concatenate attribute)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.Dense.training">(Dense attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.DenseRNN.training">(DenseRNN attribute)</a>
@@ -761,9 +782,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.flags.html#luz.flags.Flag.TRAINING">TRAINING (Flag attribute)</a>
 </li>
-      <li><a href="luz.modules.html#luz.modules.GraphNetwork.training">training (GraphNetwork attribute)</a>
+      <li><a href="luz.modules.html#luz.modules.GraphConv.training">training (GraphConv attribute)</a>
 
       <ul>
+        <li><a href="luz.modules.html#luz.modules.GraphConvAttention.training">(GraphConvAttention attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.GraphNetwork.training">(GraphNetwork attribute)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.Module.training">(Module attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention.training">(MultiheadEdgeAttention attribute)</a>

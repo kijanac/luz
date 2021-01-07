@@ -32,6 +32,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -186,11 +187,45 @@
   <div class="section" id="module-luz.utils">
 <span id="luz-utils-module"></span><h1>luz.utils module<a class="headerlink" href="#module-luz.utils" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt id="luz.utils.adjacency">
+<code class="sig-name descname">adjacency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.adjacency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert edge indices to adjacency matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>edge_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge index tensor.
+Shape: <span class="math notranslate nohighlight">\((2,N_e)\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Adjacency matrix.
+Shape: <span class="math notranslate nohighlight">\((N_v,N_v)\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="luz.utils.attention">
 <code class="sig-name descname">attention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.attention" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Compute scaled dot product attention.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Query vectors.
+Shape: <span class="math notranslate nohighlight">\((N,d_q)\)</span></p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Key vectors.
+Shape: <span class="math notranslate nohighlight">\((N,d_q)\)</span></p></li>
+<li><p><strong>mask</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Mask tensor to ignore query-key pairs, by default None.
+Shape: <span class="math notranslate nohighlight">\((N,N)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Scaled dot product attention between each query and key vector.
+Shape: <span class="math notranslate nohighlight">\((N,N)\)</span></p>
+</dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -222,12 +257,15 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>batch</strong> (<em>torch.Tensor</em>) – Length N_v tensor of batch indices</p></li>
-<li><p><strong>edge_index</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em><em>, </em><em>optional</em>) – 2xN_e tensor of edge indices, by default None</p></li>
+<li><p><strong>batch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Tensor of batch indices.
+Shape: <span class="math notranslate nohighlight">\((N_v,)\)</span></p></li>
+<li><p><strong>edge_index</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Tensor of edge indices, by default None.
+Shape: <span class="math notranslate nohighlight">\((2,N_e)\)</span></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Mask for batchwise aggregation</p>
+<dd class="field-even"><p>Mask for batchwise aggregation.
+Shape: <span class="math notranslate nohighlight">\((N_{batch},N_v)\)</span> if <cite>edge_index = None</cite></p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>torch.Tensor</p>
@@ -266,6 +304,25 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="luz.utils.in_degree">
+<code class="sig-name descname">in_degree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">adjacency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.in_degree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute in-degrees of nodes in a graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>adjacency</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Adjacency matrix.
+Shape: <span class="math notranslate nohighlight">\((N_v, N_v)\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nodewise in-degree tensor.
+Shape: <span class="math notranslate nohighlight">\((N_v,)\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="luz.utils.int_length">
 <code class="sig-name descname">int_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.int_length" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -282,12 +339,14 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>torch.Tensor</em>) – Argument of softmax</p></li>
-<li><p><strong>M</strong> (<em>torch.Tensor</em>) – Mask tensor</p></li>
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Argument of softmax.</p></li>
+<li><p><strong>M</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Mask tensor.</p></li>
+<li><p><strong>*args</strong> – Softmax args.</p></li>
+<li><p><strong>**kwargs</strong> – Softmax kwargs.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Masked softmax</p>
+<dd class="field-even"><p>Masked softmax of <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>torch.Tensor</p>
@@ -332,12 +391,15 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>edges</strong> (<em>torch.Tensor</em>) – N_exd tensor of edge features</p></li>
-<li><p><strong>edge_index</strong> (<em>torch.Tensor</em>) – 2xN_e tensor of edge indices</p></li>
+<li><p><strong>edges</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge features.
+Shape: <span class="math notranslate nohighlight">\((N_e,d_e)\)</span></p></li>
+<li><p><strong>edge_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Ege indices.
+Shape: <span class="math notranslate nohighlight">\((2,N_e)\)</span></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>N_vxd array of nodewise summed incoming edges</p>
+<dd class="field-even"><p>Tensor of summed incoming edges for each node.
+Shape: <span class="math notranslate nohighlight">\((N_v,d_e)\)</span></p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>torch.Tensor</p>
@@ -348,13 +410,33 @@
 <dl class="py function">
 <dt id="luz.utils.nodewise_mask">
 <code class="sig-name descname">nodewise_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.nodewise_mask" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a mask for nodewise aggregation of graph edges.</p>
+<dd><p>Create a mask for nodewise aggregation of incoming graph edges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>edge_index</strong> (<em>torch.Tensor</em>) – 2xN_e tensor of edge indices</p>
+<dd class="field-odd"><p><strong>edge_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge indices.
+Shape: <span class="math notranslate nohighlight">\((2,N_e)\)</span></p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Mask for nodewise edge aggregation</p>
+<dd class="field-even"><p>Mask for nodewise edge aggregation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="luz.utils.out_degree">
+<code class="sig-name descname">out_degree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">adjacency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.out_degree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute out-degrees of nodes in a graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>adjacency</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Adjacency matrix.
+Shape: <span class="math notranslate nohighlight">\((N_v,N_v)\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nodewise out-degree tensor.
+Shape: <span class="math notranslate nohighlight">\((N_v,)\)</span></p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>torch.Tensor</p>
