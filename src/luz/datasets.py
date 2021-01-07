@@ -168,8 +168,8 @@ class Dataset(torch.utils.data.Dataset, BaseDataset):
 
         Parameters
         ----------
-        data : Iterable[luz.Data]
-            Data objects comprising the dataset
+        data
+            Iterable of Data objects comprising the dataset.
         """
         self.data = tuple(data)
 
@@ -190,6 +190,13 @@ class Subset(torch.utils.data.Subset, BaseDataset):
 
 class OnDiskDataset(BaseDataset, torch.utils.data.Dataset):
     def __init__(self, root: str) -> None:
+        """Dataset which reads data from disk.
+
+        Parameters
+        ----------
+        root
+            Root directory containing data stored in .pt files.
+        """
         self.root = luz.expand_path(root)
 
     def __getitem__(self, index: int) -> luz.Data:

@@ -13,6 +13,7 @@ import torch
 
 
 __all__ = [
+    "adjacency",
     "attention",
     "batchwise_edge_mean",
     "batchwise_edge_sum",
@@ -20,6 +21,7 @@ __all__ = [
     "batchwise_node_mean",
     "batchwise_node_sum",
     "expand_path",
+    "in_degree",
     "int_length",
     "masked_softmax",
     "mkdir_safe",
@@ -27,16 +29,56 @@ __all__ = [
     "nodewise_edge_mean",
     "nodewise_edge_sum",
     "nodewise_mask",
+    "out_degree",
     "set_seed",
     "temporary_seed",
 ]
 
 
+def adjacency(edge_index: torch.Tensor) -> torch.Tensor:
+    """Convert edge indices to adjacency matrix.
+
+    Parameters
+    ----------
+    edge_index
+        Edge index tensor.
+        Shape: :math:`(2,N_e)`
+
+    Returns
+    -------
+    torch.Tensor
+        Adjacency matrix.
+        Shape: :math:`(N_v,N_v)`
+    """
+    n = edge_index.max() + 1
+    A = torch.zeros((n, n)).long()
+    A[tuple(edge_index)] = 1
+    return A
+
+
 def attention(
     query: torch.Tensor, key: torch.Tensor, mask: Optional[torch.Tensor] = None
 ) -> torch.Tensor:
-    # query: N x d_q
-    # key: N x d_q
+    """Compute scaled dot product attention.
+
+    Parameters
+    ----------
+    query
+        Query vectors.
+        Shape: :math:`(N,d_q)`
+    key
+        Key vectors.
+        Shape: :math:`(N,d_q)`
+    mask
+        Mask tensor to ignore query-key pairs, by default None.
+        Shape: :math:`(N,N)`
+
+    Returns
+    -------
+    torch.Tensor
+        Scaled dot product attention between each query and key vector.
+        Shape: :math:`(N,N)`
+    """
 
     _, d = key.shape
 
@@ -50,7 +92,7 @@ def batchwise_edge_mean(
     M = batchwise_mask(batch, edge_index)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
-    return torch.matmul(M, edges)
+    return M @ edges
 
 
 def batchwise_edge_sum(
@@ -58,7 +100,7 @@ def batchwise_edge_sum(
 ) -> torch.Tensor:
     M = batchwise_mask(batch, edge_index)
 
-    return torch.matmul(M, edges)
+    return M @ edges
 
 
 def batchwise_mask(
@@ -68,15 +110,18 @@ def batchwise_mask(
 
     Parameters
     ----------
-    batch : torch.Tensor
-        Length N_v tensor of batch indices
-    edge_index : Optional[torch.Tensor], optional
-        2xN_e tensor of edge indices, by default None
+    batch
+        Tensor of batch indices.
+        Shape: :math:`(N_v,)`
+    edge_index
+        Tensor of edge indices, by default None.
+        Shape: :math:`(2,N_e)`
 
     Returns
     -------
     torch.Tensor
-        Mask for batchwise aggregation
+        Mask for batchwise aggregation.
+        Shape: :math:`(N_{batch},N_v)` if `edge_index = None`
     """
     if edge_index is not None:
         # masking for edge aggregation
@@ -97,13 +142,13 @@ def batchwise_node_mean(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tenso
     M = batchwise_mask(batch)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
-    return torch.matmul(M, nodes)
+    return M @ nodes
 
 
 def batchwise_node_sum(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
     M = batchwise_mask(batch)
 
-    return torch.matmul(M, nodes)
+    return M @ nodes
 
 
 def expand_path(path: str, dir: Optional[str] = None) -> str:
@@ -111,6 +156,24 @@ def expand_path(path: str, dir: Optional[str] = None) -> str:
     if dir is not None:
         p = pathlib.Path(dir).joinpath(p)
     return str(p.expanduser().resolve())
+
+
+def in_degree(adjacency: torch.Tensor) -> torch.Tensor:
+    """Compute in-degrees of nodes in a graph.
+
+    Parameters
+    ----------
+    adjacency
+        Adjacency matrix.
+        Shape: :math:`(N_v, N_v)`
+
+    Returns
+    -------
+    torch.Tensor
+        Nodewise in-degree tensor.
+        Shape: :math:`(N_v,)`
+    """
+    return adjacency.sum(dim=0)
 
 
 def int_length(n: int) -> int:
@@ -131,15 +194,19 @@ def masked_softmax(
 
     Parameters
     ----------
-    x : torch.Tensor
-        Argument of softmax
-    M : torch.Tensor
-        Mask tensor
+    x
+        Argument of softmax.
+    M
+        Mask tensor.
+    *args
+        Softmax args.
+    **kwargs
+        Softmax kwargs.
 
     Returns
     -------
     torch.Tensor
-        Masked softmax
+        Masked softmax of `x`.
     """
     return torch.softmax((M * x).masked_fill(M == 0, -float("inf")), *args, **kwargs)
 
@@ -170,7 +237,7 @@ def nodewise_edge_mean(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.T
     M = nodewise_mask(edge_index)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
-    return torch.matmul(M, edges)
+    return M @ edges
 
 
 def nodewise_edge_sum(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
@@ -178,33 +245,37 @@ def nodewise_edge_sum(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Te
 
     Parameters
     ----------
-    edges : torch.Tensor
-        N_exd tensor of edge features
-    edge_index : torch.Tensor
-        2xN_e tensor of edge indices
+    edges
+        Edge features.
+        Shape: :math:`(N_e,d_e)`
+    edge_index
+        Ege indices.
+        Shape: :math:`(2,N_e)`
 
     Returns
     -------
     torch.Tensor
-        N_vxd array of nodewise summed incoming edges
+        Tensor of summed incoming edges for each node.
+        Shape: :math:`(N_v,d_e)`
     """
     M = nodewise_mask(edge_index)
 
-    return torch.matmul(M, edges)
+    return M @ edges
 
 
 def nodewise_mask(edge_index: torch.Tensor) -> torch.Tensor:
-    """Create a mask for nodewise aggregation of graph edges.
+    """Create a mask for nodewise aggregation of incoming graph edges.
 
     Parameters
     ----------
-    edge_index : torch.Tensor
-        2xN_e tensor of edge indices
+    edge_index
+        Edge indices.
+        Shape: :math:`(2,N_e)`
 
     Returns
     -------
     torch.Tensor
-        Mask for nodewise edge aggregation
+        Mask for nodewise edge aggregation.
     """
     _, N_e = edge_index.shape
     s, r = edge_index
@@ -212,6 +283,24 @@ def nodewise_mask(edge_index: torch.Tensor) -> torch.Tensor:
     M[r, torch.arange(N_e)] = 1
 
     return M
+
+
+def out_degree(adjacency: torch.Tensor) -> torch.Tensor:
+    """Compute out-degrees of nodes in a graph.
+
+    Parameters
+    ----------
+    adjacency
+        Adjacency matrix.
+        Shape: :math:`(N_v,N_v)`
+
+    Returns
+    -------
+    torch.Tensor
+        Nodewise out-degree tensor.
+        Shape: :math:`(N_v,)`
+    """
+    return adjacency.sum(dim=1)
 
 
 def set_seed(seed: int) -> None:

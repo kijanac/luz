@@ -13,11 +13,14 @@ import networkx as nx
 import torch
 
 __all__ = [
+    "AdditiveAttention",
     "Concatenate",
     "Dense",
     "DenseRNN",
     "ElmanRNN",
     "EdgeAttention",
+    "GraphConv",
+    "GraphConvAttention",
     "GraphNetwork",
     "Module",
     "MultiheadEdgeAttention",
@@ -100,11 +103,13 @@ class Dense(torch.nn.Module):
         ----------
         x
             Input tensor.
+            Shape: :math:`(N, *, H_{in})`
 
         Returns
         -------
         torch.Tensor
             Output tensor.
+            Shape: :math:`(N, *, H_{out})`
         """
         return self.seq(x)
 
@@ -120,6 +125,18 @@ class DenseRNN(torch.nn.Module):
         self.i2o = torch.nn.Linear(input_size + hidden_size, output_size)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        x
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
         self.hidden = self._init_hidden()
 
         for i in x.transpose(0, 1):
@@ -131,6 +148,58 @@ class DenseRNN(torch.nn.Module):
 
     def _init_hidden(self) -> torch.Tensor:
         return torch.zeros(1, self.hidden_size)
+
+
+class AdditiveAttention(torch.nn.Module):
+    def __init__(self, d_v: int, d_attn: int) -> None:
+        """Additive node attention on graphs. From https://arxiv.org/abs/1710.10903.
+
+        Parameters
+        ----------
+        d_v
+            Node feature length.
+        d_attn
+            Attention vector length.
+        """
+        super().__init__()
+        self.concat = Concatenate(dim=1)
+        self.Z = torch.nn.Linear(d_v, d_attn, bias=False)
+        self.lin = torch.nn.Linear(2 * d_attn, 1, bias=False)
+        self.act = torch.nn.LeakyReLU()
+
+    def forward(
+        self,
+        nodes: torch.Tensor,
+        edge_index: torch.Tensor,
+    ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_v,d_v)`
+        edge_index
+            Edge index tensor.
+            Shape: :math:`(2,N_e)`
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+            Shape: :math:`(N_e,N_v)`
+        """
+        s, r = edge_index
+        Z_i = self.Z(nodes[s])
+        Z_j = self.Z(nodes[r])
+        X = self.concat(Z_i, Z_j)
+
+        pre_attn = self.act(self.lin(X)).t()
+
+        M = luz.nodewise_mask(edge_index)
+        attn = luz.masked_softmax(pre_attn, M, dim=1)
+
+        return attn
 
 
 class EdgeAttention(torch.nn.Module):
@@ -256,6 +325,96 @@ class ElmanRNN(torch.nn.Module):
         return output
 
 
+class GraphConv(torch.nn.Module):
+    def __init__(
+        self, d_v: int, activation: Callable[torch.Tensor, torch.Tensor]
+    ) -> None:
+        """Graph convolutional network from https://arxiv.org/abs/1609.02907.
+
+        Parameters
+        ----------
+        d_v
+            Node feature length.
+        activation
+            Activation function.
+        """
+        super().__init__()
+        self.lin = Module(torch.nn.Linear(d_v, d_v), activation)
+
+    def forward(self, nodes: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_v,d_v)`
+        edge_index
+            Edge indices.
+            Shape: :math:`(2,N_e)`
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+            Shape: :math:`(N_v,d_v)`
+        """
+        N_v, _ = nodes.shape
+        A = luz.adjacency(edge_index) + torch.eye(N_v)
+        d = luz.in_degree(A).pow(-0.5)
+        d.masked_fill(d == float("inf"), 0)
+        D = torch.diag(d)
+
+        return self.lin(D @ A @ D @ nodes)
+
+
+class GraphConvAttention(torch.nn.Module):
+    def __init__(
+        self, d_v: int, activation: Callable[torch.Tensor, torch.Tensor]
+    ) -> None:
+        """Compute node attention weights using graph convolutional network.
+
+        Parameters
+        ----------
+        d_v
+            Node feature length.
+        activation
+            Activation function.
+        """
+        super().__init__()
+        self.gcn = GraphConv(d_v, torch.nn.Identity())
+        self.lin = Module(torch.nn.Linear(d_v, 1), activation)
+
+    def forward(
+        self, nodes: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor
+    ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_v,d_v)`
+        edge_index
+            Edge indices.
+            Shape: :math:`(2,N_e)`
+        batch
+            Batch indices.
+            Shape: :math:`(N_v,)`
+
+        Returns
+        -------
+        torch.Tensor
+            Attention weights.
+            Shape: :math:`(N_{batch},N_v)`
+        """
+        pre_attn = self.lin(self.gcn(nodes, edge_index)).t()
+        M = luz.batchwise_mask(batch)
+        attn = luz.masked_softmax(pre_attn, M, dim=1)
+
+        return attn
+
+
 class GraphNetwork(torch.nn.Module):
     def __init__(
         self,
@@ -278,6 +437,44 @@ class GraphNetwork(torch.nn.Module):
         u: Optional[torch.Tensor] = None,
         batch: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_v,d_v)`
+        edge_index
+            Edge index tensor.
+            Shape: :math:`(2,N_e)`
+        edges
+            Edge features, by default None.
+            Shape: :math:`(N_e,d_e)`
+        u
+            Global features, by default None.
+            Shape: :math:`(N_{batch},d_u)`
+        batch
+            Nodewise batch tensor, by default None.
+            Shape: :math:`(N_v,)`
+
+        Returns
+        -------
+        torch.Tensor
+            Output node feature tensor.
+            Shape: :math:`(N_v,d_v)`
+        torch.Tensor
+            Output edge index tensor.
+            Shape: :math:`(2,N_e)`
+        torch.Tensor
+            Output edge feature tensor.
+            Shape: :math:`(N_e,d_e)`
+        torch.Tensor
+            Output global feature tensor.
+            Shape: :math:`(N_{batch},d_u)`
+        torch.Tensor
+            Output batch tensor.
+            Shape: :math:`(N_v,)`
+        """
         if batch is None:
             N_v, *_ = nodes.shape
             batch = torch.zeros((N_v,), dtype=torch.long)
@@ -494,7 +691,7 @@ class WAVE(torch.nn.Module):
             lengths = tuple(len(n) for n in traversal_order)
             perm = torch.eye(sum(lengths))[[a for b in traversal_order for a in b]]
 
-            _x = torch.matmul(perm, _x).t()
+            _x = (perm @ _x).t()
 
             for _ in range(self.num_passes):
                 self._propagate(_x, lengths)
