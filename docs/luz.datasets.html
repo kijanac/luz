@@ -228,12 +228,24 @@
 <dt id="luz.datasets.Dataset">
 <em class="property">class </em><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<p>Object containing points from a domain, possibly with labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="#luz.datasets.Data" title="luz.datasets.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a>]) – Iterable of Data objects comprising the dataset.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.datasets.OnDiskDataset">
 <em class="property">class </em><code class="sig-name descname">OnDiskDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.OnDiskDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<p>Dataset which reads data from disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Root directory containing data stored in .pt files.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">

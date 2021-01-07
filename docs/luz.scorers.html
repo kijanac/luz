@@ -191,6 +191,15 @@
 <dt id="luz.scorers.CrossValidationScorer">
 <em class="property">class </em><code class="sig-name descname">CrossValidationScorer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_folds</span></em>, <em class="sig-param"><span class="n">fold_seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidationScorer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.scorers.Scorer</span></code></a></p>
+<p>Object which scores a learning algorithm using cross validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_folds</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of cross validation folds.</p></li>
+<li><p><strong>fold_seed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Seed for random fold split, by default None.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="luz.scorers.CrossValidationScorer.score">
 <code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidationScorer.score" title="Permalink to this definition">¶</a></dt>
@@ -218,6 +227,12 @@
 <dt id="luz.scorers.HoldoutValidationScorer">
 <em class="property">class </em><code class="sig-name descname">HoldoutValidationScorer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">holdout_fraction</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.HoldoutValidationScorer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.scorers.Scorer</span></code></a></p>
+<p>Object which scores a learning algorithm using the holdout method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>holdout_fraction</strong> (<em>float</em>) – Fraction of data to use as a test set for scoring.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="luz.scorers.HoldoutValidationScorer.score">
 <code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.HoldoutValidationScorer.score" title="Permalink to this definition">¶</a></dt>
@@ -245,6 +260,7 @@
 <dt id="luz.scorers.Score">
 <em class="property">class </em><code class="sig-name descname">Score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">score</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Create new instance of Score(predictor, score)</p>
 <dl class="py attribute">
 <dt id="luz.scorers.Score.predictor">
 <code class="sig-name descname">predictor</code><a class="headerlink" href="#luz.scorers.Score.predictor" title="Permalink to this definition">¶</a></dt>
