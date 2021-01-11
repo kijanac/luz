@@ -65,6 +65,8 @@ class Trainer:
         device: Union[str, torch.device],
         train: bool,
         val_dataset: Optional[luz.Dataset] = None,
+        early_stopping: Optional[bool] = False,
+        patience: Optional[int] = 5,
     ) -> None:
         """Run training algorithm.
 
@@ -78,8 +80,15 @@ class Trainer:
             Device to use for training.
         train
             If True, then train, else test.
-        val_dataset : luz.Dataset, optional
+        val_dataset
             Validation data, by default None.
+        early_stopping
+            If True, then use `val_dataset` for early stopping; by default False.
+            Ignored if `val_dataset` is `None`.
+        patience
+            Number of epochs of non-improving validation loss
+            before training stops early; by default 5.
+            Ignored if `early_stopping` is `False`.
         """
         self.migrate(predictor, device)
 
@@ -97,6 +106,10 @@ class Trainer:
                 optimizer=optimizer,
                 loader=loader,
             )
+            if early_stopping:
+                self._state.update(val_history=[])
+                self._state.update(patience=5)
+
             self._call_event(event=luz.Event.TRAINING_STARTED)
         else:
             self._state = dict(
@@ -142,16 +155,29 @@ class Trainer:
 
                 self._call_event(event=luz.Event.BATCH_ENDED)
 
-            # FIXME: provisional, clean this up
-            if val_dataset is not None:
+            self._call_event(event=luz.Event.EPOCH_ENDED)
+
+            if train and val_dataset is not None:
                 with predictor.eval():
                     val_loss = self.run_batch(predictor, data, target, device)
-            else:
-                val_loss = None
 
-            self._state.update(val_loss=val_loss)
+                print(f"[Epoch {epoch}] Validation loss: {val_loss}.")
+                if early_stopping:
+                    try:
+                        best_val_loss = min(self._state["val_history"])
 
-            self._call_event(event=luz.Event.EPOCH_ENDED)
+                        if best_val_loss - val_loss < 0.0:  # delta_thresh
+                            self._state["patience"] -= 1
+                        else:
+                            self._state["patience"] = patience
+
+                        if self._state["patience"] == 0:
+                            print(f"[Epoch {epoch}]: Stopping early.")
+                            break
+                    except ValueError:
+                        pass
+
+                self._state["val_history"].append(val_loss)
 
         if train:
             self._call_event(event=luz.Event.TRAINING_ENDED)
