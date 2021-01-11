@@ -35,6 +35,7 @@ __all__ = [
     "Progress",
     # "RVP",
     "Timer",
+    "Validate",
 ]
 
 
@@ -270,6 +271,17 @@ class LogToFile(Handler):
 
 class Loss(Handler):
     def __init__(self, print_interval: Optional[float] = 0.25) -> None:
+        """Calculate running loss throughout each epoch.
+
+        Parameters
+        ----------
+        print_interval
+            Fraction of epoch after which the running loss is printed, by default 0.25.
+
+        Raises
+        ------
+        ValueError
+        """
         if print_interval <= 0 or print_interval > 1:
             raise ValueError(
                 "Print interval must be a positive number between 0.0 and 1.0."
@@ -289,6 +301,23 @@ class Loss(Handler):
         ind: int,
         **kwargs: Any,
     ) -> None:
+        """Execute at end of batch.
+
+        Parameters
+        ----------
+        flag
+            Training flag.
+        loader
+            Data loader.
+        epoch
+            Epoch number.
+        loss
+            Last computed loss.
+        ind
+            Data index.
+        **kwargs
+            Superfluous kwargs.
+        """
         if flag == luz.Flag.TRAINING:
             # NOTE: it's very important to add loss.item()
             # (as opposed to loss) to avoid a memory leak!
@@ -300,6 +329,20 @@ class Loss(Handler):
                 print(
                     f"[Epoch {epoch}] Average running loss: {self.running_loss / cur}."
                 )
+
+
+class Validate(Handler):
+    def epoch_ended(
+        self,
+        flag: luz.Flag,
+        epoch: int,
+        val_loss: torch.Tensor,
+        **kwargs: Any,
+    ) -> None:
+        if flag == luz.Flag.TRAINING:
+            # NOTE: it's very important to add loss.item()
+            # (as opposed to loss) to avoid a memory leak!
+            print(f"[Epoch {epoch}] Validation loss: {val_loss}.")
 
 
 class Progress(Handler):
