@@ -6,18 +6,18 @@ __all__ = ["Trainer", "SupervisedTrainer"]
 import luz
 import torch
 
+Loss = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
+ProcessBatch = Callable[[luz.Data], Tuple[torch.Tensor, Optional[torch.Tensor]]]
+
 
 class Trainer:
     def __init__(
         self,
-        loss: Optional[Callable[[torch.Tensor, torch.Tensor], torch.Tensor]] = None,
+        loss: Optional[Loss] = None,
         optimizer: Optional[luz.Optimizer] = None,
         start_epoch: Optional[int] = 1,
         stop_epoch: Optional[int] = 2,
         handlers: Optional[Iterable[luz.Handler]] = None,
-        process_batch: Optional[
-            Callable[luz.Data, Tuple[torch.Tensor, Optional[torch.Tensor]]]
-        ] = None,
         **loader_kwargs: Union[int, bool, luz.Transform],
     ) -> None:
         """Algorithm to train a predictor using data.
@@ -34,15 +34,12 @@ class Trainer:
             Last training epoch, by default 2
         handlers
             Handlers to run during training, by default None
-        process_batch
-            Function to get output and optionally target from data, by default None
         """
         self.loss = loss
         self.optimizer = optimizer
         self.start_epoch = start_epoch
         self.stop_epoch = stop_epoch
         self.handlers = tuple(handlers or [])
-        self.process_batch = process_batch or (lambda batch: (batch.x, batch.y))
         self.loader_kwargs = loader_kwargs
 
         self.flag = None
@@ -52,36 +49,15 @@ class Trainer:
         for handler in self.handlers:
             getattr(handler, event.name.lower())(**self.state)
 
-    def process_batch(
-        self, batch: luz.Data
-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
-        """Get output and optionally target from batched data.
+    def use_process(self, process_batch: ProcessBatch) -> None:
+        """Set function to process each batch.
 
         Parameters
         ----------
-        batch
-            Batched data.
-
-        Returns
-        -------
-        Tuple[torch.Tensor, Optional[torch.Tensor]]
-            Output tensor and optional target tensor.
-
-        Raises
-        ------
-        NotImplementedError
+        process_batch
+            Function to get input and optionally target from data.
         """
-        raise NotImplementedError
-
-    def run_batch(
-        self,
-        predictor: luz.Predictor,
-        data: torch.Tensor,
-        target: torch.Tensor,
-        device: Union[str, torch.device],
-        optimizer: Optional[torch.optim.Optimizer] = None,
-    ) -> float:
-        raise NotImplementedError
+        self._process_batch = process_batch
 
     def run(
         self,
@@ -106,7 +82,6 @@ class Trainer:
         val_dataset : luz.Dataset, optional
             Validation data, by default None.
         """
-        self.set_mode(predictor, train)
         self.migrate(predictor, device)
 
         if train:
@@ -145,7 +120,7 @@ class Trainer:
             self._call_event(event=luz.Event.EPOCH_STARTED)
 
             for i, batch in enumerate(loader):
-                data, target = self.process_batch(batch)
+                data, target = self._process_batch(batch)
                 self.state.update(ind=i, data=data, target=target)
                 self._call_event(event=luz.Event.BATCH_STARTED)
 
@@ -154,11 +129,9 @@ class Trainer:
 
                 if train:
                     self.run_batch(predictor, data, target, device, optimizer)
-                    if val_dataset is not None:
-                        # FIXME: implement this!
-                        raise NotImplementedError
                 else:
-                    running_loss += self.run_batch(predictor, data, target, device)
+                    with predictor.eval():
+                        running_loss += self.run_batch(predictor, data, target, device)
                 # from https://coolnesss.github.io/2019-02-05/pytorch-gotchas
                 # All of the variables defined above are now out of scope!
                 # On CPU, they are already deallocated.
@@ -169,6 +142,11 @@ class Trainer:
                     torch.cuda.synchronize()
 
                 self._call_event(event=luz.Event.BATCH_ENDED)
+
+           
+
+            self.state.update(val_loss=val_loss)
+
             self._call_event(event=luz.Event.EPOCH_ENDED)
 
         if train:
@@ -177,9 +155,6 @@ class Trainer:
             self._call_event(event=luz.Event.TESTING_ENDED)
 
             return running_loss / len(loader)
-
-    def set_mode(self, predictor: luz.Predictor, train: bool) -> None:
-        predictor.train() if train else predictor.eval()
 
     def migrate(
         self, predictor: luz.Predictor, device: Union[str, torch.device]
@@ -195,6 +170,23 @@ class Trainer:
 
 
 class SupervisedTrainer(Trainer):
+    def _process_batch(
+        self, batch: luz.Data
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+        """Get output and optionally target from batched data.
+
+        Parameters
+        ----------
+        batch
+            Batched data.
+
+        Returns
+        -------
+        Tuple[torch.Tensor, Optional[torch.Tensor]]
+            Output tensor and optional target tensor.
+        """
+        return batch.x, batch.y
+
     def run_batch(
         self,
         predictor: luz.Predictor,
