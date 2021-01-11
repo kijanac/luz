@@ -187,24 +187,68 @@
             
   <div class="section" id="module-luz.modules">
 <span id="luz-modules-module"></span><h1>luz.modules module<a class="headerlink" href="#module-luz.modules" title="Permalink to this headline">¶</a></h1>
-<p>Custom PyTorch modules. Each class must implement torch.nn.Module,
-and therefore must have an __init__ method and a forward method.</p>
+<p>Custom PyTorch modules.</p>
 <dl class="py class">
 <dt id="luz.modules.AdditiveAttention">
-<em class="property">class </em><code class="sig-name descname">AdditiveAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_attn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveAttention" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">AdditiveAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>Additive node attention on graphs. From <a class="reference external" href="https://arxiv.org/abs/1710.10903">https://arxiv.org/abs/1710.10903</a>.</p>
+<p>Additive attention, from <a class="reference external" href="https://arxiv.org/abs/1409.0473">https://arxiv.org/abs/1409.0473</a>.</p>
+<p>Additive attention, from <a class="reference external" href="https://arxiv.org/abs/1409.0473">https://arxiv.org/abs/1409.0473</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d_v</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Node feature length.</p></li>
+<li><p><strong>d</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Feature length.</p></li>
 <li><p><strong>d_attn</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Attention vector length.</p></li>
+<li><p><strong>activation</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]]) – Activation function, by default None.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.AdditiveAttention.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveAttention.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">h</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveAttention.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute forward pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Shape: <span class="math notranslate nohighlight">\((N,d)\)</span></p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Shape: <span class="math notranslate nohighlight">\((N,d)\)</span></p></li>
+<li><p><strong>mask</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Mask tensor, by default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Output tensor.
+Shape: <span class="math notranslate nohighlight">\((1,N)\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.AdditiveAttention.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.AdditiveAttention.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.AdditiveNodeAttention">
+<em class="property">class </em><code class="sig-name descname">AdditiveNodeAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveNodeAttention" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Additive node attention on graphs. From <a class="reference external" href="https://arxiv.org/abs/1710.10903">https://arxiv.org/abs/1710.10903</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Node feature length.</p></li>
+<li><p><strong>d_attn</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Attention vector length.</p></li>
+<li><p><strong>activation</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]]) – Activation function, by default None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="luz.modules.AdditiveNodeAttention.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveNodeAttention.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -226,8 +270,8 @@ Shape: <span class="math notranslate nohighlight">\((N_e,N_v)\)</span></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="luz.modules.AdditiveAttention.training">
-<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.AdditiveAttention.training" title="Permalink to this definition">¶</a></dt>
+<dt id="luz.modules.AdditiveNodeAttention.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.AdditiveNodeAttention.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -248,7 +292,8 @@ Shape: <span class="math notranslate nohighlight">\((N_e,N_v)\)</span></p>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>*args</strong> – Input tensors.</p>
+<dd class="field-odd"><p><strong>*args</strong> – Input tensors.
+Shape: <span class="math notranslate nohighlight">\((N,*)\)</span></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Output tensor.</p>
@@ -268,15 +313,14 @@ Shape: <span class="math notranslate nohighlight">\((N_e,N_v)\)</span></p>
 
 <dl class="py class">
 <dt id="luz.modules.Dense">
-<em class="property">class </em><code class="sig-name descname">Dense</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_features</span></em>, <em class="sig-param"><span class="n">out_features</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">hidden_features</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Dense" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Dense</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">features</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Dense" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <p>Dense feed-forward neural network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>in_features</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of input features.</p></li>
-<li><p><strong>out_features</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of output features.</p></li>
-<li><p><strong>*args</strong> – Number of features at each hidden layer.</p></li>
+<li><p><strong>*features</strong> – Number of features at each layer.</p></li>
+<li><p><strong>activation</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]]) – Activation function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -336,6 +380,44 @@ Shape: <span class="math notranslate nohighlight">\((N, *, H_{out})\)</span></p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="luz.modules.DotProductAttention">
+<em class="property">class </em><code class="sig-name descname">DotProductAttention</code><a class="headerlink" href="#luz.modules.DotProductAttention" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Scaled dot product attention.</p>
+<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+<dl class="py method">
+<dt id="luz.modules.DotProductAttention.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.DotProductAttention.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute forward pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Query vectors.
+Shape: <span class="math notranslate nohighlight">\((N,d_q)\)</span></p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Key vectors.
+Shape: <span class="math notranslate nohighlight">\((N,d_q)\)</span></p></li>
+<li><p><strong>mask</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Mask tensor to ignore query-key pairs, by default None.
+Shape: <span class="math notranslate nohighlight">\((N,N)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Scaled dot product attention between each query and key vector.
+Shape: <span class="math notranslate nohighlight">\((N,N)\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.DotProductAttention.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.DotProductAttention.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="luz.modules.EdgeAttention">
 <em class="property">class </em><code class="sig-name descname">EdgeAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_u</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">nodewise</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
@@ -358,10 +440,14 @@ Shape: <span class="math notranslate nohighlight">\((N, *, H_{out})\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>nodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Node features.</p></li>
-<li><p><strong>edges</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge features.</p></li>
-<li><p><strong>edge_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge index tensor.</p></li>
-<li><p><strong>u</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Global features.</p></li>
+<li><p><strong>nodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Node features.
+Shape: <span class="math notranslate nohighlight">\((N_v,d_v)\)</span></p></li>
+<li><p><strong>edges</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge features.
+Shape: <span class="math notranslate nohighlight">\((N_e,d_e)\)</span></p></li>
+<li><p><strong>edge_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge index tensor.
+Shape: <span class="math notranslate nohighlight">\((2,N_e)\)</span></p></li>
+<li><p><strong>u</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Global features.
+Shape: <span class="math notranslate nohighlight">\((N_{batch},d_u)\)</span></p></li>
 <li><p><strong>batch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Nodewise batch tensor.</p></li>
 </ul>
 </dd>
@@ -415,8 +501,8 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d_v</strong> – Node feature length.</p></li>
-<li><p><strong>activation</strong> – Activation function.</p></li>
+<li><p><strong>d_v</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Node feature length.</p></li>
+<li><p><strong>activation</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Activation function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -458,8 +544,8 @@ Shape: <span class="math notranslate nohighlight">\((N_v,d_v)\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d_v</strong> – Node feature length.</p></li>
-<li><p><strong>activation</strong> – Activation function.</p></li>
+<li><p><strong>d_v</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Node feature length.</p></li>
+<li><p><strong>activation</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Activation function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -499,7 +585,18 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},N_v)\)</span></p>
 <dt id="luz.modules.GraphNetwork">
 <em class="property">class </em><code class="sig-name descname">GraphNetwork</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">global_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_layers</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+<p>Graph Network from <a class="reference external" href="https://arxiv.org/abs/1806.01261">https://arxiv.org/abs/1806.01261</a>.</p>
+<p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edge_model</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>]) – Edge update network, by default None.</p></li>
+<li><p><strong>node_model</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>]) – Node update network, by default None.</p></li>
+<li><p><strong>global_model</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>]) – Global update network, by default None.</p></li>
+<li><p><strong>num_layers</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Number of passes, by default 1.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="luz.modules.GraphNetwork.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">edges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">u</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphNetwork.forward" title="Permalink to this definition">¶</a></dt>
@@ -543,6 +640,39 @@ Shape: <span class="math notranslate nohighlight">\((N_v,)\)</span></p></li>
 <dl class="py attribute">
 <dt id="luz.modules.GraphNetwork.training">
 <code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.GraphNetwork.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.MaskedSoftmax">
+<em class="property">class </em><code class="sig-name descname">MaskedSoftmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MaskedSoftmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Compute softmax of a tensor using a mask.</p>
+<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+<dl class="py method">
+<dt id="luz.modules.MaskedSoftmax.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MaskedSoftmax.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute forward pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Argument of softmax.</p></li>
+<li><p><strong>mask</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Mask tensor with the same shape as <cite>x</cite>, by default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Masked softmax of <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.MaskedSoftmax.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.MaskedSoftmax.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -723,37 +853,6 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="py attribute">
 <dt id="luz.modules.Unsqueeze.training">
 <code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Unsqueeze.training" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="luz.modules.WAVE">
-<em class="property">class </em><code class="sig-name descname">WAVE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atom_feature_size</span></em>, <em class="sig-param"><span class="n">num_passes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.WAVE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
-<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
-<dl class="py method">
-<dt id="luz.modules.WAVE.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.WAVE.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="luz.modules.WAVE.training">
-<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.WAVE.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

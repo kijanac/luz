@@ -187,13 +187,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.modules.html#luz.modules.AdditiveAttention">AdditiveAttention (class in luz.modules)</a>
 </li>
-      <li><a href="luz.utils.html#luz.utils.adjacency">adjacency() (in module luz.utils)</a>
+      <li><a href="luz.modules.html#luz.modules.AdditiveNodeAttention">AdditiveNodeAttention (class in luz.modules)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.transforms.html#luz.transforms.Argmax">Argmax (class in luz.transforms)</a>
+      <li><a href="luz.utils.html#luz.utils.adjacency">adjacency() (in module luz.utils)</a>
 </li>
-      <li><a href="luz.utils.html#luz.utils.attention">attention() (in module luz.utils)</a>
+      <li><a href="luz.transforms.html#luz.transforms.Argmax">Argmax (class in luz.transforms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -285,15 +285,19 @@
 </li>
       <li><a href="luz.datasets.html#luz.datasets.ConcatDataset.datasets">datasets (ConcatDataset attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.datasets.html#luz.datasets.default_collate">default_collate() (in module luz.datasets)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.modules.html#luz.modules.Dense">Dense (class in luz.modules)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.DenseRNN">DenseRNN (class in luz.modules)</a>
 </li>
       <li><a href="luz.transforms.html#luz.transforms.DigraphToTensors">DigraphToTensors (class in luz.transforms)</a>
+</li>
+      <li><a href="luz.utils.html#luz.utils.dot_product_attention">dot_product_attention() (in module luz.utils)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.DotProductAttention">DotProductAttention (class in luz.modules)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -346,11 +350,15 @@
       <li><a href="luz.modules.html#luz.modules.AdditiveAttention.forward">forward() (AdditiveAttention method)</a>
 
       <ul>
+        <li><a href="luz.modules.html#luz.modules.AdditiveNodeAttention.forward">(AdditiveNodeAttention method)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.Concatenate.forward">(Concatenate method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Dense.forward">(Dense method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.DenseRNN.forward">(DenseRNN method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.DotProductAttention.forward">(DotProductAttention method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.EdgeAttention.forward">(EdgeAttention method)</a>
 </li>
@@ -361,6 +369,8 @@
         <li><a href="luz.modules.html#luz.modules.GraphConvAttention.forward">(GraphConvAttention method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.GraphNetwork.forward">(GraphNetwork method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.MaskedSoftmax.forward">(MaskedSoftmax method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Module.forward">(Module method)</a>
 </li>
@@ -373,8 +383,6 @@
         <li><a href="luz.modules.html#luz.modules.Squeeze.forward">(Squeeze method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Unsqueeze.forward">(Unsqueeze method)</a>
-</li>
-        <li><a href="luz.modules.html#luz.modules.WAVE.forward">(WAVE method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -560,6 +568,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.utils.html#luz.utils.masked_softmax">masked_softmax() (in module luz.utils)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.MaskedSoftmax">MaskedSoftmax (class in luz.modules)</a>
 </li>
       <li><a href="luz.utils.html#luz.utils.memoize">memoize() (in module luz.utils)</a>
 </li>
@@ -767,11 +777,15 @@
       <li><a href="luz.modules.html#luz.modules.AdditiveAttention.training">training (AdditiveAttention attribute)</a>
 
       <ul>
+        <li><a href="luz.modules.html#luz.modules.AdditiveNodeAttention.training">(AdditiveNodeAttention attribute)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.Concatenate.training">(Concatenate attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Dense.training">(Dense attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.DenseRNN.training">(DenseRNN attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.DotProductAttention.training">(DotProductAttention attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.EdgeAttention.training">(EdgeAttention attribute)</a>
 </li>
@@ -789,6 +803,8 @@
 </li>
         <li><a href="luz.modules.html#luz.modules.GraphNetwork.training">(GraphNetwork attribute)</a>
 </li>
+        <li><a href="luz.modules.html#luz.modules.MaskedSoftmax.training">(MaskedSoftmax attribute)</a>
+</li>
         <li><a href="luz.modules.html#luz.modules.Module.training">(Module attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention.training">(MultiheadEdgeAttention attribute)</a>
@@ -798,8 +814,6 @@
         <li><a href="luz.modules.html#luz.modules.Squeeze.training">(Squeeze attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Unsqueeze.training">(Unsqueeze attribute)</a>
-</li>
-        <li><a href="luz.modules.html#luz.modules.WAVE.training">(WAVE attribute)</a>
 </li>
       </ul></li>
       <li><a href="luz.events.html#luz.events.Event.TRAINING_ENDED">TRAINING_ENDED (Event attribute)</a>
@@ -843,10 +857,6 @@
 
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.modules.html#luz.modules.WAVE">WAVE (class in luz.modules)</a>
-</li>
-  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.datasets.html#luz.datasets.WrapperDataset">WrapperDataset (class in luz.datasets)</a>
 </li>
