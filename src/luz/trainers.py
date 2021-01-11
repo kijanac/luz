@@ -143,7 +143,12 @@ class Trainer:
 
                 self._call_event(event=luz.Event.BATCH_ENDED)
 
-           
+            # FIXME: provisional, clean this up
+            if val_dataset is not None:
+                with predictor.eval():
+                    val_loss = self.run_batch(predictor, data, target, device)
+            else:
+                val_loss = None
 
             self.state.update(val_loss=val_loss)
 
