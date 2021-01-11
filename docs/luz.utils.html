@@ -206,31 +206,6 @@ Shape: <span class="math notranslate nohighlight">\((N_v,N_v)\)</span></p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="luz.utils.attention">
-<code class="sig-name descname">attention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.attention" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute scaled dot product attention.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Query vectors.
-Shape: <span class="math notranslate nohighlight">\((N,d_q)\)</span></p></li>
-<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Key vectors.
-Shape: <span class="math notranslate nohighlight">\((N,d_q)\)</span></p></li>
-<li><p><strong>mask</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Mask tensor to ignore query-key pairs, by default None.
-Shape: <span class="math notranslate nohighlight">\((N,N)\)</span></p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Scaled dot product attention between each query and key vector.
-Shape: <span class="math notranslate nohighlight">\((N,N)\)</span></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>torch.Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt id="luz.utils.batchwise_edge_mean">
 <code class="sig-name descname">batchwise_edge_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_edge_mean" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -294,6 +269,31 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},N_v)\)</span> if 
 </dd></dl>
 
 <dl class="py function">
+<dt id="luz.utils.dot_product_attention">
+<code class="sig-name descname">dot_product_attention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.dot_product_attention" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute scaled dot product attention.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Query vectors.
+Shape: <span class="math notranslate nohighlight">\((N,d_q)\)</span></p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Key vectors.
+Shape: <span class="math notranslate nohighlight">\((N,d_q)\)</span></p></li>
+<li><p><strong>mask</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]) – Mask tensor to ignore query-key pairs, by default None.
+Shape: <span class="math notranslate nohighlight">\((N,N)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Scaled dot product attention between each query and key vector.
+Shape: <span class="math notranslate nohighlight">\((N,N)\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="luz.utils.expand_path">
 <code class="sig-name descname">expand_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.expand_path" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -334,15 +334,14 @@ Shape: <span class="math notranslate nohighlight">\((N_v,)\)</span></p>
 
 <dl class="py function">
 <dt id="luz.utils.masked_softmax">
-<code class="sig-name descname">masked_softmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">M</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.masked_softmax" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">masked_softmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">mask</span></em>, <em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.masked_softmax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute softmax of a tensor using a mask.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Argument of softmax.</p></li>
-<li><p><strong>M</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Mask tensor.</p></li>
-<li><p><strong>*args</strong> – Softmax args.</p></li>
-<li><p><strong>**kwargs</strong> – Softmax kwargs.</p></li>
+<li><p><strong>mask</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Mask tensor.</p></li>
+<li><p><strong>dim</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Dimension along which softmax will be computed.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

@@ -14,12 +14,12 @@ import torch
 
 __all__ = [
     "adjacency",
-    "attention",
     "batchwise_edge_mean",
     "batchwise_edge_sum",
     "batchwise_mask",
     "batchwise_node_mean",
     "batchwise_node_sum",
+    "dot_product_attention",
     "expand_path",
     "in_degree",
     "int_length",
@@ -54,36 +54,6 @@ def adjacency(edge_index: torch.Tensor) -> torch.Tensor:
     A = torch.zeros((n, n)).long()
     A[tuple(edge_index)] = 1
     return A
-
-
-def attention(
-    query: torch.Tensor, key: torch.Tensor, mask: Optional[torch.Tensor] = None
-) -> torch.Tensor:
-    """Compute scaled dot product attention.
-
-    Parameters
-    ----------
-    query
-        Query vectors.
-        Shape: :math:`(N,d_q)`
-    key
-        Key vectors.
-        Shape: :math:`(N,d_q)`
-    mask
-        Mask tensor to ignore query-key pairs, by default None.
-        Shape: :math:`(N,N)`
-
-    Returns
-    -------
-    torch.Tensor
-        Scaled dot product attention between each query and key vector.
-        Shape: :math:`(N,N)`
-    """
-
-    _, d = key.shape
-
-    pre_attn = query @ key.transpose(0, 1) / math.sqrt(d)
-    return masked_softmax(pre_attn, mask, dim=1)
 
 
 def batchwise_edge_mean(
@@ -151,6 +121,36 @@ def batchwise_node_sum(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor
     return M @ nodes
 
 
+def dot_product_attention(
+    query: torch.Tensor, key: torch.Tensor, mask: Optional[torch.Tensor] = None
+) -> torch.Tensor:
+    """Compute scaled dot product attention.
+
+    Parameters
+    ----------
+    query
+        Query vectors.
+        Shape: :math:`(N,d_q)`
+    key
+        Key vectors.
+        Shape: :math:`(N,d_q)`
+    mask
+        Mask tensor to ignore query-key pairs, by default None.
+        Shape: :math:`(N,N)`
+
+    Returns
+    -------
+    torch.Tensor
+        Scaled dot product attention between each query and key vector.
+        Shape: :math:`(N,N)`
+    """
+
+    _, d = key.shape
+
+    pre_attn = query @ key.transpose(0, 1) / math.sqrt(d)
+    return masked_softmax(pre_attn, mask, dim=1)
+
+
 def expand_path(path: str, dir: Optional[str] = None) -> str:
     p = pathlib.Path(path).expanduser()
     if dir is not None:
@@ -188,7 +188,7 @@ def int_length(n: int) -> int:
 
 
 def masked_softmax(
-    x: torch.Tensor, M: torch.Tensor, *args: Any, **kwargs: Any
+    x: torch.Tensor, mask: torch.Tensor, dim: Optional[int] = 1
 ) -> torch.Tensor:
     """Compute softmax of a tensor using a mask.
 
@@ -196,19 +196,18 @@ def masked_softmax(
     ----------
     x
         Argument of softmax.
-    M
+    mask
         Mask tensor.
-    *args
-        Softmax args.
-    **kwargs
-        Softmax kwargs.
+    dim
+        Dimension along which softmax will be computed.
 
     Returns
     -------
     torch.Tensor
         Masked softmax of `x`.
     """
-    return torch.softmax((M * x).masked_fill(M == 0, -float("inf")), *args, **kwargs)
+    X = (mask * x).masked_fill(mask == 0, -float("inf"))
+    return torch.softmax(X, dim)
 
 
 def mkdir_safe(directory: str) -> None:
