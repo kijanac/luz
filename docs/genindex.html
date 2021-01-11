@@ -185,12 +185,14 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.modules.html#luz.modules.AdditiveAttention">AdditiveAttention (class in luz.modules)</a>
+      <li><a href="luz.handlers.html#luz.handlers.Accuracy">Accuracy (class in luz.handlers)</a>
 </li>
-      <li><a href="luz.modules.html#luz.modules.AdditiveNodeAttention">AdditiveNodeAttention (class in luz.modules)</a>
+      <li><a href="luz.modules.html#luz.modules.AdditiveAttention">AdditiveAttention (class in luz.modules)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.modules.html#luz.modules.AdditiveNodeAttention">AdditiveNodeAttention (class in luz.modules)</a>
+</li>
       <li><a href="luz.utils.html#luz.utils.adjacency">adjacency() (in module luz.utils)</a>
 </li>
       <li><a href="luz.transforms.html#luz.transforms.Argmax">Argmax (class in luz.transforms)</a>
@@ -205,9 +207,13 @@
 </li>
       <li><a href="luz.events.html#luz.events.Event.BATCH_ENDED">BATCH_ENDED (Event attribute)</a>
 </li>
-      <li><a href="luz.handlers.html#luz.handlers.Handler.batch_ended">batch_ended() (Handler method)</a>
+      <li><a href="luz.handlers.html#luz.handlers.Accuracy.batch_ended">batch_ended() (Accuracy method)</a>
 
       <ul>
+        <li><a href="luz.handlers.html#luz.handlers.FBeta.batch_ended">(FBeta method)</a>
+</li>
+        <li><a href="luz.handlers.html#luz.handlers.Handler.batch_ended">(Handler method)</a>
+</li>
         <li><a href="luz.handlers.html#luz.handlers.Loss.batch_ended">(Loss method)</a>
 </li>
         <li><a href="luz.handlers.html#luz.handlers.Progress.batch_ended">(Progress method)</a>
@@ -217,10 +223,10 @@
 </li>
       <li><a href="luz.handlers.html#luz.handlers.Handler.batch_started">batch_started() (Handler method)</a>
 </li>
-      <li><a href="luz.utils.html#luz.utils.batchwise_edge_mean">batchwise_edge_mean() (in module luz.utils)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.utils.html#luz.utils.batchwise_edge_mean">batchwise_edge_mean() (in module luz.utils)</a>
+</li>
       <li><a href="luz.utils.html#luz.utils.batchwise_edge_sum">batchwise_edge_sum() (in module luz.utils)</a>
 </li>
       <li><a href="luz.utils.html#luz.utils.batchwise_mask">batchwise_mask() (in module luz.utils)</a>
@@ -311,17 +317,25 @@
 </li>
       <li><a href="luz.events.html#luz.events.Event.EPOCH_ENDED">EPOCH_ENDED (Event attribute)</a>
 </li>
-      <li><a href="luz.handlers.html#luz.handlers.Handler.epoch_ended">epoch_ended() (Handler method)</a>
+      <li><a href="luz.handlers.html#luz.handlers.Accuracy.epoch_ended">epoch_ended() (Accuracy method)</a>
 
       <ul>
+        <li><a href="luz.handlers.html#luz.handlers.FBeta.epoch_ended">(FBeta method)</a>
+</li>
+        <li><a href="luz.handlers.html#luz.handlers.Handler.epoch_ended">(Handler method)</a>
+</li>
         <li><a href="luz.handlers.html#luz.handlers.Timer.epoch_ended">(Timer method)</a>
 </li>
       </ul></li>
       <li><a href="luz.events.html#luz.events.Event.EPOCH_STARTED">EPOCH_STARTED (Event attribute)</a>
 </li>
-      <li><a href="luz.handlers.html#luz.handlers.Handler.epoch_started">epoch_started() (Handler method)</a>
+      <li><a href="luz.handlers.html#luz.handlers.Accuracy.epoch_started">epoch_started() (Accuracy method)</a>
 
       <ul>
+        <li><a href="luz.handlers.html#luz.handlers.FBeta.epoch_started">(FBeta method)</a>
+</li>
+        <li><a href="luz.handlers.html#luz.handlers.Handler.epoch_started">(Handler method)</a>
+</li>
         <li><a href="luz.handlers.html#luz.handlers.Loss.epoch_started">(Loss method)</a>
 </li>
         <li><a href="luz.handlers.html#luz.handlers.Progress.epoch_started">(Progress method)</a>
@@ -345,6 +359,8 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.handlers.html#luz.handlers.FBeta">FBeta (class in luz.handlers)</a>
+</li>
       <li><a href="luz.flags.html#luz.flags.Flag">Flag (class in luz.flags)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.AdditiveAttention.forward">forward() (AdditiveAttention method)</a>
@@ -577,8 +593,6 @@
 </li>
       <li><a href="luz.utils.html#luz.utils.mkdir_safe">mkdir_safe() (in module luz.utils)</a>
 </li>
-      <li><a href="luz.predictors.html#luz.predictors.Predictor.model">model (Predictor attribute)</a>
-</li>
       <li>
     module
 
@@ -668,8 +682,6 @@
 </li>
       <li><a href="luz.scorers.html#luz.scorers.Score.predictor">predictor (Score attribute)</a>
 </li>
-      <li><a href="luz.trainers.html#luz.trainers.Trainer.process_batch">process_batch() (Trainer method)</a>
-</li>
       <li><a href="luz.handlers.html#luz.handlers.Progress">Progress (class in luz.handlers)</a>
 </li>
   </ul></td>
@@ -687,11 +699,7 @@
       <li><a href="luz.trainers.html#luz.trainers.Trainer.run">run() (Trainer method)</a>
 </li>
       <li><a href="luz.trainers.html#luz.trainers.SupervisedTrainer.run_batch">run_batch() (SupervisedTrainer method)</a>
-
-      <ul>
-        <li><a href="luz.trainers.html#luz.trainers.Trainer.run_batch">(Trainer method)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -725,8 +733,6 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.scorers.html#luz.scorers.Scorer">Scorer (class in luz.scorers)</a>
-</li>
-      <li><a href="luz.trainers.html#luz.trainers.Trainer.set_mode">set_mode() (Trainer method)</a>
 </li>
       <li><a href="luz.utils.html#luz.utils.set_seed">set_seed() (in module luz.utils)</a>
 </li>
@@ -851,6 +857,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.modules.html#luz.modules.Unsqueeze">Unsqueeze (class in luz.modules)</a>
+</li>
+      <li><a href="luz.trainers.html#luz.trainers.Trainer.use_process">use_process() (Trainer method)</a>
 </li>
   </ul></td>
 </tr></table>
