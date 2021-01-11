@@ -187,9 +187,99 @@
             
   <div class="section" id="module-luz.handlers">
 <span id="luz-handlers-module"></span><h1>luz.handlers module<a class="headerlink" href="#module-luz.handlers" title="Permalink to this headline">¶</a></h1>
-<p>Contains callback objects which perform various functions
-during the training process. Every callback should inherit
-the Callback class.</p>
+<p>Contains callback objects which perform various functions during the training process.</p>
+<dl class="py class">
+<dt id="luz.handlers.Accuracy">
+<em class="property">class </em><code class="sig-name descname">Accuracy</code><a class="headerlink" href="#luz.handlers.Accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
+<dl class="py method">
+<dt id="luz.handlers.Accuracy.batch_ended">
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.batch_ended" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute on batch end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Output tensor.
+Shape: <span class="math notranslate nohighlight">\((N,C)\)</span></p></li>
+<li><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Target tensor. One-hot encoded.
+Shape: <span class="math notranslate nohighlight">\((N,C)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Accuracy.epoch_ended">
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.Accuracy.epoch_started">
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.epoch_started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute on epoch start.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.handlers.FBeta">
+<em class="property">class </em><code class="sig-name descname">FBeta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">beta</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
+<dl class="py method">
+<dt id="luz.handlers.FBeta.batch_ended">
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.batch_ended" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute on batch end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Output tensor.
+Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
+<li><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Target tensor. One-hot encoded.
+Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.FBeta.epoch_ended">
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.FBeta.epoch_started">
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.epoch_started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute on epoch start.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt id="luz.handlers.Handler">
 <em class="property">class </em><code class="sig-name descname">Handler</code><a class="headerlink" href="#luz.handlers.Handler" title="Permalink to this definition">¶</a></dt>
@@ -240,12 +330,32 @@ the Callback class.</p>
 <dt id="luz.handlers.Loss">
 <em class="property">class </em><code class="sig-name descname">Loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_interval</span><span class="o">=</span><span class="default_value">0.25</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
+<p>Calculate running loss throughout each epoch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>print_interval</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Fraction of epoch after which the running loss is printed, by default 0.25.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – </p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="luz.handlers.Loss.batch_ended">
 <code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="n">loader</span></em>, <em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="n">loss</span></em>, <em class="sig-param"><span class="n">ind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss.batch_ended" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd><p>Execute at end of batch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flag</strong> (<a class="reference internal" href="luz.flags.html#luz.flags.Flag" title="luz.flags.Flag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flag</span></code></a>) – Training flag.</p></li>
+<li><p><strong>loader</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code>) – Data loader.</p></li>
+<li><p><strong>epoch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Epoch number.</p></li>
+<li><p><strong>loss</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Last computed loss.</p></li>
+<li><p><strong>ind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Data index.</p></li>
+<li><p><strong>**kwargs</strong> – Superfluous kwargs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
