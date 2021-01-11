@@ -1,8 +1,6 @@
 """
 
-Contains callback objects which perform various functions
-during the training process. Every callback should inherit
-the Callback class.
+Contains callback objects which perform various functions during the training process.
 
 """
 
@@ -23,102 +21,118 @@ import torch
 
 __all__ = [
     "Handler",
-    # "Accuracy",
-    # "AVP",
+    "Accuracy",
+    # "ActualVsPredicted",
     # "Checkpoint",
     # "DataAndFit",
     # "DurbinWatson",
     # "EarlyStopping",
-    # "FBeta",
+    "FBeta",
     # "LogToFile",
     "Loss",
     "Progress",
     # "RVP",
     "Timer",
-    "Validate",
 ]
 
 
 class Handler:
-    def __init__(self):
+    def batch_started(self, **kwargs: Any):
         pass
 
-    def batch_started(self, **kwargs):
+    def batch_ended(self, **kwargs: Any):
         pass
 
-    def batch_ended(self, **kwargs):
+    def epoch_started(self, **kwargs: Any):
         pass
 
-    def epoch_started(self, **kwargs):
+    def epoch_ended(self, **kwargs: Any):
         pass
 
-    def epoch_ended(self, **kwargs):
+    def testing_started(self, **kwargs: Any):
         pass
 
-    def testing_started(self, **kwargs):
+    def testing_ended(self, **kwargs: Any):
         pass
 
-    def testing_ended(self, **kwargs):
+    def training_started(self, **kwargs: Any):
         pass
 
-    def training_started(self, **kwargs):
-        pass
-
-    def training_ended(self, **kwargs):
+    def training_ended(self, **kwargs: Any):
         pass
 
 
 class Accuracy(Handler):
-    def __init__(self, y_transform=None, output_transform=None):
-        # FIXME: test this class's performance
-        self.y_transform = y_transform
-        self.output_transform = output_transform
+    def __init__(self) -> None:
+        self.correct = 0
+        self.total = 0
 
-    def training_started(self, **kwargs):
-        self.num_correct = 0
-        self.num_points = 0
+    def epoch_started(self, **kwargs: Any) -> None:
+        """Compute on epoch start."""
+        self.correct = 0
+        self.total = 0
 
-    def batch_ended(self, target, output, **kwargs):
-        # FIXME: is this sufficiently general?
-        # self.num_correct += torch.sum(y == torch.argmax(input=output,dim=-1))
-        # self.num_points += y.shape[0]
+    def batch_ended(
+        self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any
+    ) -> None:
+        """Compute on batch end.
 
-        self.num_correct += torch.sum(
-            (target if self.y_transform is None else self.y_transform.transform(target))
-            == (
-                output
-                if self.output_transform is None
-                else self.output_transform.transform(output)
-            ).long()
-        ).item()  # FIXME: this .long() is an ugly hardcoded error fix
-        self.num_points += target.shape[
-            0
-        ]  # FIXME: assumes the first dimension is the batch size - is this always true?
+        Parameters
+        ----------
+        output
+            Output tensor.
+            Shape: :math:`(N,C)`
+        target
+            Target tensor. One-hot encoded.
+            Shape: :math:`(N,C)`
+        """
+        predicted = torch.argmax(torch.softmax(output, dim=1), dim=1)
+        correct = torch.argmax(target, dim=1)
 
-    def training_ended(self, epoch, **kwargs):
-        acc = self.num_correct / self.num_points
+        self.correct += (predicted == correct).sum().item()
+        self.total += target.size(0)
+
+    def epoch_ended(self, epoch: int, **kwargs: Any) -> None:
+        acc = self.correct / self.total
         s = f"[Epoch {epoch}] Classification accuracy: {acc}"
         print(s)
 
 
-class AVP(Handler):
-    def __init__(self):
+class ActualVsPredicted(Handler):
+    # FIXME: this is broken! This should be run once at the
+    # end of training using the whole dataset, not every batch & epoch!
+    def __init__(self) -> None:
         self.actual = []
         self.predicted = []
 
-    def update(self, x, y, predicted):
-        self.predicted.append(predicted.item())
-        self.actual.append(y.item())
+    def batch_ended(
+        self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any
+    ) -> None:
+        """Compute on batch end.
 
-    def compute(self):
-        self.fig, self.ax = plt.subplots()
-        self.ax.scatter(self.actual, self.predicted, c="black")
-        mmax = max([max(self.actual), max(self.predicted)])
-        plt.xlim([0, mmax])
-        plt.ylim([0, mmax])
+        Parameters
+        ----------
+        output
+            Output tensor.
+            Shape: :math:`(N,)`
+        target
+            Target tensor.
+            Shape: :math:`(N,)`
+        """
+        self.actual.append(output.detach())
+        self.predicted.append(target.detach())
+
+    def training_ended(self, **kwargs: Any) -> None:
+        x = torch.cat(self.actual).reshape(-1).numpy()
+        y = torch.cat(self.predicted).reshape(-1).numpy()
+
+        fig, ax = plt.subplots()
+        ax.scatter(x, y, c="black")
+        plt.xlim([min(x), max(x)])
+        plt.ylim([min(y), max(y)])
         line = mlines.Line2D([0, 1], [0, 1], color="red")
-        line.set_transform(self.ax.transAxes)
-        self.ax.add_line(line)
+        line.set_transform(ax.transAxes)
+        ax.add_line(line)
         plt.ylabel("Predicted")
         plt.xlabel("Actual")
         plt.title("Predicted vs. actual")
@@ -216,7 +230,7 @@ class EarlyStopping(Handler):
                 )
             )
 
-    def on_epoch_end(self):
+    def epoch_ended(self):
         if self.wait == 0:
             return False
 
@@ -229,28 +243,55 @@ class EarlyStopping(Handler):
 
 
 class FBeta(Handler):
-    def __init__(self, beta):
+    def __init__(self, beta: float) -> None:
         self.beta = beta
 
         self.true_positive = 0
         self.predicted_positive = 0
         self.actual_positive = 0
 
-    def update(self, x, y, predicted):
-        self.true_positive += y.item() == predicted.item()
-        self.predicted_positive += predicted.item() == 1
-        self.actual_positive += y.item() == 1
+    def epoch_started(self, **kwargs: Any) -> None:
+        """Compute on epoch start."""
+        self.true_positive = 0
+        self.predicted_positive = 0
+        self.actual_positive = 0
 
-    def compute(self):
-        precision = self.true_positive / self.predicted_positive
-        recall = self.true_positive / self.actual_positive
+    def batch_ended(
+        self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any
+    ) -> None:
+        """Compute on batch end.
 
-        return (
-            (1 + self.beta ** 2)
-            * precision
-            * recall
-            / (precision * (self.beta ** 2) + recall)
-        )
+        Parameters
+        ----------
+        output
+            Output tensor.
+            Shape: :math:`(N,2)`
+        target
+            Target tensor. One-hot encoded.
+            Shape: :math:`(N,2)`
+        """
+        predicted = torch.argmax(torch.softmax(output, dim=1), dim=1)
+        correct = torch.argmax(target, dim=1)
+
+        self.true_positive += correct[predicted.nonzero(as_tuple=False)].sum().item()
+        self.predicted_positive += predicted.sum().item()
+        self.actual_positive += correct.sum().item()
+
+    def epoch_ended(self, epoch: int, **kwargs: Any) -> None:
+        try:
+            precision = self.true_positive / self.predicted_positive
+            recall = self.true_positive / self.actual_positive
+            F = (
+                (1 + self.beta ** 2)
+                * precision
+                * recall
+                / (precision * (self.beta ** 2) + recall)
+            )
+        except ZeroDivisionError:
+            F = 1
+
+        s = f"[Epoch {epoch}] F-score: {F}"
+        print(s)
 
 
 class LogToFile(Handler):
@@ -329,20 +370,6 @@ class Loss(Handler):
                 print(
                     f"[Epoch {epoch}] Average running loss: {self.running_loss / cur}."
                 )
-
-
-class Validate(Handler):
-    def epoch_ended(
-        self,
-        flag: luz.Flag,
-        epoch: int,
-        val_loss: torch.Tensor,
-        **kwargs: Any,
-    ) -> None:
-        if flag == luz.Flag.TRAINING:
-            # NOTE: it's very important to add loss.item()
-            # (as opposed to loss) to avoid a memory leak!
-            print(f"[Epoch {epoch}] Validation loss: {val_loss}.")
 
 
 class Progress(Handler):
