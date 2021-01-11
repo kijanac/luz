@@ -10,15 +10,15 @@ __all__ = ["Predictor"]
 
 
 class Predictor:
-    """
-    A Predictor is an object which takes objects from a domain set
-    and predicts the corresponding values from a label set.
-
-    Attributes:
-        model (torch.nn.Module): PyTorch module used for prediction.
-    """
-
     def __init__(self, model: torch.nn.Module) -> None:
+        """Object which takes objects from a domain set and
+           predicts the corresponding values from a label set.
+
+        Parameters
+        ----------
+        model
+            Module used for prediction.
+        """
         self.model = model
 
     @classmethod
@@ -49,13 +49,15 @@ class Predictor:
         return self
 
     @contextlib.contextmanager
-    def eval(self) -> None:
+    def eval(self, no_grad: Optional[bool] = True) -> None:
         training = copy.copy(self.model.training)
 
-        try:
-            if training:
-                self.model.eval()
-            yield
-        finally:
-            if training:
-                self.model.train()
+        nc = contextlib.nullcontext()
+        with torch.no_grad() if no_grad else nc:
+            try:
+                if training:
+                    self.model.eval()
+                yield
+            finally:
+                if training:
+                    self.model.train()
