@@ -1,41 +1,42 @@
 """
 
-Custom PyTorch modules. Each class must implement torch.nn.Module,
-and therefore must have an __init__ method and a forward method.
+Custom PyTorch modules.
 
 """
 from __future__ import annotations
-from typing import Callable, Iterable, Optional, Tuple
+from typing import Callable, Iterable, Optional
 
-import collections
 import luz
-import networkx as nx
 import torch
 
 __all__ = [
     "AdditiveAttention",
+    "AdditiveNodeAttention",
     "Concatenate",
     "Dense",
     "DenseRNN",
+    "DotProductAttention",
     "ElmanRNN",
     "EdgeAttention",
     "GraphConv",
     "GraphConvAttention",
     "GraphNetwork",
+    "MaskedSoftmax",
     "Module",
     "MultiheadEdgeAttention",
     "Reshape",
     "Squeeze",
     "Unsqueeze",
-    "WAVE",
 ]
+
+Activation = Callable[[torch.Tensor], torch.Tensor]
 
 
 class Module(torch.nn.Module):
     def __init__(
         self,
         module: torch.nn.Module,
-        activation: Optional[Callable[..., torch.Tensor]] = None,
+        activation: Optional[Activation] = None,
     ) -> None:
         super().__init__()
         self.module = module
@@ -43,6 +44,103 @@ class Module(torch.nn.Module):
 
     def forward(self, *args: torch.Tensor, **kwargs: torch.Tensor) -> torch.Tensor:
         return self.activation(self.module(*args, **kwargs))
+
+
+class AdditiveAttention(torch.nn.Module):
+    """Additive attention, from https://arxiv.org/abs/1409.0473."""
+
+    def __init__(
+        self, d: int, d_attn: int, activation: Optional[Activation] = None
+    ) -> None:
+        """Additive attention, from https://arxiv.org/abs/1409.0473.
+
+        Parameters
+        ----------
+        d
+            Feature length.
+        d_attn
+            Attention vector length.
+        activation
+            Activation function, by default None.
+        """
+        super().__init__()
+        self.concat = Concatenate(dim=1)
+        if activation is None:
+            activation = torch.nn.Tanh()
+        self.W = Module(torch.nn.Linear(2 * d, 2 * d_attn, bias=False), activation)
+        self.v = torch.nn.Linear(2 * d_attn, 1, bias=False)
+
+        self.ms = MaskedSoftmax(dim=1)
+
+    def forward(
+        self, s: torch.Tensor, h: torch.Tensor, mask: Optional[torch.Tensor] = None
+    ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        s
+            Shape: :math:`(N,d)`
+        h
+            Shape: :math:`(N,d)`
+        mask
+            Mask tensor, by default None.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+            Shape: :math:`(1,N)`
+        """
+        X = self.W(self.concat(s, h))
+        pre_attn = self.v(X).t()
+
+        return self.ms(pre_attn, mask)
+
+
+class AdditiveNodeAttention(torch.nn.Module):
+    def __init__(
+        self, d: int, d_attn: int, activation: Optional[Activation] = None
+    ) -> None:
+        """Additive node attention on graphs. From https://arxiv.org/abs/1710.10903.
+
+        Parameters
+        ----------
+        d
+            Node feature length.
+        d_attn
+            Attention vector length.
+        activation
+            Activation function, by default None.
+        """
+        super().__init__()
+        self.attn = AdditiveAttention(d, d_attn, activation)
+
+    def forward(
+        self,
+        nodes: torch.Tensor,
+        edge_index: torch.Tensor,
+    ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_v,d_v)`
+        edge_index
+            Edge index tensor.
+            Shape: :math:`(2,N_e)`
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+            Shape: :math:`(N_e,N_v)`
+        """
+        mask = luz.nodewise_mask(edge_index)
+        s, r = edge_index
+        return self.attn(nodes[s], nodes[r], mask)
 
 
 class Concatenate(torch.nn.Module):
@@ -64,6 +162,7 @@ class Concatenate(torch.nn.Module):
         ----------
         *args
             Input tensors.
+            Shape: :math:`(N,*)`
 
         Returns
         -------
@@ -75,25 +174,31 @@ class Concatenate(torch.nn.Module):
 
 class Dense(torch.nn.Module):
     def __init__(
-        self, in_features: int, out_features: int, *hidden_features: int
+        self,
+        *features: int,
+        activation: Optional[Activation] = None,
     ) -> None:
         """Dense feed-forward neural network.
 
         Parameters
         ----------
-        in_features
-            Number of input features.
-        out_features
-            Number of output features.
-        *args
-            Number of features at each hidden layer.
+        *features
+            Number of features at each layer.
+        activation
+            Activation function.
         """
         super().__init__()
-        sizes = tuple((in_features, *hidden_features, out_features))
-        layers = (
-            torch.nn.Linear(in_features=n_in, out_features=n_out)
-            for n_in, n_out in zip(sizes, sizes[1:])
-        )
+
+        if activation is None:
+            activation = torch.nn.LeakyReLU()
+
+        layers = []
+
+        for n_in, n_out in zip(features, features[1:]):
+            lin = torch.nn.Linear(n_in, n_out)
+            m = Module(lin, activation)
+            layers.append(m)
+
         self.seq = torch.nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -150,56 +255,36 @@ class DenseRNN(torch.nn.Module):
         return torch.zeros(1, self.hidden_size)
 
 
-class AdditiveAttention(torch.nn.Module):
-    def __init__(self, d_v: int, d_attn: int) -> None:
-        """Additive node attention on graphs. From https://arxiv.org/abs/1710.10903.
-
-        Parameters
-        ----------
-        d_v
-            Node feature length.
-        d_attn
-            Attention vector length.
-        """
-        super().__init__()
-        self.concat = Concatenate(dim=1)
-        self.Z = torch.nn.Linear(d_v, d_attn, bias=False)
-        self.lin = torch.nn.Linear(2 * d_attn, 1, bias=False)
-        self.act = torch.nn.LeakyReLU()
+class DotProductAttention(torch.nn.Module):
+    """Scaled dot product attention."""
 
     def forward(
         self,
-        nodes: torch.Tensor,
-        edge_index: torch.Tensor,
+        query: torch.Tensor,
+        key: torch.Tensor,
+        mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """Compute forward pass.
 
         Parameters
         ----------
-        nodes
-            Node features.
-            Shape: :math:`(N_v,d_v)`
-        edge_index
-            Edge index tensor.
-            Shape: :math:`(2,N_e)`
+        query
+            Query vectors.
+            Shape: :math:`(N,d_q)`
+        key
+            Key vectors.
+            Shape: :math:`(N,d_q)`
+        mask
+            Mask tensor to ignore query-key pairs, by default None.
+            Shape: :math:`(N,N)`
 
         Returns
         -------
         torch.Tensor
-            Output tensor.
-            Shape: :math:`(N_e,N_v)`
+            Scaled dot product attention between each query and key vector.
+            Shape: :math:`(N,N)`
         """
-        s, r = edge_index
-        Z_i = self.Z(nodes[s])
-        Z_j = self.Z(nodes[r])
-        X = self.concat(Z_i, Z_j)
-
-        pre_attn = self.act(self.lin(X)).t()
-
-        M = luz.nodewise_mask(edge_index)
-        attn = luz.masked_softmax(pre_attn, M, dim=1)
-
-        return attn
+        return luz.dot_product_attention(query, key, mask)
 
 
 class EdgeAttention(torch.nn.Module):
@@ -237,6 +322,7 @@ class EdgeAttention(torch.nn.Module):
             torch.nn.Linear(d_e + d_u, d_attn), torch.nn.functional.leaky_relu
         )
         self.concat = Concatenate(dim=1)
+        self.attn = DotProductAttention()
 
         self.nodewise = nodewise
 
@@ -254,12 +340,16 @@ class EdgeAttention(torch.nn.Module):
         ----------
         nodes
             Node features.
+            Shape: :math:`(N_v,d_v)`
         edges
             Edge features.
+            Shape: :math:`(N_e,d_e)`
         edge_index
             Edge index tensor.
+            Shape: :math:`(2,N_e)`
         u
             Global features.
+            Shape: :math:`(N_{batch},d_u)`
         batch
             Nodewise batch tensor.
 
@@ -274,11 +364,12 @@ class EdgeAttention(torch.nn.Module):
             mask = luz.batchwise_mask(batch, edge_index)
 
         s, r = edge_index
+
         q = self.query(self.concat(nodes, u[batch]))
         k = self.key(self.concat(nodes[s], u[batch[s]]))
         v = self.value(self.concat(edges, u[batch[s]]))
 
-        return luz.attention(q, k, mask) @ v
+        return self.attn(q, k, mask) @ v
 
 
 class ElmanRNN(torch.nn.Module):
@@ -326,9 +417,7 @@ class ElmanRNN(torch.nn.Module):
 
 
 class GraphConv(torch.nn.Module):
-    def __init__(
-        self, d_v: int, activation: Callable[torch.Tensor, torch.Tensor]
-    ) -> None:
+    def __init__(self, d_v: int, activation: Activation) -> None:
         """Graph convolutional network from https://arxiv.org/abs/1609.02907.
 
         Parameters
@@ -369,9 +458,7 @@ class GraphConv(torch.nn.Module):
 
 
 class GraphConvAttention(torch.nn.Module):
-    def __init__(
-        self, d_v: int, activation: Callable[torch.Tensor, torch.Tensor]
-    ) -> None:
+    def __init__(self, d_v: int, activation: Activation) -> None:
         """Compute node attention weights using graph convolutional network.
 
         Parameters
@@ -416,6 +503,8 @@ class GraphConvAttention(torch.nn.Module):
 
 
 class GraphNetwork(torch.nn.Module):
+    """Graph Network from https://arxiv.org/abs/1806.01261."""
+
     def __init__(
         self,
         edge_model: Optional[torch.nn.Module] = None,
@@ -423,6 +512,19 @@ class GraphNetwork(torch.nn.Module):
         global_model: Optional[torch.nn.Module] = None,
         num_layers: Optional[int] = 1,
     ) -> None:
+        """[summary]
+
+        Parameters
+        ----------
+        edge_model
+            Edge update network, by default None.
+        node_model
+            Node update network, by default None.
+        global_model
+            Global update network, by default None.
+        num_layers
+            Number of passes, by default 1.
+        """
         super().__init__()
         self.edge_model = edge_model
         self.node_model = node_model
@@ -496,6 +598,35 @@ class GraphNetwork(torch.nn.Module):
                 )
 
         return nodes, edge_index, edges, u, batch
+
+
+class MaskedSoftmax(torch.nn.Module):
+    """Compute softmax of a tensor using a mask."""
+
+    def __init__(self, dim: Optional[int] = None) -> None:
+        super().__init__()
+        self.dim = dim
+
+    def forward(
+        self, x: torch.Tensor, mask: Optional[torch.Tensor] = None
+    ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        x
+            Argument of softmax.
+        mask
+            Mask tensor with the same shape as `x`, by default None.
+
+        Returns
+        -------
+        torch.Tensor
+            Masked softmax of `x`.
+        """
+        if mask is None:
+            return torch.softmax(x, self.dim)
+        return luz.masked_softmax(x, mask, self.dim)
 
 
 class MultiheadEdgeAttention(torch.nn.Module):
@@ -657,113 +788,3 @@ class Unsqueeze(torch.nn.Module):
             Unsueezed output tensor.
         """
         return x.unsqueeze(dim=self.dim)
-
-
-class WAVE(torch.nn.Module):
-    def __init__(self, atom_feature_size: int, num_passes: int) -> None:
-        super().__init__()
-
-        self.d = atom_feature_size
-        self.num_passes = num_passes
-
-        self.T_to_A = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
-        self.C_to_A = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
-        self.T_to_B = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
-        self.C_to_B = torch.nn.Linear(in_features=2 * self.d, out_features=self.d)
-        self.softmax_mix = Module(Concatenate(dim=1), torch.nn.Softmax(dim=1))
-        self.softsign_mix = Module(Concatenate(dim=1), torch.nn.Softsign())
-        self.W = torch.randn(size=(self.d, 1))
-        self.W_u = Module(
-            torch.nn.Linear(in_features=2 * self.d, out_features=self.d),
-            torch.nn.Sigmoid(),
-        )
-        self.W_o = Module(
-            torch.nn.Linear(in_features=2 * self.d, out_features=self.d),
-            torch.nn.ReLU(),
-        )
-
-    def forward(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
-        # FIXME: is this really the only way to handle batches of disjoint graphs?
-        out = []
-        for _x, _edge_index in zip(x, edge_index):
-            traversal_order = self._traverse_graph(_x, _edge_index)
-
-            lengths = tuple(len(n) for n in traversal_order)
-            perm = torch.eye(sum(lengths))[[a for b in traversal_order for a in b]]
-
-            _x = (perm @ _x).t()
-
-            for _ in range(self.num_passes):
-                self._propagate(_x, lengths)
-                self._propagate(_x, lengths[::-1])
-
-            out.append(_x.t())
-
-        return torch.stack(out, dim=0)
-
-    def _traverse_graph(self, x: torch.Tensor, edge_index: torch.Tensor) -> Tuple[int]:
-        # FIXME: if a graph has nodes with no edges, this leads to an error in forward
-        # because edge_index does not reference them
-        # and so they are not included in the traversal order
-        # but they are still included in x
-        g = nx.Graph(list(edge_index.t().numpy()))
-
-        root, *_ = nx.center(g)
-
-        digraph = nx.bfs_tree(g, root)
-
-        order = [[root]]
-        while sum(len(a) for a in order) < len(g):
-            # FIXME: not sure what this ordered dict stuff actually does if anything...
-            succs = list(
-                collections.OrderedDict.fromkeys(
-                    [r for s in order[-1] for r in list(digraph.successors(s))]
-                ).keys()
-            )
-            order.append(succs)
-
-        return order
-
-    def _propagate(self, x: torch.Tensor, lengths: Iterable[int]) -> None:
-        offset = 0
-        # NOTE/FIXME: using update avoids a RuntimeError due to editing x in place
-        update = torch.zeros_like(x)
-        for t, c in zip(lengths, lengths[1:]):
-            i = offset + t
-            j = i + c
-
-            T = x[:, offset:i]
-            C = x[:, i:j]
-            N = x[:, offset:j]
-
-            for k in range(c):
-                s = C.narrow(dim=1, start=k, length=1)
-
-                m = self._mix_gate(state=s, tree=T, cross=C, neighbors=N)
-
-                u = self.W_u(torch.cat(tensors=[m, s], dim=0).t()).t()
-                o = self.W_o(torch.cat(tensors=[m, s], dim=0).t()).t()
-
-                # NOTE: subtract s to replace the column in x with the update
-                update[:, i:j][:, k : k + 1] = u * o + (1 - u) * m - s
-
-            x = x + update
-            offset += t
-
-    def _mix_gate(
-        self,
-        state: torch.Tensor,
-        tree: torch.Tensor,
-        cross: torch.Tensor,
-        neighbors: torch.Tensor,
-    ) -> torch.Tensor:
-        input_T = torch.cat([tree, state.expand_as(tree)], dim=0).t()
-        input_C = torch.cat([cross, state.expand_as(cross)], dim=0).t()
-
-        A = self.softmax_mix(
-            self.T_to_A(input_T).t(), self.C_to_A(input_C).t()
-        ) * self.W.expand_as(neighbors)
-
-        B = self.softsign_mix(self.T_to_B(input_T).t(), self.C_to_B(input_C).t())
-
-        return torch.sum((A + B) * neighbors, dim=1).unsqueeze(1)
