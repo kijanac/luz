@@ -42,12 +42,11 @@ class Trainer:
         self.handlers = tuple(handlers or [])
         self.loader_kwargs = loader_kwargs
 
-        self.flag = None
-        self.state = {}
+        self._state = {}
 
     def _call_event(self, event: luz.Event) -> None:
         for handler in self.handlers:
-            getattr(handler, event.name.lower())(**self.state)
+            getattr(handler, event.name.lower())(**self._state)
 
     def use_process(self, process_batch: ProcessBatch) -> None:
         """Set function to process each batch.
@@ -91,7 +90,7 @@ class Trainer:
         loader = dataset.loader(**self.loader_kwargs)
 
         if train:
-            self.state = dict(
+            self._state = dict(
                 flag=luz.Flag.TRAINING,
                 trainer=self,
                 predictor=predictor,
@@ -100,7 +99,7 @@ class Trainer:
             )
             self._call_event(event=luz.Event.TRAINING_STARTED)
         else:
-            self.state = dict(
+            self._state = dict(
                 flag=luz.Flag.TESTING,
                 trainer=self,
                 predictor=predictor,
@@ -116,12 +115,12 @@ class Trainer:
         for epoch in range(start, stop):
             running_loss = 0.0
 
-            self.state.update(epoch=epoch)
+            self._state.update(epoch=epoch)
             self._call_event(event=luz.Event.EPOCH_STARTED)
 
             for i, batch in enumerate(loader):
                 data, target = self._process_batch(batch)
-                self.state.update(ind=i, data=data, target=target)
+                self._state.update(ind=i, data=data, target=target)
                 self._call_event(event=luz.Event.BATCH_STARTED)
 
                 # migrate the input and target tensors to the appropriate device
@@ -150,7 +149,7 @@ class Trainer:
             else:
                 val_loss = None
 
-            self.state.update(val_loss=val_loss)
+            self._state.update(val_loss=val_loss)
 
             self._call_event(event=luz.Event.EPOCH_ENDED)
 
@@ -227,7 +226,7 @@ class SupervisedTrainer(Trainer):
             self.backward(loss)
             self.optimizer_step(optimizer)
 
-        self.state.update(output=output, loss=loss)
+        self._state.update(output=output, loss=loss)
 
         return loss.item()
 
