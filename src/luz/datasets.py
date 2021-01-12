@@ -21,6 +21,8 @@ __all__ = [
     "WrapperDataset",
 ]
 
+Device = Union[str, torch.device]
+
 
 def default_collate(batch: Iterable[luz.Data]) -> luz.Data:
     """Collate multiple Data objects.
@@ -110,7 +112,7 @@ class Data:
     def __getitem__(self, k: str) -> torch.Tensor:
         return self.d[k]
 
-    def to(self, device: Union[str, torch.device]) -> luz.Data:
+    def to(self, device: Device) -> luz.Data:
         """Migrate tensors to device. Modifies Data object in-place.
 
         Parameters

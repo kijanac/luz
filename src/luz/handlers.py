@@ -10,6 +10,7 @@ Contains callback objects which perform various functions during the training pr
 from __future__ import annotations
 from typing import Any, Optional
 
+from abc import ABC, abstractmethod
 import datetime
 import luz
 import matplotlib.pyplot as plt
@@ -36,28 +37,36 @@ __all__ = [
 ]
 
 
-class Handler:
+class Handler(ABC):
+    @abstractmethod
     def batch_started(self, **kwargs: Any):
         pass
 
+    @abstractmethod
     def batch_ended(self, **kwargs: Any):
         pass
 
+    @abstractmethod
     def epoch_started(self, **kwargs: Any):
         pass
 
+    @abstractmethod
     def epoch_ended(self, **kwargs: Any):
         pass
 
+    @abstractmethod
     def testing_started(self, **kwargs: Any):
         pass
 
+    @abstractmethod
     def testing_ended(self, **kwargs: Any):
         pass
 
+    @abstractmethod
     def training_started(self, **kwargs: Any):
         pass
 
+    @abstractmethod
     def training_ended(self, **kwargs: Any):
         pass
 

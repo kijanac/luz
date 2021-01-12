@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Iterator, Optional, Tuple, Union
 
+from abc import ABC, abstractmethod
 import collections
 import contextlib
 import math
@@ -13,14 +14,15 @@ __all__ = ["Score", "Scorer", "CrossValidationScorer", "HoldoutValidationScorer"
 Score = collections.namedtuple("Score", ["predictor", "score"])
 
 
-class Scorer:
+class Scorer(ABC):
+    @abstractmethod
     def score(
         self,
         learner: luz.Learner,
         dataset: luz.Dataset,
         device: Union[torch.device, str],
     ) -> luz.Score:
-        raise NotImplementedError
+        pass
 
 
 class CrossValidationScorer(Scorer):
@@ -98,7 +100,7 @@ class HoldoutValidationScorer(Scorer):
 
         Parameters
         ----------
-        holdout_fraction : float
+        holdout_fraction
             Fraction of data to use as a test set for scoring.
         """
         self.holdout_fraction = holdout_fraction
@@ -113,11 +115,11 @@ class HoldoutValidationScorer(Scorer):
 
         Parameters
         ----------
-        learner : luz.Learner
+        learner
             Learning algorithm to be scored.
-        dataset : luz.Dataset
+        dataset
             Dataset to use for scoring.
-        device : Union[torch.device, str]
+        device
             Device to use for scoring.
 
         Returns
