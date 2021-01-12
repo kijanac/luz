@@ -20,7 +20,6 @@ class Trainer(ABC):
         optimizer: Optional[luz.Optimizer] = None,
         start_epoch: Optional[int] = 1,
         stop_epoch: Optional[int] = 2,
-        handlers: Optional[Iterable[luz.Handler]] = None,
         **loader_kwargs: Union[int, bool, luz.Transform],
     ) -> None:
         """Algorithm to train a predictor using data.
@@ -35,21 +34,18 @@ class Trainer(ABC):
             First training epoch, by default 1
         stop_epoch
             Last training epoch, by default 2
-        handlers
-            Handlers to run during training, by default None
         """
         self.loss = loss
         self.optimizer = optimizer
         self.start_epoch = start_epoch
         self.stop_epoch = stop_epoch
-        self.handlers = tuple(handlers or [])
         self.loader_kwargs = loader_kwargs
 
         self._state = {}
 
-    def _call_event(self, event: luz.Event) -> None:
-        for handler in self.handlers:
-            getattr(handler, event.name.lower())(**self._state)
+    def _call_event(self, event: luz.Event, handlers: Iterable[luz.Handler]) -> None:
+        for h in handlers:
+            getattr(h, event.name.lower())(**self._state)
 
     def use_process(self, process_batch: ProcessBatch) -> None:
         """Set function to process each batch.
@@ -70,6 +66,7 @@ class Trainer(ABC):
         val_dataset: Optional[luz.Dataset] = None,
         early_stopping: Optional[bool] = False,
         patience: Optional[int] = 5,
+        handlers: Optional[Iterable[luz.Handler]] = None,
     ) -> None:
         """Run training algorithm.
 
@@ -92,7 +89,11 @@ class Trainer(ABC):
             Number of epochs of non-improving validation loss
             before training stops early; by default 5.
             Ignored if `early_stopping` is `False`.
+        handlers
+            Handlers to run during training, by default None.
         """
+        handlers = tuple(handlers or [])
+
         self.migrate(predictor, device)
 
         if train:
@@ -113,7 +114,7 @@ class Trainer(ABC):
             if early_stopping:
                 self._state.update(patience=5)
 
-            self._call_event(event=luz.Event.TRAINING_STARTED)
+            self._call_event(luz.Event.TRAINING_STARTED, handlers)
         else:
             self._state = dict(
                 flag=luz.Flag.TESTING,
@@ -121,7 +122,7 @@ class Trainer(ABC):
                 predictor=predictor,
                 loader=loader,
             )
-            self._call_event(event=luz.Event.TESTING_STARTED)
+            self._call_event(luz.Event.TESTING_STARTED, handlers)
 
         if train:
             start, stop = self.start_epoch, self.stop_epoch
@@ -132,12 +133,12 @@ class Trainer(ABC):
             running_loss = 0.0
 
             self._state.update(epoch=epoch)
-            self._call_event(event=luz.Event.EPOCH_STARTED)
+            self._call_event(luz.Event.EPOCH_STARTED, handlers)
 
             for i, batch in enumerate(loader):
                 data, target = self._process_batch(batch)
                 self._state.update(ind=i, data=data, target=target)
-                self._call_event(event=luz.Event.BATCH_STARTED)
+                self._call_event(luz.Event.BATCH_STARTED, handlers)
 
                 # migrate the input and target tensors to the appropriate device
                 data, target = data.to(device), target.to(device)
@@ -156,9 +157,9 @@ class Trainer(ABC):
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
 
-                self._call_event(event=luz.Event.BATCH_ENDED)
+                self._call_event(luz.Event.BATCH_ENDED, handlers)
 
-            self._call_event(event=luz.Event.EPOCH_ENDED)
+            self._call_event(luz.Event.EPOCH_ENDED, handlers)
 
             if train and val_dataset is not None:
                 val_loss = 0.0
@@ -188,9 +189,9 @@ class Trainer(ABC):
                 self._state["val_history"].append(val_loss)
 
         if train:
-            self._call_event(event=luz.Event.TRAINING_ENDED)
+            self._call_event(luz.Event.TRAINING_ENDED, handlers)
         else:
-            self._call_event(event=luz.Event.TESTING_ENDED)
+            self._call_event(luz.Event.TESTING_ENDED, handlers)
 
             return running_loss / len(loader)
 

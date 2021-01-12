@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Type, Union
+from typing import Iterable, Optional, Type, Union
 
 import luz
 import torch
@@ -37,6 +37,7 @@ class Learner:
         device: Device,
         val_dataset: Optional[luz.Dataset] = None,
         test_dataset: Optional[luz.Dataset] = None,
+        handlers: Optional[Iterable[luz.Handler]] = None,
     ) -> luz.Score:
         """Learn a predictor based on a given dataset.
 
@@ -46,10 +47,12 @@ class Learner:
             Training dataset used to learn a predictor.
         device
             Device to use for learning.
-        val_dataset
+        val_dataset : luz.Dataset, optional
             Validation dataset, by default None.
-        test_dataset
+        test_dataset : luz.Dataset, optional
             Test dataset, by default None.
+        handlers
+            Handlers to run during training, by default None.
 
         Returns
         -------
