@@ -104,6 +104,8 @@ class Data:
             if torch.is_tensor(v):
                 self.d[k] = v.to(device)
 
+            setattr(self, k, self.d[k])
+
         return self
 
     def __repr__(self) -> str:

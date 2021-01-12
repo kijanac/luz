@@ -57,24 +57,32 @@ def adjacency(edge_index: torch.Tensor) -> torch.Tensor:
 
 
 def batchwise_edge_mean(
-    edges: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor
+    edges: torch.Tensor,
+    edge_index: torch.Tensor,
+    batch: torch.Tensor,
+    device="cpu",
 ) -> torch.Tensor:
-    M = batchwise_mask(batch, edge_index)
+    M = batchwise_mask(batch, edge_index, device=device)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
     return M @ edges
 
 
 def batchwise_edge_sum(
-    edges: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor
+    edges: torch.Tensor,
+    edge_index: torch.Tensor,
+    batch: torch.Tensor,
+    device="cpu",
 ) -> torch.Tensor:
-    M = batchwise_mask(batch, edge_index)
+    M = batchwise_mask(batch, edge_index, device=device)
 
     return M @ edges
 
 
 def batchwise_mask(
-    batch: torch.Tensor, edge_index: Optional[torch.Tensor] = None
+    batch: torch.Tensor,
+    edge_index: Optional[torch.Tensor] = None,
+    device="cpu",
 ) -> torch.Tensor:
     """Create a mask for batchwise aggregation of graph nodes or edges.
 
@@ -97,26 +105,30 @@ def batchwise_mask(
         # masking for edge aggregation
         _, N_e = edge_index.shape
         s, r = edge_index
-        M = torch.zeros(batch[r].max() + 1, N_e)
+        M = torch.zeros(batch[r].max() + 1, N_e, device=device)
         M[batch[r], torch.arange(N_e)] = 1
     else:
         # masking for node aggregation
         N_v = len(batch)
-        M = torch.zeros(batch.max() + 1, N_v)
+        M = torch.zeros(batch.max() + 1, N_v, device=device)
         M[batch, torch.arange(N_v)] = 1
 
     return M
 
 
-def batchwise_node_mean(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
-    M = batchwise_mask(batch)
+def batchwise_node_mean(
+    nodes: torch.Tensor, batch: torch.Tensor, device="cpu"
+) -> torch.Tensor:
+    M = batchwise_mask(batch, device=device)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
     return M @ nodes
 
 
-def batchwise_node_sum(nodes: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
-    M = batchwise_mask(batch)
+def batchwise_node_sum(
+    nodes: torch.Tensor, batch: torch.Tensor, device="cpu"
+) -> torch.Tensor:
+    M = batchwise_mask(batch, device=device)
 
     return M @ nodes
 
@@ -232,14 +244,18 @@ def memoize(func: T) -> T:
     return memoized
 
 
-def nodewise_edge_mean(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
-    M = nodewise_mask(edge_index)
+def nodewise_edge_mean(
+    edges: torch.Tensor, edge_index: torch.Tensor, device="cpu"
+) -> torch.Tensor:
+    M = nodewise_mask(edge_index, device=device)
     M = torch.nn.functional.normalize(M, p=1, dim=1)
 
     return M @ edges
 
 
-def nodewise_edge_sum(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+def nodewise_edge_sum(
+    edges: torch.Tensor, edge_index: torch.Tensor, device="cpu"
+) -> torch.Tensor:
     """Sum all incoming edge features for each node.
 
     Parameters
@@ -257,12 +273,12 @@ def nodewise_edge_sum(edges: torch.Tensor, edge_index: torch.Tensor) -> torch.Te
         Tensor of summed incoming edges for each node.
         Shape: :math:`(N_v,d_e)`
     """
-    M = nodewise_mask(edge_index)
+    M = nodewise_mask(edge_index, device=device)
 
     return M @ edges
 
 
-def nodewise_mask(edge_index: torch.Tensor) -> torch.Tensor:
+def nodewise_mask(edge_index: torch.Tensor, device="cpu") -> torch.Tensor:
     """Create a mask for nodewise aggregation of incoming graph edges.
 
     Parameters
@@ -278,7 +294,7 @@ def nodewise_mask(edge_index: torch.Tensor) -> torch.Tensor:
     """
     _, N_e = edge_index.shape
     s, r = edge_index
-    M = torch.zeros(r.max() + 1, N_e)
+    M = torch.zeros(r.max() + 1, N_e, device=device)
     M[r, torch.arange(N_e)] = 1
 
     return M
