@@ -8,21 +8,20 @@ Contains callback objects which perform various functions during the training pr
 # FIXME: Type annotate every handler here
 
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import datetime
 import luz
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-
-# import matplotlib.transforms as mtransforms
 import os
+import pathlib
 import torch
 
 __all__ = [
     "Handler",
     "Accuracy",
-    # "ActualVsPredicted",
+    "ActualVsPredicted",
     # "Checkpoint",
     # "DataAndFit",
     # "DurbinWatson",
@@ -99,14 +98,18 @@ class Accuracy(Handler):
 
 
 class ActualVsPredicted(Handler):
-    # FIXME: this is broken! This should be run once at the
-    # end of training using the whole dataset, not every batch & epoch!
-    def __init__(self) -> None:
-        self.actual = []
-        self.predicted = []
+    def __init__(self, filepath: Optional[Union[str, pathlib.Path]] = None) -> None:
+        """Plot actual labels vs. predicted labels.
+
+        Parameters
+        ----------
+        filepath
+            Path to save plot if not None, by default None.
+        """
+        self.filepath = filepath
 
     def batch_ended(
-        self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any
+        self, output: torch.Tensor, target: torch.Tensor, flag: luz.Flag, **kwargs: Any
     ) -> None:
         """Compute on batch end.
 
@@ -119,23 +122,31 @@ class ActualVsPredicted(Handler):
             Target tensor.
             Shape: :math:`(N,)`
         """
-        self.actual.append(output.detach())
-        self.predicted.append(target.detach())
+        if flag == luz.Flag.TESTING:
+            x = output.detach().reshape(-1).numpy()
+            y = target.detach().reshape(-1).numpy()
+            self.ax.scatter(x, y, color="black")
 
-    def training_ended(self, **kwargs: Any) -> None:
-        x = torch.cat(self.actual).reshape(-1).numpy()
-        y = torch.cat(self.predicted).reshape(-1).numpy()
+    def testing_started(self, **kwargs: Any) -> None:
+        """Compute on testing start."""
+        self.fig, self.ax = plt.subplots()
 
-        fig, ax = plt.subplots()
-        ax.scatter(x, y, c="black")
-        plt.xlim([min(x), max(x)])
-        plt.ylim([min(y), max(y)])
+    def testing_ended(self, **kwargs: Any) -> None:
+        """Compute on testing end."""
+        x_min, x_max = self.ax.get_xlim()
+        y_min, y_max = self.ax.get_ylim()
+        plot_min = min(x_min, y_min)
+        plot_max = max(x_max, y_max)
+        self.ax.set_xlim(plot_min, plot_max)
         line = mlines.Line2D([0, 1], [0, 1], color="red")
-        line.set_transform(ax.transAxes)
-        ax.add_line(line)
+        line.set_transform(self.ax.transAxes)
+        self.ax.add_line(line)
         plt.ylabel("Predicted")
         plt.xlabel("Actual")
         plt.title("Predicted vs. actual")
+        if self.filepath is not None:
+            plt.savefig(luz.expand_path(self.filepath))
+
         plt.show()
 
 
