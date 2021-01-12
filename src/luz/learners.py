@@ -67,6 +67,7 @@ class Learner:
             val_dataset=val_dataset,
             device=device,
             train=True,
+            handlers=handlers,
         )
 
         if test_dataset is None:
