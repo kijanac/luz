@@ -106,8 +106,8 @@ class Trainer:
                 optimizer=optimizer,
                 loader=loader,
             )
+            self._state.update(val_history=[])
             if early_stopping:
-                self._state.update(val_history=[])
                 self._state.update(patience=5)
 
             self._call_event(event=luz.Event.TRAINING_STARTED)
@@ -158,8 +158,13 @@ class Trainer:
             self._call_event(event=luz.Event.EPOCH_ENDED)
 
             if train and val_dataset is not None:
+                val_loss = 0.0
                 with predictor.eval():
-                    val_loss = self.run_batch(predictor, data, target, device)
+                    for batch in val_dataset.loader(**self.loader_kwargs):
+                        data, target = self._process_batch(batch)
+                        # migrate the input and target tensors to the appropriate device
+                        data, target = data.to(device), target.to(device)
+                        val_loss += self.run_batch(predictor, data, target, device)
 
                 print(f"[Epoch {epoch}] Validation loss: {val_loss}.")
                 if early_stopping:

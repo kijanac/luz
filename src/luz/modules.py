@@ -138,7 +138,7 @@ class AdditiveNodeAttention(torch.nn.Module):
             Output tensor.
             Shape: :math:`(N_e,N_v)`
         """
-        mask = luz.nodewise_mask(edge_index)
+        mask = luz.nodewise_mask(edge_index, device=nodes.device)
         s, r = edge_index
         return self.attn(nodes[s], nodes[r], mask)
 
@@ -359,12 +359,11 @@ class EdgeAttention(torch.nn.Module):
             Output tensor.
         """
         if self.nodewise:
-            mask = luz.nodewise_mask(edge_index)
+            mask = luz.nodewise_mask(edge_index, device=edges.device)
         else:
-            mask = luz.batchwise_mask(batch, edge_index)
+            mask = luz.batchwise_mask(batch, edge_index, device=edges.device)
 
         s, r = edge_index
-
         q = self.query(self.concat(nodes, u[batch]))
         k = self.key(self.concat(nodes[s], u[batch[s]]))
         v = self.value(self.concat(edges, u[batch[s]]))
@@ -496,7 +495,7 @@ class GraphConvAttention(torch.nn.Module):
             Shape: :math:`(N_{batch},N_v)`
         """
         pre_attn = self.lin(self.gcn(nodes, edge_index)).t()
-        M = luz.batchwise_mask(batch)
+        M = luz.batchwise_mask(batch, device=nodes.device)
         attn = luz.masked_softmax(pre_attn, M, dim=1)
 
         return attn
@@ -658,8 +657,8 @@ class MultiheadEdgeAttention(torch.nn.Module):
         """
         super().__init__()
         self.concat = luz.Concatenate(dim=1)
-        self.heads = []
-        self.gates = []
+        self.heads = torch.nn.ModuleList()
+        self.gates = torch.nn.ModuleList()
 
         for _ in range(num_heads):
             h = EdgeAttention(d_v, d_e, d_u, d_attn, nodewise)

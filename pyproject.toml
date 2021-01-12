@@ -16,7 +16,7 @@ homepage = "https://github.com/kijanac/luz"
 name = "luz"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "3.8"
 matplotlib = "^3.3.2"
 torch = "^1.7.0"
 networkx = "^2.5"
