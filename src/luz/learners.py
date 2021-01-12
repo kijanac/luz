@@ -6,6 +6,8 @@ import torch
 
 __all__ = ["Learner"]
 
+Device = Union[str, torch.device]
+
 
 class Learner:
     def __init__(
@@ -19,10 +21,10 @@ class Learner:
 
         Parameters
         ----------
-        trainer : luz.Trainer
+        trainer
             Training algorithm.
-        cls : Type[torch.nn.Module]
-            Predictor class.
+        cls
+            Module class.
         """
         self.cls = cls
         self.trainer = trainer
@@ -32,7 +34,7 @@ class Learner:
     def learn(
         self,
         dataset: luz.Dataset,
-        device: Union[str, torch.device],
+        device: Device,
         val_dataset: Optional[luz.Dataset] = None,
         test_dataset: Optional[luz.Dataset] = None,
     ) -> luz.Score:
@@ -40,14 +42,14 @@ class Learner:
 
         Parameters
         ----------
-        dataset : luz.Dataset
+        dataset
             Training dataset used to learn a predictor.
-        device : Union[str, torch.device]
+        device
             Device to use for learning.
-        val_dataset : luz.Dataset, optional
-            Validation dataset, by default None
-        test_dataset : luz.Dataset, optional
-            Test dataset, by default None
+        val_dataset
+            Validation dataset, by default None.
+        test_dataset
+            Test dataset, by default None.
 
         Returns
         -------
