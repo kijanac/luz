@@ -1,16 +1,19 @@
 from __future__ import annotations
 from typing import Callable, Iterable, Optional, Tuple, Union
 
-__all__ = ["Trainer", "SupervisedTrainer"]
-
+from abc import ABC, abstractmethod
 import luz
 import torch
 
+__all__ = ["Trainer", "SupervisedTrainer"]
+
+
+Device = Union[str, torch.device]
 Loss = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 ProcessBatch = Callable[[luz.Data], Tuple[torch.Tensor, Optional[torch.Tensor]]]
 
 
-class Trainer:
+class Trainer(ABC):
     def __init__(
         self,
         loss: Optional[Loss] = None,
@@ -58,7 +61,7 @@ class Trainer:
         self,
         predictor: luz.Predictor,
         dataset: luz.Dataset,
-        device: Union[str, torch.device],
+        device: Device,
         train: bool,
         val_dataset: Optional[luz.Dataset] = None,
         early_stopping: Optional[bool] = False,
@@ -192,9 +195,7 @@ class Trainer:
 
             return running_loss / len(loader)
 
-    def migrate(
-        self, predictor: luz.Predictor, device: Union[str, torch.device]
-    ) -> None:
+    def migrate(self, predictor: luz.Predictor, device: Device) -> None:
         predictor.to(device=device)
 
     def backward(self, loss: torch.Tensor) -> None:
@@ -203,6 +204,17 @@ class Trainer:
     def optimizer_step(self, optimizer: torch.optim.Optimizer) -> None:
         optimizer.step()
         optimizer.zero_grad()
+
+    @abstractmethod
+    def run_batch(
+        self,
+        predictor: luz.Predictor,
+        data: torch.Tensor,
+        target: torch.Tensor,
+        device: Device,
+        optimizer: Optional[torch.optim.Optimizer] = None,
+    ) -> float:
+        pass
 
 
 class SupervisedTrainer(Trainer):
@@ -228,7 +240,7 @@ class SupervisedTrainer(Trainer):
         predictor: luz.Predictor,
         data: torch.Tensor,
         target: torch.Tensor,
-        device: Union[str, torch.device],
+        device: Device,
         optimizer: Optional[torch.optim.Optimizer] = None,
     ) -> float:
         """Run training algorithm on a single batch.
