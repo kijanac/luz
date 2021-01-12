@@ -87,19 +87,42 @@ class Data:
     def __init__(
         self, x: torch.Tensor, y: torch.Tensor = None, **kwargs: torch.Tensor
     ) -> None:
+        """Data containing one or more tensors.
+
+        Parameters
+        ----------
+        x
+            Primary data tensor.
+        y
+            Label tensor, by default None.
+        **kwargs
+            Additional data tensors.
+        """
         self.d = {"x": x, "y": y, **kwargs}
 
         for k, v in dict(x=x, y=y, **kwargs).items():
             setattr(self, k, v)
 
     @property
-    def keys(self):
+    def keys(self) -> None:
         return self.d.keys()
 
-    def __getitem__(self, k: str) -> Any:
+    def __getitem__(self, k: str) -> torch.Tensor:
         return self.d[k]
 
     def to(self, device: Union[str, torch.device]) -> luz.Data:
+        """Migrate tensors to device. Modifies Data object in-place.
+
+        Parameters
+        ----------
+        device
+            Target device.
+
+        Returns
+        -------
+        luz.Data
+            Migrated Data.
+        """
         for k, v in self.d.items():
             if torch.is_tensor(v):
                 self.d[k] = v.to(device)
@@ -122,7 +145,7 @@ class BaseDataset:
 
     def use_collate(
         self, collate: Callable[Iterable[luz.Data], luz.Data]
-    ) -> luz.BaseDataset:
+    ) -> luz._BaseDataset:
         self._collate = collate
         return self
 
@@ -134,6 +157,27 @@ class BaseDataset:
         pin_memory: Optional[bool] = True,
         transform: Optional[luz.Transform] = None,
     ) -> torch.utils.data.Dataloader:
+        """Generate Dataloader.
+
+        Parameters
+        ----------
+        batch_size
+            Batch size, by default 1.
+        shuffle
+            If True, shuffle dataset; by default True.
+        num_workers
+            Number of workers, by default 1.
+        pin_memory
+            If True, put fetched tensors in pinned memory; by default True.
+        transform
+            Data transform, by default None.
+
+        Returns
+        -------
+        torch.utils.data.Dataloader
+            Generated Dataloader.
+        """
+
         def f(batch):
             return transform(self._collate(batch))
 
@@ -150,9 +194,33 @@ class BaseDataset:
         return ConcatDataset([self, other])
 
     def subset(self, indices: Iterable[int]) -> luz.Subset:
+        """Generate subset of this Dataset.
+
+        Parameters
+        ----------
+        indices
+            Indices used to select elements of the subset.
+
+        Returns
+        -------
+        luz.Subset
+            Generated subset.
+        """
         return Subset(dataset=self, indices=indices)
 
     def random_split(self, lengths: Iterable[int]) -> Tuple[BaseDataset]:
+        """Randomly split Dataset into multiple subsets of given lengths.
+
+        Parameters
+        ----------
+        lengths
+            Lengths of random subsets.
+
+        Returns
+        -------
+        Tuple[BaseDataset]
+            Generated subsets.
+        """
         # adapted from
         # https://pytorch.org/docs/stable/_modules/torch/utils/data/dataset.html#random_split
         indices = torch.randperm(sum(lengths)).tolist()
