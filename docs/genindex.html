@@ -187,6 +187,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.handlers.html#luz.handlers.Accuracy">Accuracy (class in luz.handlers)</a>
 </li>
+      <li><a href="luz.handlers.html#luz.handlers.ActualVsPredicted">ActualVsPredicted (class in luz.handlers)</a>
+</li>
       <li><a href="luz.modules.html#luz.modules.AdditiveAttention">AdditiveAttention (class in luz.modules)</a>
 </li>
   </ul></td>
@@ -210,6 +212,8 @@
       <li><a href="luz.handlers.html#luz.handlers.Accuracy.batch_ended">batch_ended() (Accuracy method)</a>
 
       <ul>
+        <li><a href="luz.handlers.html#luz.handlers.ActualVsPredicted.batch_ended">(ActualVsPredicted method)</a>
+</li>
         <li><a href="luz.handlers.html#luz.handlers.FBeta.batch_ended">(FBeta method)</a>
 </li>
         <li><a href="luz.handlers.html#luz.handlers.Handler.batch_ended">(Handler method)</a>
@@ -221,10 +225,10 @@
       </ul></li>
       <li><a href="luz.events.html#luz.events.Event.BATCH_STARTED">BATCH_STARTED (Event attribute)</a>
 </li>
-      <li><a href="luz.handlers.html#luz.handlers.Handler.batch_started">batch_started() (Handler method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.handlers.html#luz.handlers.Handler.batch_started">batch_started() (Handler method)</a>
+</li>
       <li><a href="luz.utils.html#luz.utils.batchwise_edge_mean">batchwise_edge_mean() (in module luz.utils)</a>
 </li>
       <li><a href="luz.utils.html#luz.utils.batchwise_edge_sum">batchwise_edge_sum() (in module luz.utils)</a>
@@ -242,11 +246,7 @@
       <li><a href="luz.tuners.html#luz.tuners.Tuner.best_score">best_score() (Tuner property)</a>
 </li>
       <li><a href="luz.optimizer.html#luz.optimizer.Optimizer.builder">builder() (Optimizer static method)</a>
-
-      <ul>
-        <li><a href="luz.predictors.html#luz.predictors.Predictor.builder">(Predictor class method)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -345,7 +345,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.predictors.html#luz.predictors.Predictor.eval">eval() (Predictor method)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.eval">eval() (Module method)</a>
 </li>
       <li><a href="luz.events.html#luz.events.Event">Event (class in luz.events)</a>
 </li>
@@ -388,11 +388,7 @@
 </li>
         <li><a href="luz.modules.html#luz.modules.MaskedSoftmax.forward">(MaskedSoftmax method)</a>
 </li>
-        <li><a href="luz.modules.html#luz.modules.Module.forward">(Module method)</a>
-</li>
         <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention.forward">(MultiheadEdgeAttention method)</a>
-</li>
-        <li><a href="luz.predictors.html#luz.predictors.Predictor.forward">(Predictor method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Reshape.forward">(Reshape method)</a>
 </li>
@@ -407,8 +403,6 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.tuners.html#luz.tuners.Tuner.get_sample">get_sample() (Tuner method)</a>
-</li>
       <li><a href="luz.datasets.html#luz.datasets.graph_collate">graph_collate() (in module luz.datasets)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.GraphConv">GraphConv (class in luz.modules)</a>
@@ -467,9 +461,9 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.learners.html#luz.learners.Learner.learn">learn() (Learner method)</a>
+      <li><a href="luz.learner.html#luz.learner.Learner.learn">learn() (Learner method)</a>
 </li>
-      <li><a href="luz.learners.html#luz.learners.Learner">Learner (class in luz.learners)</a>
+      <li><a href="luz.learner.html#luz.learner.Learner">Learner (class in luz.learner)</a>
 </li>
       <li><a href="luz.optimizer.html#luz.optimizer.Optimizer.link">link() (Optimizer method)</a>
 </li>
@@ -512,15 +506,15 @@
         <li><a href="luz.handlers.html#module-luz.handlers">module</a>
 </li>
       </ul></li>
-      <li>
-    luz.learners
-
-      <ul>
-        <li><a href="luz.learners.html#module-luz.learners">module</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    luz.learner
+
+      <ul>
+        <li><a href="luz.learner.html#module-luz.learner">module</a>
+</li>
+      </ul></li>
       <li>
     luz.modules
 
@@ -533,13 +527,6 @@
 
       <ul>
         <li><a href="luz.optimizer.html#module-luz.optimizer">module</a>
-</li>
-      </ul></li>
-      <li>
-    luz.predictors
-
-      <ul>
-        <li><a href="luz.predictors.html#module-luz.predictors">module</a>
 </li>
       </ul></li>
       <li>
@@ -593,6 +580,8 @@
 </li>
       <li><a href="luz.utils.html#luz.utils.mkdir_safe">mkdir_safe() (in module luz.utils)</a>
 </li>
+      <li><a href="luz.scorers.html#luz.scorers.Score.model">model (Score attribute)</a>
+</li>
       <li>
     module
 
@@ -607,13 +596,11 @@
 </li>
         <li><a href="luz.handlers.html#module-luz.handlers">luz.handlers</a>
 </li>
-        <li><a href="luz.learners.html#module-luz.learners">luz.learners</a>
+        <li><a href="luz.learner.html#module-luz.learner">luz.learner</a>
 </li>
         <li><a href="luz.modules.html#module-luz.modules">luz.modules</a>
 </li>
         <li><a href="luz.optimizer.html#module-luz.optimizer">luz.optimizer</a>
-</li>
-        <li><a href="luz.predictors.html#module-luz.predictors">luz.predictors</a>
 </li>
         <li><a href="luz.scorers.html#module-luz.scorers">luz.scorers</a>
 </li>
@@ -672,15 +659,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.tuners.html#luz.tuners.Tuner.pin">pin() (Tuner method)</a>
 </li>
-      <li><a href="luz.transforms.html#luz.transforms.PowerSeries">PowerSeries (class in luz.transforms)</a>
-</li>
-      <li><a href="luz.predictors.html#luz.predictors.Predictor.predict">predict() (Predictor method)</a>
+      <li><a href="luz.handlers.html#luz.handlers.PlotHistory">PlotHistory (class in luz.handlers)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.predictors.html#luz.predictors.Predictor">Predictor (class in luz.predictors)</a>
+      <li><a href="luz.transforms.html#luz.transforms.PowerSeries">PowerSeries (class in luz.transforms)</a>
 </li>
-      <li><a href="luz.scorers.html#luz.scorers.Score.predictor">predictor (Score attribute)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.predict">predict() (Module method)</a>
 </li>
       <li><a href="luz.handlers.html#luz.handlers.Progress">Progress (class in luz.handlers)</a>
 </li>
@@ -699,7 +684,11 @@
       <li><a href="luz.trainers.html#luz.trainers.Trainer.run">run() (Trainer method)</a>
 </li>
       <li><a href="luz.trainers.html#luz.trainers.SupervisedTrainer.run_batch">run_batch() (SupervisedTrainer method)</a>
+
+      <ul>
+        <li><a href="luz.trainers.html#luz.trainers.Trainer.run_batch">(Trainer method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -754,29 +743,27 @@
 </li>
       <li><a href="luz.events.html#luz.events.Event.TESTING_ENDED">TESTING_ENDED (Event attribute)</a>
 </li>
-      <li><a href="luz.handlers.html#luz.handlers.Handler.testing_ended">testing_ended() (Handler method)</a>
+      <li><a href="luz.handlers.html#luz.handlers.ActualVsPredicted.testing_ended">testing_ended() (ActualVsPredicted method)</a>
 
       <ul>
+        <li><a href="luz.handlers.html#luz.handlers.Handler.testing_ended">(Handler method)</a>
+</li>
         <li><a href="luz.handlers.html#luz.handlers.Progress.testing_ended">(Progress method)</a>
 </li>
       </ul></li>
       <li><a href="luz.events.html#luz.events.Event.TESTING_STARTED">TESTING_STARTED (Event attribute)</a>
 </li>
-      <li><a href="luz.handlers.html#luz.handlers.Handler.testing_started">testing_started() (Handler method)</a>
+      <li><a href="luz.handlers.html#luz.handlers.ActualVsPredicted.testing_started">testing_started() (ActualVsPredicted method)</a>
 
       <ul>
+        <li><a href="luz.handlers.html#luz.handlers.Handler.testing_started">(Handler method)</a>
+</li>
         <li><a href="luz.handlers.html#luz.handlers.Progress.testing_started">(Progress method)</a>
 </li>
       </ul></li>
       <li><a href="luz.handlers.html#luz.handlers.Timer">Timer (class in luz.handlers)</a>
 </li>
       <li><a href="luz.datasets.html#luz.datasets.Data.to">to() (Data method)</a>
-
-      <ul>
-        <li><a href="luz.predictors.html#luz.predictors.Predictor.to">(Predictor method)</a>
-</li>
-      </ul></li>
-      <li><a href="luz.predictors.html#luz.predictors.Predictor.train">train() (Predictor method)</a>
 </li>
       <li><a href="luz.trainers.html#luz.trainers.Trainer">Trainer (class in luz.trainers)</a>
 </li>
@@ -827,6 +814,8 @@
       <li><a href="luz.handlers.html#luz.handlers.Handler.training_ended">training_ended() (Handler method)</a>
 
       <ul>
+        <li><a href="luz.handlers.html#luz.handlers.PlotHistory.training_ended">(PlotHistory method)</a>
+</li>
         <li><a href="luz.handlers.html#luz.handlers.Progress.training_ended">(Progress method)</a>
 </li>
       </ul></li>
@@ -854,9 +843,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.datasets.html#luz.datasets.UnpackDataset">UnpackDataset (class in luz.datasets)</a>
 </li>
+      <li><a href="luz.modules.html#luz.modules.Unsqueeze">Unsqueeze (class in luz.modules)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.modules.html#luz.modules.Unsqueeze">Unsqueeze (class in luz.modules)</a>
+      <li><a href="luz.trainers.html#luz.trainers.Trainer.use_handlers">use_handlers() (Trainer method)</a>
 </li>
       <li><a href="luz.trainers.html#luz.trainers.Trainer.use_process">use_process() (Trainer method)</a>
 </li>

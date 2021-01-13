@@ -98,10 +98,9 @@
 <li class="toctree-l4"><a class="reference internal" href="luz.events.html">luz.events module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.flags.html">luz.flags module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.handlers.html">luz.handlers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.learners.html">luz.learners module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.learner.html">luz.learner module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.modules.html">luz.modules module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.optimizer.html">luz.optimizer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.predictors.html">luz.predictors module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.scorers.html">luz.scorers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.trainers.html">luz.trainers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.transforms.html">luz.transforms module</a></li>
@@ -191,15 +190,52 @@
 <dt id="luz.tuners.BayesianTuner">
 <em class="property">class </em><code class="sig-name descname">BayesianTuner</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_iterations</span></em>, <em class="sig-param"><span class="n">scorer</span></em>, <em class="sig-param"><span class="n">seed_loop</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.BayesianTuner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.tuners.Tuner" title="luz.tuners.Tuner"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.tuners.Tuner</span></code></a></p>
+<p>Hyperparameter tuning algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_iterations</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of tuning iterations.</p></li>
+<li><p><strong>scorer</strong> (<a class="reference internal" href="luz.scorers.html#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scorer</span></code></a>) – Algorithm to score each set of hyperparameters.</p></li>
+<li><p><strong>seed_loop</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If True seed each iteration, by default False.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="luz.tuners.BayesianTuner.choose">
 <code class="sig-name descname">choose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">choices</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.BayesianTuner.choose" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Choose hyperparameter value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>choices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Possible hyperparameter values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Chosen hyperparameter value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="luz.tuners.BayesianTuner.sample">
 <code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.BayesianTuner.sample" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sample hyperparameter value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Hyperparameter lower bound.</p></li>
+<li><p><strong>upper</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Hyperparameter upper bound.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sampled hyperparameter value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[int, float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -207,15 +243,52 @@
 <dt id="luz.tuners.GridTuner">
 <em class="property">class </em><code class="sig-name descname">GridTuner</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_iterations</span></em>, <em class="sig-param"><span class="n">scorer</span></em>, <em class="sig-param"><span class="n">seed_loop</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.GridTuner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.tuners.Tuner" title="luz.tuners.Tuner"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.tuners.Tuner</span></code></a></p>
+<p>Hyperparameter tuning algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_iterations</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of tuning iterations.</p></li>
+<li><p><strong>scorer</strong> (<a class="reference internal" href="luz.scorers.html#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scorer</span></code></a>) – Algorithm to score each set of hyperparameters.</p></li>
+<li><p><strong>seed_loop</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If True seed each iteration, by default False.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="luz.tuners.GridTuner.choose">
 <code class="sig-name descname">choose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">choices</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.GridTuner.choose" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Choose hyperparameter value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>choices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Possible hyperparameter values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Chosen hyperparameter value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="luz.tuners.GridTuner.sample">
 <code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.GridTuner.sample" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sample hyperparameter value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Hyperparameter lower bound.</p></li>
+<li><p><strong>upper</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Hyperparameter upper bound.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sampled hyperparameter value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[int, float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -223,22 +296,69 @@
 <dt id="luz.tuners.RandomSearchTuner">
 <em class="property">class </em><code class="sig-name descname">RandomSearchTuner</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_iterations</span></em>, <em class="sig-param"><span class="n">scorer</span></em>, <em class="sig-param"><span class="n">seed_loop</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.RandomSearchTuner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.tuners.Tuner" title="luz.tuners.Tuner"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.tuners.Tuner</span></code></a></p>
+<p>Hyperparameter tuning algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_iterations</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of tuning iterations.</p></li>
+<li><p><strong>scorer</strong> (<a class="reference internal" href="luz.scorers.html#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scorer</span></code></a>) – Algorithm to score each set of hyperparameters.</p></li>
+<li><p><strong>seed_loop</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If True seed each iteration, by default False.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="luz.tuners.RandomSearchTuner.choose">
 <code class="sig-name descname">choose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">choices</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.RandomSearchTuner.choose" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Choose hyperparameter value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>choices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Possible hyperparameter values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Chosen hyperparameter value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="luz.tuners.RandomSearchTuner.sample">
 <code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.RandomSearchTuner.sample" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sample hyperparameter value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Hyperparameter lower bound.</p></li>
+<li><p><strong>upper</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Hyperparameter upper bound.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sampled hyperparameter value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[int, float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.tuners.Tuner">
 <em class="property">class </em><code class="sig-name descname">Tuner</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_iterations</span></em>, <em class="sig-param"><span class="n">scorer</span></em>, <em class="sig-param"><span class="n">seed_loop</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.Tuner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Hyperparameter tuning algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_iterations</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of tuning iterations.</p></li>
+<li><p><strong>scorer</strong> (<a class="reference internal" href="luz.scorers.html#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scorer</span></code></a>) – Algorithm to score each set of hyperparameters.</p></li>
+<li><p><strong>seed_loop</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If True seed each iteration, by default False.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="luz.tuners.Tuner.best_hyperparameters">
 <em class="property">property </em><code class="sig-name descname">best_hyperparameters</code><a class="headerlink" href="#luz.tuners.Tuner.best_hyperparameters" title="Permalink to this definition">¶</a></dt>
@@ -251,8 +371,20 @@
 
 <dl class="py method">
 <dt id="luz.tuners.Tuner.choose">
-<code class="sig-name descname">choose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">choices</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.Tuner.choose" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">abstract </em><code class="sig-name descname">choose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">choices</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.Tuner.choose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose hyperparameter value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>choices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Possible hyperparameter values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Chosen hyperparameter value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="luz.tuners.Tuner.conditional">
@@ -263,11 +395,6 @@
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt id="luz.tuners.Tuner.get_sample">
-<code class="sig-name descname">get_sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.Tuner.get_sample" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.tuners.Tuner.hp_choose">
@@ -301,13 +428,33 @@
 
 <dl class="py method">
 <dt id="luz.tuners.Tuner.sample">
-<code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.Tuner.sample" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">abstract </em><code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span></em>, <em class="sig-param"><span class="n">upper</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.Tuner.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample hyperparameter value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Hyperparameter lower bound.</p></li>
+<li><p><strong>upper</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Hyperparameter upper bound.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sampled hyperparameter value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[int, float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="luz.tuners.Tuner.score">
 <code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.tuners.Tuner.score" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="luz.scorers.html#luz.scorers.Score" title="luz.scorers.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">Score</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="luz.tuners.Tuner.tune">

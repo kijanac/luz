@@ -11,10 +11,9 @@ Submodules
    luz.events
    luz.flags
    luz.handlers
-   luz.learners
+   luz.learner
    luz.modules
    luz.optimizer
-   luz.predictors
    luz.scorers
    luz.trainers
    luz.transforms

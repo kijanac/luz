@@ -40,7 +40,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="luz.trainers module" href="luz.trainers.html" />
-    <link rel="prev" title="luz.predictors module" href="luz.predictors.html" /> 
+    <link rel="prev" title="luz.optimizer module" href="luz.optimizer.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -98,10 +98,9 @@
 <li class="toctree-l4"><a class="reference internal" href="luz.events.html">luz.events module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.flags.html">luz.flags module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.handlers.html">luz.handlers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.learners.html">luz.learners module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.learner.html">luz.learner module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.modules.html">luz.modules module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.optimizer.html">luz.optimizer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.predictors.html">luz.predictors module</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">luz.scorers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.trainers.html">luz.trainers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.transforms.html">luz.transforms module</a></li>
@@ -202,18 +201,18 @@
 </dl>
 <dl class="py method">
 <dt id="luz.scorers.CrossValidationScorer.score">
-<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidationScorer.score" title="Permalink to this definition">¶</a></dt>
-<dd><p>Learn a predictor and score it using cross validation.</p>
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidationScorer.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Learn a model and score it using cross validation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>learner</strong> (<a class="reference internal" href="luz.learners.html#luz.learners.Learner" title="luz.learners.Learner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Learner</span></code></a>) – Learning algorithm to be scored.</p></li>
+<li><p><strong>learner</strong> (<a class="reference internal" href="luz.learner.html#luz.learner.Learner" title="luz.learner.Learner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Learner</span></code></a>) – Learning algorithm to be scored.</p></li>
 <li><p><strong>dataset</strong> (<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>) – Dataset to use for scoring.</p></li>
-<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Device to use for scoring.</p></li>
+<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – Device to use for scoring, by default “cpu”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Learned predictor and cross-validation score.</p>
+<dd class="field-even"><p>Learned model and cross-validation score.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>luz.Score</p>
@@ -225,28 +224,31 @@
 
 <dl class="py class">
 <dt id="luz.scorers.HoldoutValidationScorer">
-<em class="property">class </em><code class="sig-name descname">HoldoutValidationScorer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">holdout_fraction</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.HoldoutValidationScorer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">HoldoutValidationScorer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_fraction</span></em>, <em class="sig-param"><span class="n">val_fraction</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.HoldoutValidationScorer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.scorers.Scorer</span></code></a></p>
 <p>Object which scores a learning algorithm using the holdout method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>holdout_fraction</strong> (<em>float</em>) – Fraction of data to use as a test set for scoring.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>test_fraction</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Fraction of data to use as a test set for scoring.</p></li>
+<li><p><strong>val_fraction</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Fraction of data to use as a validation set, by defaul tNone.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt id="luz.scorers.HoldoutValidationScorer.score">
-<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.HoldoutValidationScorer.score" title="Permalink to this definition">¶</a></dt>
-<dd><p>Learn a predictor and estimate its error using the holdout method.</p>
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.HoldoutValidationScorer.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Learn a model and estimate its error using the holdout method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>learner</strong> (<em>luz.Learner</em>) – Learning algorithm to be scored.</p></li>
-<li><p><strong>dataset</strong> (<em>luz.Dataset</em>) – Dataset to use for scoring.</p></li>
-<li><p><strong>device</strong> (<em>Union</em><em>[</em><em>torch.device</em><em>, </em><em>str</em><em>]</em>) – Device to use for scoring.</p></li>
+<li><p><strong>learner</strong> (<a class="reference internal" href="luz.learner.html#luz.learner.Learner" title="luz.learner.Learner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Learner</span></code></a>) – Learning algorithm to be scored.</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>) – Dataset to use for scoring.</p></li>
+<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – Device to use for scoring, by default “cpu”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Learned predictor and holdout score.</p>
+<dd class="field-even"><p>Learned model and holdout score.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>luz.Score</p>
@@ -258,12 +260,12 @@
 
 <dl class="py class">
 <dt id="luz.scorers.Score">
-<em class="property">class </em><code class="sig-name descname">Score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predictor</span></em>, <em class="sig-param"><span class="n">score</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Score" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">score</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
-<p>Create new instance of Score(predictor, score)</p>
+<p>Create new instance of Score(model, score)</p>
 <dl class="py attribute">
-<dt id="luz.scorers.Score.predictor">
-<code class="sig-name descname">predictor</code><a class="headerlink" href="#luz.scorers.Score.predictor" title="Permalink to this definition">¶</a></dt>
+<dt id="luz.scorers.Score.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#luz.scorers.Score.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
@@ -278,10 +280,10 @@
 <dl class="py class">
 <dt id="luz.scorers.Scorer">
 <em class="property">class </em><code class="sig-name descname">Scorer</code><a class="headerlink" href="#luz.scorers.Scorer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <dl class="py method">
 <dt id="luz.scorers.Scorer.score">
-<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Scorer.score" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Scorer.score" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#luz.scorers.Score" title="luz.scorers.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">Score</span></code></a></p>
@@ -300,7 +302,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="luz.trainers.html" class="btn btn-neutral float-right" title="luz.trainers module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="luz.predictors.html" class="btn btn-neutral float-left" title="luz.predictors module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="luz.optimizer.html" class="btn btn-neutral float-left" title="luz.optimizer module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

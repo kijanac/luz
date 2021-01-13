@@ -97,10 +97,9 @@
 <li class="toctree-l4"><a class="reference internal" href="luz.events.html">luz.events module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.flags.html">luz.flags module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.handlers.html">luz.handlers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.learners.html">luz.learners module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.learner.html">luz.learner module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.modules.html">luz.modules module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.optimizer.html">luz.optimizer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.predictors.html">luz.predictors module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.scorers.html">luz.scorers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.trainers.html">luz.trainers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.transforms.html">luz.transforms module</a></li>
@@ -207,7 +206,7 @@ Shape: <span class="math notranslate nohighlight">\((N_v,N_v)\)</span></p>
 
 <dl class="py function">
 <dt id="luz.utils.batchwise_edge_mean">
-<code class="sig-name descname">batchwise_edge_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_edge_mean" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batchwise_edge_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_edge_mean" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
@@ -217,7 +216,7 @@ Shape: <span class="math notranslate nohighlight">\((N_v,N_v)\)</span></p>
 
 <dl class="py function">
 <dt id="luz.utils.batchwise_edge_sum">
-<code class="sig-name descname">batchwise_edge_sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_edge_sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batchwise_edge_sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_edge_sum" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
@@ -227,7 +226,7 @@ Shape: <span class="math notranslate nohighlight">\((N_v,N_v)\)</span></p>
 
 <dl class="py function">
 <dt id="luz.utils.batchwise_mask">
-<code class="sig-name descname">batchwise_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">edge_index</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batchwise_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">edge_index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a mask for batchwise aggregation of graph nodes or edges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -250,7 +249,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},N_v)\)</span> if 
 
 <dl class="py function">
 <dt id="luz.utils.batchwise_node_mean">
-<code class="sig-name descname">batchwise_node_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_node_mean" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batchwise_node_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_node_mean" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
@@ -260,7 +259,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},N_v)\)</span> if 
 
 <dl class="py function">
 <dt id="luz.utils.batchwise_node_sum">
-<code class="sig-name descname">batchwise_node_sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_node_sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batchwise_node_sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.batchwise_node_sum" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
@@ -375,7 +374,7 @@ Shape: <span class="math notranslate nohighlight">\((N_v,)\)</span></p>
 
 <dl class="py function">
 <dt id="luz.utils.nodewise_edge_mean">
-<code class="sig-name descname">nodewise_edge_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.nodewise_edge_mean" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">nodewise_edge_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.nodewise_edge_mean" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
@@ -385,7 +384,7 @@ Shape: <span class="math notranslate nohighlight">\((N_v,)\)</span></p>
 
 <dl class="py function">
 <dt id="luz.utils.nodewise_edge_sum">
-<code class="sig-name descname">nodewise_edge_sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.nodewise_edge_sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">nodewise_edge_sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.nodewise_edge_sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sum all incoming edge features for each node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -408,7 +407,7 @@ Shape: <span class="math notranslate nohighlight">\((N_v,d_e)\)</span></p>
 
 <dl class="py function">
 <dt id="luz.utils.nodewise_mask">
-<code class="sig-name descname">nodewise_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.nodewise_mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">nodewise_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.utils.nodewise_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a mask for nodewise aggregation of incoming graph edges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
