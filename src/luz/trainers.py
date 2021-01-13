@@ -109,8 +109,9 @@ class Trainer(ABC):
                 predictor=predictor,
                 optimizer=optimizer,
                 loader=loader,
+                train_history=[],
+                val_history=[],
             )
-            self._state.update(val_history=[])
             if early_stopping:
                 self._state.update(patience=5)
 
@@ -158,6 +159,9 @@ class Trainer(ABC):
                     torch.cuda.synchronize()
 
                 self._call_event(luz.Event.BATCH_ENDED, handlers)
+
+            if train:
+                self._state["train_history"].append(running_loss)
 
             self._call_event(luz.Event.EPOCH_ENDED, handlers)
 

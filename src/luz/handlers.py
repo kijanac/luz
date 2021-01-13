@@ -8,9 +8,8 @@ Contains callback objects which perform various functions during the training pr
 # FIXME: Type annotate every handler here
 
 from __future__ import annotations
-from typing import Any, Optional, Union
+from typing import Any, Iterable, Optional, Union
 
-from abc import ABC, abstractmethod
 import datetime
 import luz
 import matplotlib.pyplot as plt
@@ -30,42 +29,35 @@ __all__ = [
     "FBeta",
     # "LogToFile",
     "Loss",
+    "PlotHistory",
     "Progress",
     # "RVP",
     "Timer",
 ]
 
 
-class Handler(ABC):
-    @abstractmethod
+class Handler:
     def batch_started(self, **kwargs: Any):
         pass
 
-    @abstractmethod
     def batch_ended(self, **kwargs: Any):
         pass
 
-    @abstractmethod
     def epoch_started(self, **kwargs: Any):
         pass
 
-    @abstractmethod
     def epoch_ended(self, **kwargs: Any):
         pass
 
-    @abstractmethod
     def testing_started(self, **kwargs: Any):
         pass
 
-    @abstractmethod
     def testing_ended(self, **kwargs: Any):
         pass
 
-    @abstractmethod
     def training_started(self, **kwargs: Any):
         pass
 
-    @abstractmethod
     def training_ended(self, **kwargs: Any):
         pass
 
@@ -390,6 +382,28 @@ class Loss(Handler):
                 print(
                     f"[Epoch {epoch}] Average running loss: {self.running_loss / cur}."
                 )
+
+
+class PlotHistory(Handler):
+    def training_ended(
+        self,
+        train_history: Iterable[float],
+        val_history: Iterable[float],
+        **kwargs: Any,
+    ) -> None:
+        x = range(1, len(train_history) + 1)
+        fig, ax1 = plt.subplots()
+        ax1.set_xlabel("Epoch")
+        (line1,) = ax1.plot(x, train_history, color="tab:blue")
+
+        ax2 = ax1.twinx()
+        (line2,) = ax2.plot(x, val_history, color="tab:orange")
+
+        plt.title("Loss history")
+        plt.legend((line1, line2), ("Training loss", "Validation loss"))
+
+        fig.tight_layout()
+        plt.show()
 
 
 class Progress(Handler):
