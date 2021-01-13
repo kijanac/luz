@@ -12,6 +12,12 @@ Luz Module
 
 Longer description coming soon!
 
+Basic usage: custom modules with luz.Module functionality.
+
+Next level: simplified training algorithms with transforms and handlers.
+
+Next level: straightforward hyperparameter tuning with various scoring mechanisms.
+
 ---------------
 Getting Started
 ---------------

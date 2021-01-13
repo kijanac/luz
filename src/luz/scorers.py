@@ -5,13 +5,13 @@ from abc import ABC, abstractmethod
 import collections
 import contextlib
 import math
-import numpy as np
 import torch
 import luz
 
 __all__ = ["Score", "Scorer", "CrossValidationScorer", "HoldoutValidationScorer"]
 
-Score = collections.namedtuple("Score", ["predictor", "score"])
+Device = Union[str, torch.device]
+Score = collections.namedtuple("Score", ["model", "score"])
 
 
 class Scorer(ABC):
@@ -43,9 +43,9 @@ class CrossValidationScorer(Scorer):
         self,
         learner: luz.Learner,
         dataset: luz.Dataset,
-        device: Union[torch.device, str],
+        device: Optional[Device] = "cpu",
     ) -> luz.Score:
-        """Learn a predictor and score it using cross validation.
+        """Learn a model and score it using cross validation.
 
         Parameters
         ----------
@@ -54,12 +54,12 @@ class CrossValidationScorer(Scorer):
         dataset
             Dataset to use for scoring.
         device
-            Device to use for scoring.
+            Device to use for scoring, by default "cpu".
 
         Returns
         -------
         luz.Score
-            Learned predictor and cross-validation score.
+            Learned model and cross-validation score.
         """
         test_losses = []
         for fit_dataset, test_dataset in self._split_dataset(dataset):
@@ -74,7 +74,7 @@ class CrossValidationScorer(Scorer):
 
         score = sum(test_losses) / self.num_folds
 
-        return Score(learner.learn(dataset=dataset, device=device).predictor, score)
+        return Score(learner.learn(dataset=dataset, device=device).model, score)
 
     def _split_dataset(
         self, dataset: luz.Dataset
@@ -95,23 +95,28 @@ class CrossValidationScorer(Scorer):
 
 
 class HoldoutValidationScorer(Scorer):
-    def __init__(self, holdout_fraction: float) -> None:
+    def __init__(
+        self, test_fraction: float, val_fraction: Optional[float] = None
+    ) -> None:
         """Object which scores a learning algorithm using the holdout method.
 
         Parameters
         ----------
-        holdout_fraction
+        test_fraction
             Fraction of data to use as a test set for scoring.
+        val_fraction
+            Fraction of data to use as a validation set, by defaul tNone.
         """
-        self.holdout_fraction = holdout_fraction
+        self.test_fraction = test_fraction
+        self.val_fraction = val_fraction
 
     def score(
         self,
         learner: luz.Learner,
         dataset: luz.Dataset,
-        device: Union[torch.device, str],
+        device: Optional[Device] = "cpu",
     ) -> luz.Score:
-        """Learn a predictor and estimate its error using the holdout method.
+        """Learn a model and estimate its error using the holdout method.
 
         Parameters
         ----------
@@ -120,25 +125,31 @@ class HoldoutValidationScorer(Scorer):
         dataset
             Dataset to use for scoring.
         device
-            Device to use for scoring.
+            Device to use for scoring, by default "cpu".
 
         Returns
         -------
         luz.Score
-            Learned predictor and holdout score.
+            Learned model and holdout score.
         """
-        fit_dataset, test_dataset = self._split_dataset(dataset=dataset)
+        n = len(dataset)
+        n_test = round(self.test_fraction * n)
 
-        return learner.learn(
-            dataset=fit_dataset, test_dataset=test_dataset, device=device
-        )
+        if self.val_fraction is not None:
+            n_val = round(self.val_fraction * n)
+            train_dataset, val_dataset, test_dataset = dataset.random_split(
+                [n - n_val - n_test, n_val, n_test]
+            )
 
-    def _split_dataset(self, dataset: luz.Dataset) -> Tuple[luz.Dataset, luz.Dataset]:
-        lens = np.random.permutation(len(dataset))
-        ind = round(float(f"{self.holdout_fraction}e{luz.int_length(len(lens))-1}"))
-        holdout, remainder = np.split(lens, [ind])
+            return learner.learn(
+                dataset=train_dataset,
+                val_dataset=val_dataset,
+                test_dataset=test_dataset,
+                device=device,
+            )
+        else:
+            train_dataset, test_dataset = dataset.random_split([n - n_test, n_test])
 
-        fit_dataset = dataset.subset(remainder)
-        test_dataset = dataset.subset(holdout)
-
-        return fit_dataset, test_dataset
+            return learner.learn(
+                dataset=train_dataset, test_dataset=test_dataset, device=device
+            )

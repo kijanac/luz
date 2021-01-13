@@ -22,7 +22,5 @@ class Optimizer:
 
         return f
 
-    def link(self, predictor: luz.Predictor) -> torch.optim.Optimizer:
-        return self.optim_cls(
-            params=predictor.model.parameters(), *self.args, **self.kwargs
-        )
+    def link(self, model: luz.Module) -> torch.optim.Optimizer:
+        return self.optim_cls(params=model.parameters(), *self.args, **self.kwargs)

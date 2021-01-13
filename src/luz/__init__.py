@@ -2,10 +2,9 @@ from luz.datasets import *
 from luz.events import *
 from luz.flags import *
 from luz.handlers import *
-from luz.learners import *
+from luz.learner import *
 from luz.modules import *
 from luz.optimizer import *
-from luz.predictors import *
 from luz.scorers import *
 from luz.trainers import *
 from luz.transforms import *

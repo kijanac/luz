@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, Iterable, Optional
 
-import abc
+from abc import ABC, abstractmethod
 import collections
 import luz
 import networkx
@@ -32,9 +32,9 @@ class Transform:
         return luz.Data(**kw)
 
 
-class TensorTransform:
-    @abc.abstractmethod
-    def __call__(self, x):
+class TensorTransform(ABC):
+    @abstractmethod
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
         "Transform which is applied to an input tensor."
 
 

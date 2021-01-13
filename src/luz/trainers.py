@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Callable, Iterable, Optional, Tuple, Union
+from typing import Callable, Optional, Tuple, Union
 
 from abc import ABC, abstractmethod
 import luz
@@ -20,9 +20,11 @@ class Trainer(ABC):
         optimizer: Optional[luz.Optimizer] = None,
         start_epoch: Optional[int] = 1,
         stop_epoch: Optional[int] = 2,
+        early_stopping: Optional[bool] = False,
+        patience: Optional[int] = 5,
         **loader_kwargs: Union[int, bool, luz.Transform],
     ) -> None:
-        """Algorithm to train a predictor using data.
+        """Algorithm to train a model using data.
 
         Parameters
         ----------
@@ -34,17 +36,29 @@ class Trainer(ABC):
             First training epoch, by default 1
         stop_epoch
             Last training epoch, by default 2
+        early_stopping
+            If True, then use `val_dataset` for early stopping; by default False.
+            Ignored if `val_dataset` is `None`.
+        patience
+            Number of epochs of non-improving validation loss
+            before training stops early; by default 5.
+            Ignored if `early_stopping` is `False`.
+        **loader_kwargs
+            Dataset.loader kwargs.
         """
         self.loss = loss
         self.optimizer = optimizer
         self.start_epoch = start_epoch
         self.stop_epoch = stop_epoch
+        self.early_stopping = early_stopping
+        self.patience = patience
         self.loader_kwargs = loader_kwargs
+        self.handlers = []
 
         self._state = {}
 
-    def _call_event(self, event: luz.Event, handlers: Iterable[luz.Handler]) -> None:
-        for h in handlers:
+    def _call_event(self, event: luz.Event) -> None:
+        for h in self.handlers:
             getattr(h, event.name.lower())(**self._state)
 
     def use_process(self, process_batch: ProcessBatch) -> None:
@@ -57,23 +71,28 @@ class Trainer(ABC):
         """
         self._process_batch = process_batch
 
+    def use_handlers(self, *handlers: luz.Handler) -> None:
+        """Set handlers.
+
+        *handlers
+            Handlers to run.
+        """
+        self.handlers = handlers
+
     def run(
         self,
-        predictor: luz.Predictor,
+        model: luz.Module,
         dataset: luz.Dataset,
         device: Device,
         train: bool,
         val_dataset: Optional[luz.Dataset] = None,
-        early_stopping: Optional[bool] = False,
-        patience: Optional[int] = 5,
-        handlers: Optional[Iterable[luz.Handler]] = None,
     ) -> None:
         """Run training algorithm.
 
         Parameters
         ----------
-        predictor
-            Predictor to be trained.
+        model
+            Model to be trained.
         dataset
             Training data.
         device
@@ -82,23 +101,13 @@ class Trainer(ABC):
             If True, then train, else test.
         val_dataset
             Validation data, by default None.
-        early_stopping
-            If True, then use `val_dataset` for early stopping; by default False.
-            Ignored if `val_dataset` is `None`.
-        patience
-            Number of epochs of non-improving validation loss
-            before training stops early; by default 5.
-            Ignored if `early_stopping` is `False`.
-        handlers
-            Handlers to run during training, by default None.
-        """
-        handlers = tuple(handlers or [])
 
-        self.migrate(predictor, device)
+        """
+        self.migrate(model, device)
 
         if train:
             # NOTE: must come after migrate
-            optimizer = self.optimizer.link(predictor=predictor)
+            optimizer = self.optimizer.link(model=model)
 
         loader = dataset.loader(**self.loader_kwargs)
 
@@ -106,24 +115,24 @@ class Trainer(ABC):
             self._state = dict(
                 flag=luz.Flag.TRAINING,
                 trainer=self,
-                predictor=predictor,
+                model=model,
                 optimizer=optimizer,
                 loader=loader,
                 train_history=[],
                 val_history=[],
             )
-            if early_stopping:
+            if self.early_stopping:
                 self._state.update(patience=5)
 
-            self._call_event(luz.Event.TRAINING_STARTED, handlers)
+            self._call_event(luz.Event.TRAINING_STARTED)
         else:
             self._state = dict(
                 flag=luz.Flag.TESTING,
                 trainer=self,
-                predictor=predictor,
+                model=model,
                 loader=loader,
             )
-            self._call_event(luz.Event.TESTING_STARTED, handlers)
+            self._call_event(luz.Event.TESTING_STARTED)
 
         if train:
             start, stop = self.start_epoch, self.stop_epoch
@@ -134,21 +143,21 @@ class Trainer(ABC):
             running_loss = 0.0
 
             self._state.update(epoch=epoch)
-            self._call_event(luz.Event.EPOCH_STARTED, handlers)
+            self._call_event(luz.Event.EPOCH_STARTED)
 
             for i, batch in enumerate(loader):
                 data, target = self._process_batch(batch)
                 self._state.update(ind=i, data=data, target=target)
-                self._call_event(luz.Event.BATCH_STARTED, handlers)
+                self._call_event(luz.Event.BATCH_STARTED)
 
                 # migrate the input and target tensors to the appropriate device
                 data, target = data.to(device), target.to(device)
 
                 if train:
-                    self.run_batch(predictor, data, target, device, optimizer)
+                    self.run_batch(model, data, target, device, optimizer)
                 else:
-                    with predictor.eval():
-                        running_loss += self.run_batch(predictor, data, target, device)
+                    with model.eval():
+                        running_loss += self.run_batch(model, data, target, device)
                 # from https://coolnesss.github.io/2019-02-05/pytorch-gotchas
                 # All of the variables defined above are now out of scope!
                 # On CPU, they are already deallocated.
@@ -158,31 +167,31 @@ class Trainer(ABC):
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
 
-                self._call_event(luz.Event.BATCH_ENDED, handlers)
+                self._call_event(luz.Event.BATCH_ENDED)
 
             if train:
                 self._state["train_history"].append(running_loss)
 
-            self._call_event(luz.Event.EPOCH_ENDED, handlers)
+            self._call_event(luz.Event.EPOCH_ENDED)
 
             if train and val_dataset is not None:
                 val_loss = 0.0
-                with predictor.eval():
+                with model.eval():
                     for batch in val_dataset.loader(**self.loader_kwargs):
                         data, target = self._process_batch(batch)
                         # migrate the input and target tensors to the appropriate device
                         data, target = data.to(device), target.to(device)
-                        val_loss += self.run_batch(predictor, data, target, device)
+                        val_loss += self.run_batch(model, data, target, device)
 
                 print(f"[Epoch {epoch}] Validation loss: {val_loss}.")
-                if early_stopping:
+                if self.early_stopping:
                     try:
                         best_val_loss = min(self._state["val_history"])
 
                         if best_val_loss - val_loss < 0.0:  # delta_thresh
                             self._state["patience"] -= 1
                         else:
-                            self._state["patience"] = patience
+                            self._state["patience"] = self.patience
 
                         if self._state["patience"] == 0:
                             print(f"[Epoch {epoch}]: Stopping early.")
@@ -193,14 +202,14 @@ class Trainer(ABC):
                 self._state["val_history"].append(val_loss)
 
         if train:
-            self._call_event(luz.Event.TRAINING_ENDED, handlers)
+            self._call_event(luz.Event.TRAINING_ENDED)
         else:
-            self._call_event(luz.Event.TESTING_ENDED, handlers)
+            self._call_event(luz.Event.TESTING_ENDED)
 
             return running_loss / len(loader)
 
-    def migrate(self, predictor: luz.Predictor, device: Device) -> None:
-        predictor.to(device=device)
+    def migrate(self, model: luz.Module, device: Device) -> None:
+        model.to(device=device)
 
     def backward(self, loss: torch.Tensor) -> None:
         loss.backward()
@@ -212,7 +221,7 @@ class Trainer(ABC):
     @abstractmethod
     def run_batch(
         self,
-        predictor: luz.Predictor,
+        model: luz.Module,
         data: torch.Tensor,
         target: torch.Tensor,
         device: Device,
@@ -241,7 +250,7 @@ class SupervisedTrainer(Trainer):
 
     def run_batch(
         self,
-        predictor: luz.Predictor,
+        model: luz.Module,
         data: torch.Tensor,
         target: torch.Tensor,
         device: Device,
@@ -251,8 +260,8 @@ class SupervisedTrainer(Trainer):
 
         Parameters
         ----------
-        predictor
-            Predictor to be trained.
+        model
+            Model to be trained.
         dataset
             Batch of training data.
         target
@@ -267,7 +276,7 @@ class SupervisedTrainer(Trainer):
         float
             Batch loss.
         """
-        output = predictor(data)
+        output = model(data)
         loss = self.loss(output, target)
 
         if optimizer is not None:

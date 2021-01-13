@@ -6,6 +6,7 @@ Custom PyTorch modules.
 from __future__ import annotations
 from typing import Callable, Iterable, Optional
 
+import contextlib
 import luz
 import torch
 
@@ -33,20 +34,45 @@ Activation = Callable[[torch.Tensor], torch.Tensor]
 
 
 class Module(torch.nn.Module):
-    def __init__(
-        self,
-        module: torch.nn.Module,
-        activation: Optional[Activation] = None,
-    ) -> None:
-        super().__init__()
-        self.module = module
-        self.activation = activation or (lambda x: x)
+    def predict(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass in eval mode.
 
-    def forward(self, *args: torch.Tensor, **kwargs: torch.Tensor) -> torch.Tensor:
-        return self.activation(self.module(*args, **kwargs))
+        Parameters
+        ----------
+        x
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
+        with self.eval():
+            return self.__call__(x)
+
+    @contextlib.contextmanager
+    def eval(self, no_grad: Optional[bool] = True) -> None:
+        """Context manager to operate in eval mode.
+
+        Parameters
+        ----------
+        no_grad
+            If True use torch.no_grad(), by default True.
+        """
+        training = True if self.training else False
+
+        nc = contextlib.nullcontext()
+        with torch.no_grad() if no_grad else nc:
+            try:
+                if training:
+                    super().eval()
+                yield
+            finally:
+                if training:
+                    self.train()
 
 
-class AdditiveAttention(torch.nn.Module):
+class AdditiveAttention(Module):
     """Additive attention, from https://arxiv.org/abs/1409.0473."""
 
     def __init__(
@@ -67,7 +93,7 @@ class AdditiveAttention(torch.nn.Module):
         self.concat = Concatenate(dim=1)
         if activation is None:
             activation = torch.nn.Tanh()
-        self.W = Module(torch.nn.Linear(2 * d, 2 * d_attn, bias=False), activation)
+        self.W = Dense(2 * d, 2 * d_attn, bias=False, activation=activation)
         self.v = torch.nn.Linear(2 * d_attn, 1, bias=False)
 
         self.ms = MaskedSoftmax(dim=1)
@@ -98,7 +124,7 @@ class AdditiveAttention(torch.nn.Module):
         return self.ms(pre_attn, mask)
 
 
-class AdditiveNodeAttention(torch.nn.Module):
+class AdditiveNodeAttention(Module):
     def __init__(
         self, d: int, d_attn: int, activation: Optional[Activation] = None
     ) -> None:
@@ -143,7 +169,7 @@ class AdditiveNodeAttention(torch.nn.Module):
         return self.attn(nodes[s], nodes[r], mask)
 
 
-class Concatenate(torch.nn.Module):
+class Concatenate(Module):
     def __init__(self, dim: Optional[int] = 0) -> None:
         """Concatenate tensors along a given dimension.
 
@@ -172,10 +198,11 @@ class Concatenate(torch.nn.Module):
         return torch.cat(tensors, dim=self.dim)
 
 
-class Dense(torch.nn.Module):
+class Dense(Module):
     def __init__(
         self,
         *features: int,
+        bias: Optional[bool] = True,
         activation: Optional[Activation] = None,
     ) -> None:
         """Dense feed-forward neural network.
@@ -184,6 +211,8 @@ class Dense(torch.nn.Module):
         ----------
         *features
             Number of features at each layer.
+        bias
+            If False, each layer will not learn an additive bias; by default True.
         activation
             Activation function.
         """
@@ -195,9 +224,8 @@ class Dense(torch.nn.Module):
         layers = []
 
         for n_in, n_out in zip(features, features[1:]):
-            lin = torch.nn.Linear(n_in, n_out)
-            m = Module(lin, activation)
-            layers.append(m)
+            lin = torch.nn.Linear(n_in, n_out, bias=bias)
+            layers.extend([lin, activation])
 
         self.seq = torch.nn.Sequential(*layers)
 
@@ -219,7 +247,7 @@ class Dense(torch.nn.Module):
         return self.seq(x)
 
 
-class DenseRNN(torch.nn.Module):
+class DenseRNN(Module):
     def __init__(self, input_size: int, hidden_size: int, output_size: int) -> None:
         super().__init__()
 
@@ -255,7 +283,7 @@ class DenseRNN(torch.nn.Module):
         return torch.zeros(1, self.hidden_size)
 
 
-class DotProductAttention(torch.nn.Module):
+class DotProductAttention(Module):
     """Scaled dot product attention."""
 
     def forward(
@@ -287,7 +315,7 @@ class DotProductAttention(torch.nn.Module):
         return luz.dot_product_attention(query, key, mask)
 
 
-class EdgeAttention(torch.nn.Module):
+class EdgeAttention(Module):
     def __init__(
         self,
         d_v: int,
@@ -312,15 +340,11 @@ class EdgeAttention(torch.nn.Module):
             If True perform nodewise edge aggregation, by default True.
         """
         super().__init__()
-        self.query = luz.Module(
-            torch.nn.Linear(d_v + d_u, d_attn), torch.nn.functional.leaky_relu
-        )
-        self.key = luz.Module(
-            torch.nn.Linear(d_v + d_u, d_attn), torch.nn.functional.leaky_relu
-        )
-        self.value = luz.Module(
-            torch.nn.Linear(d_e + d_u, d_attn), torch.nn.functional.leaky_relu
-        )
+        act = torch.nn.LeakyReLU()
+        self.query = Dense(d_v + d_u, d_attn, activation=act)
+        self.key = Dense(d_v + d_u, d_attn, activation=act)
+        self.value = Dense(d_e + d_u, d_attn, activation=act)
+
         self.concat = Concatenate(dim=1)
         self.attn = DotProductAttention()
 
@@ -371,7 +395,7 @@ class EdgeAttention(torch.nn.Module):
         return self.attn(q, k, mask) @ v
 
 
-class ElmanRNN(torch.nn.Module):
+class ElmanRNN(Module):
     def __init__(
         self,
         input_size,
@@ -415,7 +439,7 @@ class ElmanRNN(torch.nn.Module):
         return output
 
 
-class GraphConv(torch.nn.Module):
+class GraphConv(Module):
     def __init__(self, d_v: int, activation: Activation) -> None:
         """Graph convolutional network from https://arxiv.org/abs/1609.02907.
 
@@ -427,7 +451,7 @@ class GraphConv(torch.nn.Module):
             Activation function.
         """
         super().__init__()
-        self.lin = Module(torch.nn.Linear(d_v, d_v), activation)
+        self.lin = Dense(d_v, d_v, activation=activation)
 
     def forward(self, nodes: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
         """Compute forward pass.
@@ -456,7 +480,7 @@ class GraphConv(torch.nn.Module):
         return self.lin(D @ A @ D @ nodes)
 
 
-class GraphConvAttention(torch.nn.Module):
+class GraphConvAttention(Module):
     def __init__(self, d_v: int, activation: Activation) -> None:
         """Compute node attention weights using graph convolutional network.
 
@@ -469,7 +493,7 @@ class GraphConvAttention(torch.nn.Module):
         """
         super().__init__()
         self.gcn = GraphConv(d_v, torch.nn.Identity())
-        self.lin = Module(torch.nn.Linear(d_v, 1), activation)
+        self.lin = Dense(d_v, 1, activation=activation)
 
     def forward(
         self, nodes: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor
@@ -501,7 +525,7 @@ class GraphConvAttention(torch.nn.Module):
         return attn
 
 
-class GraphNetwork(torch.nn.Module):
+class GraphNetwork(Module):
     """Graph Network from https://arxiv.org/abs/1806.01261."""
 
     def __init__(
@@ -599,7 +623,7 @@ class GraphNetwork(torch.nn.Module):
         return nodes, edge_index, edges, u, batch
 
 
-class MaskedSoftmax(torch.nn.Module):
+class MaskedSoftmax(Module):
     """Compute softmax of a tensor using a mask."""
 
     def __init__(self, dim: Optional[int] = None) -> None:
@@ -628,7 +652,7 @@ class MaskedSoftmax(torch.nn.Module):
         return luz.masked_softmax(x, mask, self.dim)
 
 
-class MultiheadEdgeAttention(torch.nn.Module):
+class MultiheadEdgeAttention(Module):
     def __init__(
         self,
         num_heads: int,
@@ -662,9 +686,7 @@ class MultiheadEdgeAttention(torch.nn.Module):
 
         for _ in range(num_heads):
             h = EdgeAttention(d_v, d_e, d_u, d_attn, nodewise)
-            g = luz.Module(
-                torch.nn.Linear(d_v + d_u, 1), torch.nn.functional.leaky_relu
-            )
+            g = Dense(d_v + d_u, 1, activation=torch.nn.LeakyReLU())
 
             self.heads.append(h)
             self.gates.append(g)
@@ -705,7 +727,7 @@ class MultiheadEdgeAttention(torch.nn.Module):
         return torch.einsum("ijk, ij -> jk", heads, gates)
 
 
-class Reshape(torch.nn.Module):
+class Reshape(Module):
     def __init__(self, out_shape: Iterable[int]) -> None:
         """Reshape tensor.
 
@@ -733,7 +755,7 @@ class Reshape(torch.nn.Module):
         return x.view(self.shape)
 
 
-class Squeeze(torch.nn.Module):
+class Squeeze(Module):
     def __init__(self, dim: Optional[int]) -> None:
         """Squeeze tensor.
 
@@ -761,7 +783,7 @@ class Squeeze(torch.nn.Module):
         return x.squeeze(dim=self.dim)
 
 
-class Unsqueeze(torch.nn.Module):
+class Unsqueeze(Module):
     def __init__(self, dim: int) -> None:
         """Unsqueeze tensor.
 

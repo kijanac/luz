@@ -37,7 +37,7 @@ class Tuner(ABC):
         self.values = {}
 
         self.scores = collections.defaultdict(list)
-        self.best_predictor = None
+        self.best_model = None
 
     @abstractmethod
     def sample(
@@ -103,11 +103,13 @@ class Tuner(ABC):
                 else:
                     yield values
 
-    def score(self, learner: luz.Learner, dataset: luz.Dataset, device) -> luz.Score:
-        predictor, score = self.scorer.score(learner, dataset, device)
+    def score(
+        self, learner: luz.Learner, dataset: luz.Dataset, device: Device
+    ) -> luz.Score:
+        model, score = self.scorer.score(learner, dataset, device)
 
-        if self.best_predictor is None or score < self.best_score:
-            self.best_predictor = copy.deepcopy(predictor)
+        if self.best_model is None or score < self.best_score:
+            self.best_model = copy.deepcopy(model)
 
         self.scores[tuple(sorted(copy.deepcopy(self.values).items()))].append(score)
 
