@@ -25,7 +25,6 @@ __all__ = [
     # "Checkpoint",
     # "DataAndFit",
     # "DurbinWatson",
-    # "EarlyStopping",
     "FBeta",
     # "LogToFile",
     "Loss",
@@ -215,45 +214,6 @@ class DurbinWatson(Handler):
         return self.numerator / self.denominator
 
 
-class EarlyStopping(Handler):
-    def __init__(self, monitor="val_loss", delta_thresh=0.0, patience=5):
-        # FIXME: This might not work with the revised scorer
-        # scheme - investigate and repair/rewrite this whole class
-
-        if delta_thresh < 0:
-            raise ValueError("Threshold value must be nonnegative.")
-
-        self.monitor = monitor
-        self.delta_thresh = delta_thresh
-        self.patience = patience
-        self.wait = patience
-
-        self.history = None
-
-    def compile(self, model, trainer):
-        if self.monitor == "train_loss":
-            self.history = model.train_history
-        elif self.monitor == "val_loss":
-            self.history = model.val_history
-        else:
-            raise ValueError(
-                "Monitor keyword {0} not recognized for EarlyStopping callback.".format(
-                    self.monitor
-                )
-            )
-
-    def epoch_ended(self):
-        if self.wait == 0:
-            return False
-
-        if (min(self.history) - self.history[-1]) < self.delta_thresh:
-            self.wait -= 1
-        else:
-            self.wait = self.patience
-
-        return True
-
-
 class FBeta(Handler):
     def __init__(self, beta: float) -> None:
         self.beta = beta
@@ -375,13 +335,12 @@ class Loss(Handler):
             # NOTE: it's very important to add loss.item()
             # (as opposed to loss) to avoid a memory leak!
             self.running_loss += loss.item()
-            total = len(loader.sampler) / loader.batch_size
-            batch_interval = int(total * self.print_interval)
+            num_batches = len(loader)
+            batch_interval = max(1, round(num_batches * self.print_interval))
             cur = ind + 1
-            if cur % batch_interval == 0 or cur == total:
-                print(
-                    f"[Epoch {epoch}] Average running loss: {self.running_loss / cur}."
-                )
+            if cur % batch_interval == 0 or cur == num_batches:
+                avg_loss = self.running_loss / cur / loader.batch_size
+                print(f"[Epoch {epoch}] Running average loss: {avg_loss}.")
 
 
 class PlotHistory(Handler):
@@ -396,11 +355,15 @@ class PlotHistory(Handler):
         ax1.set_xlabel("Epoch")
         (line1,) = ax1.plot(x, train_history, color="tab:blue")
 
-        ax2 = ax1.twinx()
-        (line2,) = ax2.plot(x, val_history, color="tab:orange")
+        if len(val_history) > 0:
+            ax2 = ax1.twinx()
+            (line2,) = ax2.plot(x, val_history, color="tab:orange")
 
-        plt.title("Loss history")
-        plt.legend((line1, line2), ("Training loss", "Validation loss"))
+            plt.title("Loss history")
+            plt.legend((line1, line2), ("Training loss", "Validation loss"))
+        else:
+            plt.title("Loss history")
+            plt.legend((line1,), ("Training loss",))
 
         fig.tight_layout()
         plt.show()
@@ -483,7 +446,14 @@ class Timer(Handler):
     def epoch_started(self, **kwargs: Any) -> None:
         self.start_time = datetime.datetime.now().replace(microsecond=0)
 
-    def epoch_ended(self, epoch: int, **kwargs: Any) -> None:
+    def epoch_ended(self, epoch: int, flag: luz.Flag, **kwargs: Any) -> None:
         self.end_time = datetime.datetime.now().replace(microsecond=0)
 
-        print(f"[Epoch {epoch}]: {self.end_time-self.start_time} to train")
+        if flag == luz.Flag.TRAINING:
+            mode = "train"
+        elif flag == luz.Flag.VALIDATING:
+            mode = "validate"
+        else:
+            mode = "test"
+
+        print(f"[Epoch {epoch}]: {self.end_time-self.start_time} to {mode}.")
