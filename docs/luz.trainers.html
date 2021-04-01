@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.trainers module &mdash; luz 4.0.0 documentation</title>
+  <title>luz.trainers module &mdash; luz 5.0.0 documentation</title>
   
 
   
@@ -32,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -64,7 +63,7 @@
             
             
               <div class="version">
-                4.0.0
+                5.0.0
               </div>
             
           
@@ -187,55 +186,9 @@
   <div class="section" id="module-luz.trainers">
 <span id="luz-trainers-module"></span><h1>luz.trainers module<a class="headerlink" href="#module-luz.trainers" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="luz.trainers.SupervisedTrainer">
-<em class="property">class </em><code class="sig-name descname">SupervisedTrainer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loss</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_epoch</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">stop_epoch</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">early_stopping</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">patience</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">loader_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.SupervisedTrainer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#luz.trainers.Trainer" title="luz.trainers.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.trainers.Trainer</span></code></a></p>
-<p>Algorithm to train a model using data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>loss</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]]) – Loss function to be minimized during training, by default None</p></li>
-<li><p><strong>optimizer</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="luz.optimizer.html#luz.optimizer.Optimizer" title="luz.optimizer.Optimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></a>]) – Training optimizer, by default None</p></li>
-<li><p><strong>start_epoch</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – First training epoch, by default 1</p></li>
-<li><p><strong>stop_epoch</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Last training epoch, by default 2</p></li>
-<li><p><strong>early_stopping</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If True, then use <cite>val_dataset</cite> for early stopping; by default False.
-Ignored if <cite>val_dataset</cite> is <cite>None</cite>.</p></li>
-<li><p><strong>patience</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Number of epochs of non-improving validation loss
-before training stops early; by default 5.
-Ignored if <cite>early_stopping</cite> is <cite>False</cite>.</p></li>
-<li><p><strong>**loader_kwargs</strong> – Dataset.loader kwargs.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt id="luz.trainers.SupervisedTrainer.run_batch">
-<code class="sig-name descname">run_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.SupervisedTrainer.run_batch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run training algorithm on a single batch.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<a class="reference internal" href="luz.modules.html#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>) – Model to be trained.</p></li>
-<li><p><strong>dataset</strong> – Batch of training data.</p></li>
-<li><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Target tensor.</p></li>
-<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>]) – Device to use for training.</p></li>
-<li><p><strong>optimizer</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code>]) – Optimizer, by default None.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Batch loss.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="luz.trainers.Trainer">
-<em class="property">class </em><code class="sig-name descname">Trainer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loss</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_epoch</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">stop_epoch</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">early_stopping</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">patience</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">loader_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Trainer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handlers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">loader_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Algorithm to train a model using data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -249,52 +202,22 @@ Ignored if <cite>val_dataset</cite> is <cite>None</cite>.</p></li>
 <li><p><strong>patience</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Number of epochs of non-improving validation loss
 before training stops early; by default 5.
 Ignored if <cite>early_stopping</cite> is <cite>False</cite>.</p></li>
+<li><p><strong>handlers</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="luz.handlers.html#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Handler</span></code></a>]]) – Handlers to run, by default None.</p></li>
 <li><p><strong>**loader_kwargs</strong> – Dataset.loader kwargs.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="luz.trainers.Trainer.backward">
-<code class="sig-name descname">backward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loss</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.backward" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="luz.trainers.Trainer.migrate">
-<code class="sig-name descname">migrate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.migrate" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="luz.trainers.Trainer.optimizer_step">
-<code class="sig-name descname">optimizer_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optimizer</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.optimizer_step" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="luz.trainers.Trainer.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">train</span></em>, <em class="sig-param"><span class="n">val_dataset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run training algorithm.</p>
+<dt id="luz.trainers.Trainer.fit">
+<code class="sig-name descname"><span class="pre">fit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<a class="reference internal" href="luz.modules.html#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>) – Model to be trained.</p></li>
 <li><p><strong>dataset</strong> (<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>) – Training data.</p></li>
-<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>]) – Device to use for training.</p></li>
-<li><p><strong>train</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True, then train, else test.</p></li>
 <li><p><strong>val_dataset</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>]) – Validation data, by default None.</p></li>
+<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – Device to use for training, by default “cpu”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -304,8 +227,23 @@ Ignored if <cite>early_stopping</cite> is <cite>False</cite>.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="luz.trainers.Trainer.run_batch">
-<em class="property">abstract </em><code class="sig-name descname">run_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.run_batch" title="Permalink to this definition">¶</a></dt>
+<dt id="luz.trainers.Trainer.load_state_dict">
+<code class="sig-name descname"><span class="pre">load_state_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.load_state_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.log">
+<code class="sig-name descname"><span class="pre">log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.log" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.run_epoch">
+<code class="sig-name descname"><span class="pre">run_epoch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.run_epoch" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -314,30 +252,45 @@ Ignored if <cite>early_stopping</cite> is <cite>False</cite>.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="luz.trainers.Trainer.use_handlers">
-<code class="sig-name descname">use_handlers</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">handlers</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.use_handlers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set handlers.</p>
-<dl class="simple">
-<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>handlers</dt><dd><p>Handlers to run.</p>
-</dd>
-</dl>
+<dt id="luz.trainers.Trainer.state_dict">
+<code class="sig-name descname"><span class="pre">state_dict</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.state_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.trainers.Trainer.test">
+<code class="sig-name descname"><span class="pre">test</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="luz.modules.html#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>) – Model to be tested.</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>) – Test data.</p></li>
+<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – Device to use for testing, by default “cpu”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="luz.trainers.Trainer.use_process">
-<code class="sig-name descname">use_process</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">process_batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.use_process" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set function to process each batch.</p>
+<dt id="luz.trainers.Trainer.validate">
+<code class="sig-name descname"><span class="pre">validate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.trainers.Trainer.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>process_batch</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="luz.datasets.html#luz.datasets.Data" title="luz.datasets.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]]]) – Function to get input and optionally target from data.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="luz.modules.html#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>) – Model to be validated.</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>) – Validation data.</p></li>
+<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – Device to use for validation, by default “cpu”.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation loss.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>

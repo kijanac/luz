@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Index &mdash; luz 4.0.0 documentation</title>
+  <title>Index &mdash; luz 5.0.0 documentation</title>
   
 
   
@@ -32,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -62,7 +61,7 @@
             
             
               <div class="version">
-                4.0.0
+                5.0.0
               </div>
             
           
@@ -178,6 +177,7 @@
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
  
@@ -205,7 +205,7 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.trainers.html#luz.trainers.Trainer.backward">backward() (Trainer method)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.backward">backward() (Module method)</a>
 </li>
       <li><a href="luz.events.html#luz.events.Event.BATCH_ENDED">BATCH_ENDED (Event attribute)</a>
 </li>
@@ -253,27 +253,33 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.tuners.html#luz.tuners.BayesianTuner.choose">choose() (BayesianTuner method)</a>
+      <li><a href="luz.transforms.html#luz.transforms.Center">Center (class in luz.transforms)</a>
+</li>
+      <li><a href="luz.transforms.html#luz.transforms.CenterPerTensor">CenterPerTensor (class in luz.transforms)</a>
+</li>
+      <li><a href="luz.tuners.html#luz.tuners.Tuner.choose">choose() (Tuner method)</a>
+</li>
+      <li><a href="luz.tuners.html#luz.tuners.BayesianTuner.choose_hyperparameter">choose_hyperparameter() (BayesianTuner method)</a>
+</li>
+      <li><a href="luz.tuners.html#luz.tuners.GridSearch.choose_hyperparameters">choose_hyperparameters() (GridSearch method)</a>
 
       <ul>
-        <li><a href="luz.tuners.html#luz.tuners.GridTuner.choose">(GridTuner method)</a>
+        <li><a href="luz.tuners.html#luz.tuners.RandomSearch.choose_hyperparameters">(RandomSearch method)</a>
 </li>
-        <li><a href="luz.tuners.html#luz.tuners.RandomSearchTuner.choose">(RandomSearchTuner method)</a>
-</li>
-        <li><a href="luz.tuners.html#luz.tuners.Tuner.choose">(Tuner method)</a>
+        <li><a href="luz.tuners.html#luz.tuners.Tuner.choose_hyperparameters">(Tuner method)</a>
 </li>
       </ul></li>
-      <li><a href="luz.transforms.html#luz.transforms.Compose">Compose (class in luz.transforms)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.transforms.html#luz.transforms.Compose">Compose (class in luz.transforms)</a>
+</li>
       <li><a href="luz.datasets.html#luz.datasets.ConcatDataset">ConcatDataset (class in luz.datasets)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.Concatenate">Concatenate (class in luz.modules)</a>
 </li>
       <li><a href="luz.tuners.html#luz.tuners.Tuner.conditional">conditional() (Tuner method)</a>
 </li>
-      <li><a href="luz.scorers.html#luz.scorers.CrossValidationScorer">CrossValidationScorer (class in luz.scorers)</a>
+      <li><a href="luz.scorers.html#luz.scorers.CrossValidation">CrossValidation (class in luz.scorers)</a>
 </li>
       <li><a href="luz.datasets.html#luz.datasets.ConcatDataset.cumulative_sizes">cumulative_sizes (ConcatDataset attribute)</a>
 </li>
@@ -311,7 +317,13 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.modules.html#luz.modules.EdgeAttention">EdgeAttention (class in luz.modules)</a>
+      <li><a href="luz.modules.html#luz.modules.EdgeAggregateGlobal">EdgeAggregateGlobal (class in luz.modules)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.EdgeAggregateGlobalHead">EdgeAggregateGlobalHead (class in luz.modules)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.EdgeAggregateLocal">EdgeAggregateLocal (class in luz.modules)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.EdgeAggregateLocalHead">EdgeAggregateLocalHead (class in luz.modules)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.ElmanRNN">ElmanRNN (class in luz.modules)</a>
 </li>
@@ -327,6 +339,8 @@
         <li><a href="luz.handlers.html#luz.handlers.Timer.epoch_ended">(Timer method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.events.html#luz.events.Event.EPOCH_STARTED">EPOCH_STARTED (Event attribute)</a>
 </li>
       <li><a href="luz.handlers.html#luz.handlers.Accuracy.epoch_started">epoch_started() (Accuracy method)</a>
@@ -343,8 +357,6 @@
         <li><a href="luz.handlers.html#luz.handlers.Timer.epoch_started">(Timer method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.modules.html#luz.modules.Module.eval">eval() (Module method)</a>
 </li>
       <li><a href="luz.events.html#luz.events.Event">Event (class in luz.events)</a>
@@ -361,6 +373,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.handlers.html#luz.handlers.FBeta">FBeta (class in luz.handlers)</a>
 </li>
+      <li><a href="luz.modules.html#luz.modules.Module.fit">fit() (Module method)</a>
+
+      <ul>
+        <li><a href="luz.trainers.html#luz.trainers.Trainer.fit">(Trainer method)</a>
+</li>
+      </ul></li>
       <li><a href="luz.flags.html#luz.flags.Flag">Flag (class in luz.flags)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.AdditiveAttention.forward">forward() (AdditiveAttention method)</a>
@@ -376,7 +394,13 @@
 </li>
         <li><a href="luz.modules.html#luz.modules.DotProductAttention.forward">(DotProductAttention method)</a>
 </li>
-        <li><a href="luz.modules.html#luz.modules.EdgeAttention.forward">(EdgeAttention method)</a>
+        <li><a href="luz.modules.html#luz.modules.EdgeAggregateGlobal.forward">(EdgeAggregateGlobal method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.EdgeAggregateGlobalHead.forward">(EdgeAggregateGlobalHead method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.EdgeAggregateLocal.forward">(EdgeAggregateLocal method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.EdgeAggregateLocalHead.forward">(EdgeAggregateLocalHead method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.ElmanRNN.forward">(ElmanRNN method)</a>
 </li>
@@ -388,11 +412,13 @@
 </li>
         <li><a href="luz.modules.html#luz.modules.MaskedSoftmax.forward">(MaskedSoftmax method)</a>
 </li>
-        <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention.forward">(MultiheadEdgeAttention method)</a>
+        <li><a href="luz.modules.html#luz.modules.NodeAggregate.forward">(NodeAggregate method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Reshape.forward">(Reshape method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Squeeze.forward">(Squeeze method)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.StandardizeInput.forward">(StandardizeInput method)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Unsqueeze.forward">(Unsqueeze method)</a>
 </li>
@@ -403,17 +429,21 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.datasets.html#luz.datasets.graph_collate">graph_collate() (in module luz.datasets)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.get_input">get_input() (Module method)</a>
 </li>
-      <li><a href="luz.modules.html#luz.modules.GraphConv">GraphConv (class in luz.modules)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.get_target">get_target() (Module method)</a>
+</li>
+      <li><a href="luz.datasets.html#luz.datasets.graph_collate">graph_collate() (in module luz.datasets)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.modules.html#luz.modules.GraphConv">GraphConv (class in luz.modules)</a>
+</li>
       <li><a href="luz.modules.html#luz.modules.GraphConvAttention">GraphConvAttention (class in luz.modules)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.GraphNetwork">GraphNetwork (class in luz.modules)</a>
 </li>
-      <li><a href="luz.tuners.html#luz.tuners.GridTuner">GridTuner (class in luz.tuners)</a>
+      <li><a href="luz.tuners.html#luz.tuners.GridSearch">GridSearch (class in luz.tuners)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -423,13 +453,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.handlers.html#luz.handlers.Handler">Handler (class in luz.handlers)</a>
 </li>
-      <li><a href="luz.scorers.html#luz.scorers.HoldoutValidationScorer">HoldoutValidationScorer (class in luz.scorers)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.tuners.html#luz.tuners.Tuner.hp_choose">hp_choose() (Tuner method)</a>
-</li>
-      <li><a href="luz.tuners.html#luz.tuners.Tuner.hp_sample">hp_sample() (Tuner method)</a>
+      <li><a href="luz.scorers.html#luz.scorers.Holdout">Holdout (class in luz.scorers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -467,9 +493,21 @@
 </li>
       <li><a href="luz.optimizer.html#luz.optimizer.Optimizer.link">link() (Optimizer method)</a>
 </li>
+      <li><a href="luz.modules.html#luz.modules.Module.load">load() (Module method)</a>
+</li>
+      <li><a href="luz.trainers.html#luz.trainers.Trainer.load_state_dict">load_state_dict() (Trainer method)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.Module.log">log() (Module method)</a>
+
+      <ul>
+        <li><a href="luz.trainers.html#luz.trainers.Trainer.log">(Trainer method)</a>
+</li>
+      </ul></li>
       <li><a href="luz.transforms.html#luz.transforms.Lookup">Lookup (class in luz.transforms)</a>
 </li>
       <li><a href="luz.handlers.html#luz.handlers.Loss">Loss (class in luz.handlers)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.Module.loss">loss() (Module property)</a>
 </li>
       <li>
     luz
@@ -499,6 +537,8 @@
         <li><a href="luz.flags.html#module-luz.flags">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     luz.handlers
 
@@ -506,8 +546,6 @@
         <li><a href="luz.handlers.html#module-luz.handlers">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     luz.learner
 
@@ -576,7 +614,7 @@
 </li>
       <li><a href="luz.utils.html#luz.utils.memoize">memoize() (in module luz.utils)</a>
 </li>
-      <li><a href="luz.trainers.html#luz.trainers.Trainer.migrate">migrate() (Trainer method)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.migrate">migrate() (Module method)</a>
 </li>
       <li><a href="luz.utils.html#luz.utils.mkdir_safe">mkdir_safe() (in module luz.utils)</a>
 </li>
@@ -617,14 +655,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.modules.html#luz.modules.Module">Module (class in luz.modules)</a>
 </li>
-      <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention">MultiheadEdgeAttention (class in luz.modules)</a>
-</li>
   </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.modules.html#luz.modules.NodeAggregate">NodeAggregate (class in luz.modules)</a>
+</li>
       <li><a href="luz.utils.html#luz.utils.nodewise_edge_mean">nodewise_edge_mean() (in module luz.utils)</a>
 </li>
       <li><a href="luz.utils.html#luz.utils.nodewise_edge_sum">nodewise_edge_sum() (in module luz.utils)</a>
@@ -633,7 +671,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.utils.html#luz.utils.nodewise_mask">nodewise_mask() (in module luz.utils)</a>
 </li>
-      <li><a href="luz.transforms.html#luz.transforms.NormalizePerTensor">NormalizePerTensor (class in luz.transforms)</a>
+      <li><a href="luz.transforms.html#luz.transforms.Normalize">Normalize (class in luz.transforms)</a>
+</li>
+      <li><a href="luz.modules.html#luz.modules.Module.num_parameters">num_parameters() (Module property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -647,7 +687,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.trainers.html#luz.trainers.Trainer.optimizer_step">optimizer_step() (Trainer method)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.optimizer_step">optimizer_step() (Module method)</a>
 </li>
       <li><a href="luz.utils.html#luz.utils.out_degree">out_degree() (in module luz.utils)</a>
 </li>
@@ -675,44 +715,44 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.tuners.html#luz.tuners.RandomSearchTuner">RandomSearchTuner (class in luz.tuners)</a>
+      <li><a href="luz.tuners.html#luz.tuners.RandomSearch">RandomSearch (class in luz.tuners)</a>
 </li>
       <li><a href="luz.modules.html#luz.modules.Reshape">Reshape (class in luz.modules)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.trainers.html#luz.trainers.Trainer.run">run() (Trainer method)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.run_batch">run_batch() (Module method)</a>
 </li>
-      <li><a href="luz.trainers.html#luz.trainers.SupervisedTrainer.run_batch">run_batch() (SupervisedTrainer method)</a>
-
-      <ul>
-        <li><a href="luz.trainers.html#luz.trainers.Trainer.run_batch">(Trainer method)</a>
+      <li><a href="luz.trainers.html#luz.trainers.Trainer.run_epoch">run_epoch() (Trainer method)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.tuners.html#luz.tuners.BayesianTuner.sample">sample() (BayesianTuner method)</a>
+      <li><a href="luz.tuners.html#luz.tuners.Tuner.sample">sample() (Tuner method)</a>
+</li>
+      <li><a href="luz.tuners.html#luz.tuners.BayesianTuner.sample_hyperparameter">sample_hyperparameter() (BayesianTuner method)</a>
+</li>
+      <li><a href="luz.tuners.html#luz.tuners.GridSearch.sample_hyperparameters">sample_hyperparameters() (GridSearch method)</a>
 
       <ul>
-        <li><a href="luz.tuners.html#luz.tuners.GridTuner.sample">(GridTuner method)</a>
+        <li><a href="luz.tuners.html#luz.tuners.RandomSearch.sample_hyperparameters">(RandomSearch method)</a>
 </li>
-        <li><a href="luz.tuners.html#luz.tuners.RandomSearchTuner.sample">(RandomSearchTuner method)</a>
-</li>
-        <li><a href="luz.tuners.html#luz.tuners.Tuner.sample">(Tuner method)</a>
+        <li><a href="luz.tuners.html#luz.tuners.Tuner.sample_hyperparameters">(Tuner method)</a>
 </li>
       </ul></li>
+      <li><a href="luz.modules.html#luz.modules.Module.save">save() (Module method)</a>
+</li>
       <li><a href="luz.scorers.html#luz.scorers.Score">Score (class in luz.scorers)</a>
 </li>
       <li><a href="luz.scorers.html#luz.scorers.Score.score">score (Score attribute)</a>
 </li>
-      <li><a href="luz.scorers.html#luz.scorers.CrossValidationScorer.score">score() (CrossValidationScorer method)</a>
+      <li><a href="luz.scorers.html#luz.scorers.CrossValidation.score">score() (CrossValidation method)</a>
 
       <ul>
-        <li><a href="luz.scorers.html#luz.scorers.HoldoutValidationScorer.score">(HoldoutValidationScorer method)</a>
+        <li><a href="luz.scorers.html#luz.scorers.Holdout.score">(Holdout method)</a>
 </li>
         <li><a href="luz.scorers.html#luz.scorers.Scorer.score">(Scorer method)</a>
 </li>
@@ -727,9 +767,13 @@
 </li>
       <li><a href="luz.modules.html#luz.modules.Squeeze">Squeeze (class in luz.modules)</a>
 </li>
-      <li><a href="luz.datasets.html#luz.datasets.Subset">Subset (class in luz.datasets)</a>
+      <li><a href="luz.transforms.html#luz.transforms.Standardize">Standardize (class in luz.transforms)</a>
 </li>
-      <li><a href="luz.trainers.html#luz.trainers.SupervisedTrainer">SupervisedTrainer (class in luz.trainers)</a>
+      <li><a href="luz.modules.html#luz.modules.StandardizeInput">StandardizeInput (class in luz.modules)</a>
+</li>
+      <li><a href="luz.trainers.html#luz.trainers.Trainer.state_dict">state_dict() (Trainer method)</a>
+</li>
+      <li><a href="luz.datasets.html#luz.datasets.Subset">Subset (class in luz.datasets)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -739,6 +783,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.utils.html#luz.utils.temporary_seed">temporary_seed() (in module luz.utils)</a>
 </li>
+      <li><a href="luz.modules.html#luz.modules.Module.test">test() (Module method)</a>
+
+      <ul>
+        <li><a href="luz.trainers.html#luz.trainers.Trainer.test">(Trainer method)</a>
+</li>
+      </ul></li>
       <li><a href="luz.flags.html#luz.flags.Flag.TESTING">TESTING (Flag attribute)</a>
 </li>
       <li><a href="luz.events.html#luz.events.Event.TESTING_ENDED">TESTING_ENDED (Event attribute)</a>
@@ -780,7 +830,13 @@
 </li>
         <li><a href="luz.modules.html#luz.modules.DotProductAttention.training">(DotProductAttention attribute)</a>
 </li>
-        <li><a href="luz.modules.html#luz.modules.EdgeAttention.training">(EdgeAttention attribute)</a>
+        <li><a href="luz.modules.html#luz.modules.EdgeAggregateGlobal.training">(EdgeAggregateGlobal attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.EdgeAggregateGlobalHead.training">(EdgeAggregateGlobalHead attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.EdgeAggregateLocal.training">(EdgeAggregateLocal attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.EdgeAggregateLocalHead.training">(EdgeAggregateLocalHead attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.ElmanRNN.training">(ElmanRNN attribute)</a>
 </li>
@@ -800,11 +856,13 @@
 </li>
         <li><a href="luz.modules.html#luz.modules.Module.training">(Module attribute)</a>
 </li>
-        <li><a href="luz.modules.html#luz.modules.MultiheadEdgeAttention.training">(MultiheadEdgeAttention attribute)</a>
+        <li><a href="luz.modules.html#luz.modules.NodeAggregate.training">(NodeAggregate attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Reshape.training">(Reshape attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Squeeze.training">(Squeeze attribute)</a>
+</li>
+        <li><a href="luz.modules.html#luz.modules.StandardizeInput.training">(StandardizeInput attribute)</a>
 </li>
         <li><a href="luz.modules.html#luz.modules.Unsqueeze.training">(Unsqueeze attribute)</a>
 </li>
@@ -831,8 +889,12 @@
 </li>
       <li><a href="luz.transforms.html#luz.transforms.Transpose">Transpose (class in luz.transforms)</a>
 </li>
-      <li><a href="luz.tuners.html#luz.tuners.Tuner.tune">tune() (Tuner method)</a>
+      <li><a href="luz.tuners.html#luz.tuners.GridSearch.tune">tune() (GridSearch method)</a>
+
+      <ul>
+        <li><a href="luz.tuners.html#luz.tuners.Tuner.tune">(Tuner method)</a>
 </li>
+      </ul></li>
       <li><a href="luz.tuners.html#luz.tuners.Tuner">Tuner (class in luz.tuners)</a>
 </li>
   </ul></td>
@@ -843,13 +905,27 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="luz.datasets.html#luz.datasets.UnpackDataset">UnpackDataset (class in luz.datasets)</a>
 </li>
-      <li><a href="luz.modules.html#luz.modules.Unsqueeze">Unsqueeze (class in luz.modules)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="luz.trainers.html#luz.trainers.Trainer.use_handlers">use_handlers() (Trainer method)</a>
+      <li><a href="luz.modules.html#luz.modules.Unsqueeze">Unsqueeze (class in luz.modules)</a>
 </li>
-      <li><a href="luz.trainers.html#luz.trainers.Trainer.use_process">use_process() (Trainer method)</a>
+      <li><a href="luz.modules.html#luz.modules.Module.use_fit_params">use_fit_params() (Module method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.modules.html#luz.modules.Module.validate">validate() (Module method)</a>
+
+      <ul>
+        <li><a href="luz.trainers.html#luz.trainers.Trainer.validate">(Trainer method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="luz.flags.html#luz.flags.Flag.VALIDATING">VALIDATING (Flag attribute)</a>
 </li>
   </ul></td>
 </tr></table>

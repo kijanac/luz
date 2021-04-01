@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.learner module &mdash; luz 4.0.0 documentation</title>
+  <title>luz.learner module &mdash; luz 5.0.0 documentation</title>
   
 
   
@@ -32,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -64,7 +63,7 @@
             
             
               <div class="version">
-                4.0.0
+                5.0.0
               </div>
             
           
@@ -188,37 +187,25 @@
 <span id="luz-learner-module"></span><h1>luz.learner module<a class="headerlink" href="#module-luz.learner" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="luz.learner.Learner">
-<em class="property">class </em><code class="sig-name descname">Learner</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trainer</span></em>, <em class="sig-param"><span class="n">cls</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.learner.Learner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Protocol to learn a model given datasets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>trainer</strong> (<a class="reference internal" href="luz.trainers.html#luz.trainers.Trainer" title="luz.trainers.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>) – Training algorithm.</p></li>
-<li><p><strong>cls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="luz.modules.html#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>]) – Model class.</p></li>
-<li><p><strong>*args</strong> – Model constructor args.</p></li>
-<li><p><strong>**kwargs</strong> – Model constructor kwargs.</p></li>
-</ul>
-</dd>
-</dl>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Learner</span></code><a class="headerlink" href="#luz.learner.Learner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <dl class="py method">
 <dt id="luz.learner.Learner.learn">
-<code class="sig-name descname">learn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">val_dataset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">test_dataset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.learner.Learner.learn" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">learn</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.learner.Learner.learn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Learn a model based on a given dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset</strong> (<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>) – Training dataset used to learn a model.</p></li>
 <li><p><strong>val_dataset</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>]) – Validation dataset, by default None.</p></li>
-<li><p><strong>test_dataset</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="luz.datasets.html#luz.datasets.Dataset" title="luz.datasets.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>]) – Test dataset, by default None.</p></li>
 <li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – Device to use for learning, by default “cpu”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Learned model and learning score.</p>
+<dd class="field-even"><p>Learned model.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>luz.Score</p>
+<dd class="field-odd"><p>luz.Module</p>
 </dd>
 </dl>
 </dd></dl>
