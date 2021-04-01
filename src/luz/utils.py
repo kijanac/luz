@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Union
 
 import collections
 import contextlib
@@ -34,26 +34,49 @@ __all__ = [
     "temporary_seed",
 ]
 
+Device = Union[str, torch.device]
+Func = Callable[..., Any]
 
-def adjacency(edge_index: torch.Tensor) -> torch.Tensor:
+
+def adjacency(
+    edge_index: torch.Tensor, device: Optional[Device] = "cpu"
+) -> torch.Tensor:
     """Convert edge indices to adjacency matrix.
 
     Parameters
     ----------
     edge_index
         Edge index tensor.
-        Shape: :math:`(2,N_e)`
+        Shape: :math:`(2,N_{edges})`
 
     Returns
     -------
     torch.Tensor
         Adjacency matrix.
-        Shape: :math:`(N_v,N_v)`
+        Shape: :math:`(N_{nodes},N_{nodes})`
     """
     n = edge_index.max() + 1
-    A = torch.zeros((n, n)).long()
+    A = torch.zeros((n, n), device=device).long()
     A[tuple(edge_index)] = 1
     return A
+
+
+# def aggregate_edges(
+#     edges: torch.Tensor,
+#     edge_index: torch.Tensor,
+#     batch: torch.Tensor,
+#     weights: Optional[torch.Tensor] = None,
+# ) -> torch.Tensor:
+#     if weights is None:
+#         if nodewise:
+#             weights = nodewise_mask(edge_index, device=edges.device)
+#         else:
+#             weights = batchwise_mask(batch, edge_index, device=edges.device)
+
+#         if mean:
+#             weights = torch.nn.functional.normalize(weights, p=1, dim=1)
+
+#     return weights @ edges
 
 
 def batchwise_edge_mean(
@@ -82,7 +105,7 @@ def batchwise_edge_sum(
 def batchwise_mask(
     batch: torch.Tensor,
     edge_index: Optional[torch.Tensor] = None,
-    device="cpu",
+    device: Optional[Device] = "cpu",
 ) -> torch.Tensor:
     """Create a mask for batchwise aggregation of graph nodes or edges.
 
@@ -90,16 +113,16 @@ def batchwise_mask(
     ----------
     batch
         Tensor of batch indices.
-        Shape: :math:`(N_v,)`
+        Shape: :math:`(N_{nodes},)`
     edge_index
         Tensor of edge indices, by default None.
-        Shape: :math:`(2,N_e)`
+        Shape: :math:`(2,N_{edges})`
 
     Returns
     -------
     torch.Tensor
         Mask for batchwise aggregation.
-        Shape: :math:`(N_{batch},N_v)` if `edge_index = None`
+        Shape: :math:`(N_{batch},N_{nodes})` if `edge_index = None`
     """
     if edge_index is not None:
         # masking for edge aggregation
@@ -142,24 +165,25 @@ def dot_product_attention(
     ----------
     query
         Query vectors.
-        Shape: :math:`(N,d_q)`
+        Shape: :math:`(N_{queries},d_q)`
     key
         Key vectors.
-        Shape: :math:`(N,d_q)`
+        Shape: :math:`(N_{keys},d_q)`
     mask
         Mask tensor to ignore query-key pairs, by default None.
-        Shape: :math:`(N,N)`
+        Shape: :math:`(N_{queries},N_{keys})`
 
     Returns
     -------
     torch.Tensor
         Scaled dot product attention between each query and key vector.
-        Shape: :math:`(N,N)`
+        Shape: :math:`(N_{queries},N_{keys})`
     """
 
     _, d = key.shape
 
     pre_attn = query @ key.transpose(0, 1) / math.sqrt(d)
+
     return masked_softmax(pre_attn, mask, dim=1)
 
 
@@ -177,13 +201,13 @@ def in_degree(adjacency: torch.Tensor) -> torch.Tensor:
     ----------
     adjacency
         Adjacency matrix.
-        Shape: :math:`(N_v, N_v)`
+        Shape: :math:`(N_{nodes}, N_{nodes})`
 
     Returns
     -------
     torch.Tensor
         Nodewise in-degree tensor.
-        Shape: :math:`(N_v,)`
+        Shape: :math:`(N_{nodes},)`
     """
     return adjacency.sum(dim=0)
 
@@ -227,10 +251,7 @@ def mkdir_safe(directory: str) -> None:
         os.makedirs(directory)
 
 
-T = Callable[..., Any]
-
-
-def memoize(func: T) -> T:
+def memoize(func: Func) -> Func:
     func.cache = collections.OrderedDict()
 
     @functools.wraps(func)
@@ -262,16 +283,16 @@ def nodewise_edge_sum(
     ----------
     edges
         Edge features.
-        Shape: :math:`(N_e,d_e)`
+        Shape: :math:`(N_{edges},d_e)`
     edge_index
         Ege indices.
-        Shape: :math:`(2,N_e)`
+        Shape: :math:`(2,N_{edges})`
 
     Returns
     -------
     torch.Tensor
         Tensor of summed incoming edges for each node.
-        Shape: :math:`(N_v,d_e)`
+        Shape: :math:`(N_{nodes},d_e)`
     """
     M = nodewise_mask(edge_index, device=device)
 
@@ -285,12 +306,13 @@ def nodewise_mask(edge_index: torch.Tensor, device="cpu") -> torch.Tensor:
     ----------
     edge_index
         Edge indices.
-        Shape: :math:`(2,N_e)`
+        Shape: :math:`(2,N_{edges})`
 
     Returns
     -------
     torch.Tensor
         Mask for nodewise edge aggregation.
+        Shape: :math:`(N_{nodes},N_{edges})`
     """
     _, N_e = edge_index.shape
     s, r = edge_index
@@ -307,13 +329,13 @@ def out_degree(adjacency: torch.Tensor) -> torch.Tensor:
     ----------
     adjacency
         Adjacency matrix.
-        Shape: :math:`(N_v,N_v)`
+        Shape: :math:`(N_{nodes},N_{nodes})`
 
     Returns
     -------
     torch.Tensor
         Nodewise out-degree tensor.
-        Shape: :math:`(N_v,)`
+        Shape: :math:`(N_{nodes},)`
     """
     return adjacency.sum(dim=1)
 
