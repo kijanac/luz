@@ -1165,7 +1165,7 @@ class NodeAggregate(Module):
         -------
         torch.Tensor
             Output tensor.
-            Shape: :math:`(N_{batch},d_v)
+            Shape: :math:`(N_{batch},d_v)`
         """
         heads = torch.stack([h(nodes, edge_index, batch) for h in self.heads])
         gates = torch.stack([g(u).squeeze(-1) for g in self.gates])
