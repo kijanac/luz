@@ -12,7 +12,7 @@ Luz Module
 
 Longer description coming soon!
 
-Basic usage: custom modules with luz.Module functionality.
+Basic usage: custom modules with luz.Module functionality. Simply define your model, inherit from luz.Module, and use model.train/model.test.
 
 Next level: simplified training algorithms with transforms and handlers.
 
