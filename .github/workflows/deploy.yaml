@@ -36,7 +36,7 @@ jobs:
       run: conda run -n dev python manage/manage.py build
 
     - name: Build conda package
-      run: conda run -n dev python manage/manage.py build_conda -c
+      run: conda run -n dev python manage/manage.py build -c
 
     - name: Deploy to PyPI and Anaconda
       run: conda run -n dev python manage/manage.py publish -p ${{ secrets.PYPI_TOKEN }} -c ${{ secrets.CONDA_TOKEN }}
