@@ -10,13 +10,17 @@ import torch
 
 __all__ = [
     "Argmax",
+    "Center",
+    "CenterPerTensor",
     "Compose",
     "DigraphToTensors",
     "Expand",
     "Identity",
     "Lookup",
-    "NormalizePerTensor",
+    "Normalize",
+    # "NormalizePerTensor",
     "PowerSeries",
+    "Standardize",
     "Transform",
     "Transpose",
     "ZeroMeanPerTensor",
@@ -47,6 +51,38 @@ class Argmax(TensorTransform):
 
     def __call__(self, x: torch.Tensor) -> torch.LongTensor:
         return x.argmax(dim=self.dim, keepdim=self.keepdim)
+
+
+class Center(TensorTransform):
+    def __init__(self, dataset: luz.Dataset, key: str) -> None:
+        for x in dataset:
+            self.mean = torch.zeros_like(x[key])
+            break
+
+        n = len(dataset)
+
+        for i in range(n):
+            delta = dataset[i][key] - self.mean
+            self.mean += delta / (i + 1)
+
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        return x - self.mean
+
+
+class CenterPerTensor(TensorTransform):
+    def __init__(self, dataset: luz.Dataset, key: str, dim: int) -> None:
+        for x in dataset:
+            self.mean = torch.zeros_like(x[key].mean(dim))
+            break
+
+        n = len(dataset)
+
+        for i in range(n):
+            delta = dataset[i][key].mean(dim) - self.mean
+            self.mean += delta / (i + 1)
+
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        return x - self.mean
 
 
 class Compose(TensorTransform):
@@ -86,11 +122,16 @@ class Lookup(TensorTransform):
         return self.lookup_dict[x]
 
 
-class NormalizePerTensor(TensorTransform):
+# class NormalizePerTensor(TensorTransform):
+#     def __call__(self, x: torch.Tensor) -> torch.Tensor:
+#         x -= torch.mean(x)
+#         x /= torch.std(x)
+#         return x
+
+
+class Normalize(TensorTransform):
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
-        x -= torch.mean(x)
-        x /= torch.std(x)
-        return x
+        return x / x.abs().max()
 
 
 class PowerSeries(TensorTransform):
@@ -106,6 +147,26 @@ class PowerSeries(TensorTransform):
             return torch.stack(tensors=tensors, dim=self.dim)
 
 
+class Standardize(TensorTransform):
+    def __init__(self, dataset: luz.Dataset, key: str) -> None:
+        for x in dataset:
+            self.mean = torch.zeros_like(x[key])
+            variance = torch.zeros_like(x[key])
+            break
+
+        n = len(dataset)
+
+        for i in range(n):
+            delta = dataset[i][key] - self.mean
+            self.mean += delta / (i + 1)
+            variance += delta * (dataset[i][key] - self.mean)
+
+        self.std = torch.sqrt(variance / n)
+
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        return (x - self.mean) / self.std
+
+
 class Transpose(TensorTransform):
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
         return x.t()
@@ -113,5 +174,4 @@ class Transpose(TensorTransform):
 
 class ZeroMeanPerTensor(TensorTransform):
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
-        x -= torch.mean(x)
-        return x
+        return x - torch.mean(x)
