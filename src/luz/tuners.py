@@ -2,22 +2,93 @@ from __future__ import annotations
 from typing import Any, Iterable, Iterator, Optional, Union
 
 from abc import ABC, abstractmethod
+import ast
 import collections
-import contextlib
 import copy
+import itertools
+import json
 import luz
 import numpy as np
+import operator
 import re
 import torch
 
-__all__ = ["Tuner", "BayesianTuner", "GridTuner", "RandomSearchTuner"]
+__all__ = ["Tuner", "BayesianTuner", "GridSearch", "RandomSearch"]
 
 Device = Union[str, torch.device]
 
 
+class Experiment:
+    def __init__(self, **kwargs: Any) -> None:
+        self.kwargs = kwargs
+
+    def __getattr__(self, key: str) -> Any:
+        return self.kwargs[key]
+
+    def encode(self, obj):
+        if isinstance(obj, np.bool_):
+            return bool(obj)
+        if isinstance(obj, torch.nn.Module):
+            if len(obj._modules) > 0:
+                return obj._modules
+            else:
+                return repr(obj)
+
+    def json(self, score: float, model: luz.Module) -> str:
+        d = {"hyperparameters": self.kwargs, "score": score, "model": model}
+        return json.dumps(d, default=self.encode, indent=4)
+
+
+class Sample:
+    def __init__(self, lower: Union[int, float], upper: Union[int, float]) -> None:
+        self.lower = lower
+        self.upper = upper
+
+
+class Choose:
+    def __init__(self, choices: Iterable[Any]) -> None:
+        self.choices = tuple(choices)
+
+
+class Pin:
+    def __init__(self, equation: str) -> None:
+        self.equation = equation
+
+    def __call__(self, **kwargs: Any) -> Any:
+        # NOTE: this sorting should ensure that longer
+        # variable names are substituted first, which
+        # should prevent partial variable name clobbering
+        pattern = "|".join(sorted(kwargs, key=len)[::-1])
+
+        def replacement(m):
+            return str(kwargs[re.escape(m.group(0))])
+
+        expression = re.sub(pattern=pattern, repl=replacement, string=self.equation)
+
+        # parse pin equation string into operators and
+        # evaluate operators to obtain the pin value
+        return _evaluate_expression(expression)
+
+
+class Conditional:
+    def __init__(self, condition: str, if_true: Any, if_false: Any) -> None:
+        self.pin = Pin(condition)
+        self.if_true = if_true
+        self.if_false = if_false
+
+    def __call__(self, **kwargs: Any) -> Any:
+        if self.pin(**kwargs):
+            return self.if_true
+        return self.if_false
+
+
 class Tuner(ABC):
     def __init__(
-        self, num_iterations: int, scorer: luz.Scorer, seed_loop: Optional[bool] = False
+        self,
+        num_iterations: int,
+        scorer: luz.Scorer,
+        seed: Optional[int] = 0,
+        save_experiments: Optional[bool] = False,
     ) -> None:
         """Hyperparameter tuning algorithm.
 
@@ -27,22 +98,23 @@ class Tuner(ABC):
             Number of tuning iterations.
         scorer
             Algorithm to score each set of hyperparameters.
-        seed_loop
-            If True seed each iteration, by default False.
+        seed
+            Random seed for consistency across tuning iterations; by default 0.
         """
         self.num_iterations = num_iterations
         self.scorer = scorer
-        self.seed_loop = seed_loop
+        self.seed = seed
+        self.save_experiments = save_experiments
 
-        self.values = {}
+        self.hyperparameters = []
+
+        self.experiment = None
 
         self.scores = collections.defaultdict(list)
         self.best_model = None
 
     @abstractmethod
-    def sample(
-        self, lower: Union[int, float], upper: Union[int, float]
-    ) -> Union[int, float]:
+    def sample_hyperparameters(self, **samples: Sample) -> Union[int, float]:
         """Sample hyperparameter value.
 
         Parameters
@@ -60,7 +132,7 @@ class Tuner(ABC):
         pass
 
     @abstractmethod
-    def choose(self, choices: Iterable[Any]) -> Any:
+    def choose_hyperparameters(self, **choices: Choose) -> Any:
         """Choose hyperparameter value.
 
         Parameters
@@ -75,33 +147,71 @@ class Tuner(ABC):
         """
         pass
 
-    def hp_sample(self, lower: Union[int, float], upper: Union[int, float]) -> Sample:
-        return Sample(lower, upper, tuner=self)
+    def sample(self, lower: Union[int, float], upper: Union[int, float]) -> Sample:
+        s = Sample(lower, upper)
+        self.hyperparameters.append(s)
 
-    def hp_choose(self, *choices: Any) -> Choose:
-        return Choose(choices=choices, tuner=self)
+        return s
+
+    def choose(self, *choices: Any) -> Choose:
+        c = Choose(choices=choices)
+        self.hyperparameters.append(c)
+
+        return c
 
     def pin(self, equation: str) -> Pin:
-        return Pin(equation, tuner=self)
+        p = Pin(equation)
+        self.hyperparameters.append(p)
+
+        return p
 
     def conditional(self, condition: str, if_true: Any, if_false: Any) -> Conditional:
-        return Conditional(condition, if_true, if_false, tuner=self)
+        c = Conditional(condition, if_true, if_false)
+        self.hyperparameters.append(c)
 
+        return c
+
+    # NOTE: any pins or conditionals have to come after the variables they reference!
     def tune(self, **kwargs: Union[Choose, Conditional, Pin, Sample]) -> Iterator[Any]:
-        # FIXME: implement optional skipping if an old set of hyperparameters is sampled
+        """Tune hyperparameters. Wrap code to be run on each tuning iteration.
+
+        Yields
+        -------
+        Iterator[Any]
+            Hyperparameter values.
+        """
         for i in range(self.num_iterations):
-            # seed to ensure reproducibility in each iteration of the tuning loop
-            nc = contextlib.nullcontext()
-            with luz.temporary_seed(i) if self.seed_loop else nc:
-                for k, v in kwargs.items():
-                    self.values[k] = v()
+            self.current_iteration = i
+            try:
+                sample_hps = {k: v for k, v in kwargs.items() if isinstance(v, Sample)}
+                samples = self.sample_hyperparameters(**sample_hps)
+            except NotImplementedError:
+                pass
 
-                values = tuple(self.values.values())
+            try:
+                choice_hps = {k: v for k, v in kwargs.items() if isinstance(v, Choose)}
+                choices = self.choose_hyperparameters(**choice_hps)
+            except NotImplementedError:
+                pass
 
-                if len(values) == 1:
-                    yield from values
+            d = {}
+
+            for k, v in kwargs.items():
+                if k in sample_hps:
+                    d[k] = samples[k]
+                elif k in choice_hps:
+                    d[k] = choices[k]
                 else:
-                    yield values
+                    d[k] = v(**d)
+
+            self.experiment = Experiment(**d)
+
+            if self.experiment in self.scores:
+                self.scores[self.experiment].append(self.scores[k][-1])
+            else:
+                # seed to ensure reproducibility in each iteration of the tuning loop
+                with luz.temporary_seed(self.seed):
+                    yield self.experiment
 
     def score(
         self, learner: luz.Learner, dataset: luz.Dataset, device: Device
@@ -111,16 +221,20 @@ class Tuner(ABC):
         if self.best_model is None or score < self.best_score:
             self.best_model = copy.deepcopy(model)
 
-        self.scores[tuple(sorted(copy.deepcopy(self.values).items()))].append(score)
+        self.scores[self.experiment].append(score)
 
-        return score
+        if self.save_experiments:
+            with open(f"{self.current_iteration}.json", "w") as f:
+                f.write(self.experiment.json(score, model))
+
+        return luz.Score(model, score)
 
     @property
     def best_hyperparameters(self):
         mean_scores = {k: sum(v) / len(v) for k, v in self.scores.items()}
         try:
             k = min(mean_scores, key=mean_scores.get)
-            return dict(k)
+            return k.kwargs
         except ValueError:
             return None
 
@@ -134,86 +248,46 @@ class Tuner(ABC):
             return None
 
 
-class Sample:
-    def __init__(
-        self, lower: Union[int, float], upper: Union[int, float], tuner: luz.Tuner
-    ) -> None:
-        self.lower = lower
-        self.upper = upper
-        self.tuner = tuner
-
-    def __call__(self) -> Union[int, float]:
-        return self.tuner.sample(self.lower, self.upper)
-
-
-class Choose:
-    def __init__(self, choices: Iterable[Any], tuner: luz.Tuner) -> None:
-        self.choices = tuple(choices)
-        self.tuner = tuner
-
-    def __call__(self) -> Any:
-        return self.tuner.choose(self.choices)
-
-
-class Pin:
-    def __init__(self, equation: str, tuner: luz.Tuner) -> None:
-        self.equation = equation
-        self.tuner = tuner
-
-    def __call__(self) -> Any:
-        # NOTE: this sorting should ensure that longer
-        # variable names are substituted first, which
-        # should prevent partial variable name clobbering
-        pattern = "|".join(sorted(self.tuner.values, key=len)[::-1])
-
-        def replacement(m):
-            return str(self.tuner.values[re.escape(m.group(0))])
-
-        expression = re.sub(pattern=pattern, repl=replacement, string=self.equation)
-
-        # parse pin equation string into operators and
-        # evaluate operators to obtain the pin value
-        return luz.evaluate_expression(expression)
-
-
-class Conditional:
-    def __init__(
-        self, condition: str, if_true: Any, if_false: Any, tuner: luz.Tuner
-    ) -> None:
-        self.pin = Pin(condition, tuner)
-        self.if_true = if_true
-        self.if_false = if_false
-
-    def __call__(self) -> Any:
-        if self.pin():
-            return self.if_true
-        return self.if_false
-
-
 class BayesianTuner(Tuner):
-    def sample(
+    def sample_hyperparameter(
         self, lower: Union[int, float], upper: Union[int, float]
     ) -> Union[int, float]:
         raise NotImplementedError
 
-    def choose(self, choices: Iterable[Any]) -> Any:
+    def choose_hyperparameter(self, choices: Iterable[Any]) -> Any:
         raise NotImplementedError
 
 
-class GridTuner(Tuner):
-    def sample(
-        self, lower: Union[int, float], upper: Union[int, float]
-    ) -> Union[int, float]:
+class GridSearch(Tuner):
+    def __init__(self, scorer: luz.Scorer, seed_loop: Optional[bool] = False) -> None:
+        """Hyperparameter tuning algorithm.
+
+        Parameters
+        ----------
+        scorer
+            Algorithm to score each set of hyperparameters.
+        seed_loop
+            If True seed each iteration, by default False.
+        """
+        super().__init__(0, scorer, seed_loop)
+        self.grid = None
+
+    def tune(self, **kwargs: Union[Choose, Conditional, Pin, Sample]) -> Iterator[Any]:
+        choices = [hp for hp in self.hyperparameters if isinstance(hp, Choose)]
+        self.grid = itertools.product(*[c.choices for c in choices])
+        self.num_iterations = np.prod([len(c.choices) for c in choices])
+
+        yield from super().tune(**kwargs)
+
+    def sample_hyperparameters(self, **samples: Sample) -> Union[int, float]:
         raise NotImplementedError
 
-    def choose(self, choices: Iterable[Any]) -> Any:
-        raise NotImplementedError
+    def choose_hyperparameters(self, **choices: Choose) -> Any:
+        return dict(zip(choices.keys(), next(self.grid)))
 
 
-class RandomSearchTuner(Tuner):
-    def sample(
-        self, lower: Union[int, float], upper: Union[int, float]
-    ) -> Union[int, float]:
+class RandomSearch(Tuner):
+    def sample_hyperparameters(self, **samples: Sample) -> Union[int, float]:
         """Sample hyperparameter value.
 
         Parameters
@@ -226,17 +300,21 @@ class RandomSearchTuner(Tuner):
         Returns
         -------
         Union[int, float]
-            Sampled hyperparameter value.
+            Sampled hyperparameter value from the range `[lower, upper)`.
         """
-        (datatype,) = set((type(lower), type(upper)))
-        if datatype == int:
-            return np.random.randint(low=lower, high=upper + 1)
-        elif datatype == float:
-            return np.random.uniform(low=lower, high=upper)
-        else:
-            return None
+        d = {}
+        for k, s in samples.items():
+            (datatype,) = set((type(s.lower), type(s.upper)))
+            if datatype == int:
+                d[k] = np.random.randint(low=s.lower, high=s.upper)
+            elif datatype == float:
+                d[k] = np.random.uniform(low=s.lower, high=s.upper)
+            else:
+                d[k] = None
 
-    def choose(self, choices: Iterable[Any]) -> Any:
+        return d
+
+    def choose_hyperparameters(self, **choices: Choose) -> Any:
         """Choose hyperparameter value.
 
         Parameters
@@ -249,4 +327,61 @@ class RandomSearchTuner(Tuner):
         Any
             Chosen hyperparameter value.
         """
-        return np.random.choice(a=choices)
+        return {k: np.random.choice(a=c.choices) for k, c in choices.items()}
+
+
+# from https://stackoverflow.com/a/9558001
+
+ops = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.Pow: operator.pow,
+    ast.BitXor: operator.xor,
+    ast.USub: operator.neg,
+    ast.FloorDiv: operator.floordiv,
+    ast.Eq: operator.eq,
+    ast.NotEq: operator.ne,
+    ast.Lt: operator.lt,
+    ast.LtE: operator.le,
+    ast.Gt: operator.gt,
+    ast.GtE: operator.ge,
+    ast.Is: operator.is_,
+    ast.IsNot: operator.is_not,
+}
+
+
+def _evaluate_expression(expression: str) -> Any:
+    node = ast.parse(expression, mode="eval").body
+
+    return _evaluate_operators(node)
+
+
+def _evaluate_operators(node) -> Any:
+    # FIXME: type annotate `node`
+    # <number>
+    if isinstance(node, ast.Num):
+        return node.n
+    # <left> <operator> <right>
+    elif isinstance(node, ast.BinOp):
+        return ops[type(node.op)](
+            _evaluate_operators(node.left),
+            _evaluate_operators(node.right),
+        )
+    # <operator> <operand> e.g., -1
+    elif isinstance(node, ast.UnaryOp):
+        return ops[type(node.op)](_evaluate_operators(node.operand))
+    elif isinstance(node, ast.Compare):
+        # from https://github.com/danthedeckie/simpleeval/blob/master/simpleeval.py
+        right = _evaluate_operators(node.left)
+        to_return = True
+        for operation, comp in zip(node.ops, node.comparators):
+            if not to_return:
+                break
+            left = right
+            right = _evaluate_operators(comp)
+            to_return = ops[type(operation)](left, right)
+        return to_return
+    else:
+        raise TypeError(node)
