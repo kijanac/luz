@@ -21,7 +21,7 @@ jobs:
       run: conda update -n base -c defaults conda
 
     - name: Make conda environment and install dependencies
-      run: $(conda info --base)/bin/python3 manage/manage.py setup dev
+      run: $(conda info --base)/bin/python3 manage/manage.py setup -n dev
 
     - name: Install package (editable)
       run: conda run -n dev python manage/manage.py install
@@ -30,13 +30,13 @@ jobs:
       run: conda run -n dev python manage/manage.py lint
 
     - name: Run tests on editable install
-      run: conda run -n dev python manage/manage.py test ${{ secrets.CODECOV_TOKEN }}
+      run: conda run -n dev python manage/manage.py test -t ${{ secrets.CODECOV_TOKEN }}
 
     - name: Build sdist and wheel
       run: conda run -n dev python manage/manage.py build
 
     - name: Build conda package
-      run: conda run -n dev python manage/manage.py build_conda
+      run: conda run -n dev python manage/manage.py build_conda -c
 
     - name: Deploy to PyPI and Anaconda
-      run: conda run -n dev python manage/manage.py publish ${{ secrets.PYPI_TOKEN }} ${{ secrets.CONDA_TOKEN }}
+      run: conda run -n dev python manage/manage.py publish -p ${{ secrets.PYPI_TOKEN }} -c ${{ secrets.CONDA_TOKEN }}
