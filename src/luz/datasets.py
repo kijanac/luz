@@ -65,7 +65,7 @@ def graph_collate(batch: Iterable[luz.Data]) -> luz.Data:
     kw = {}
 
     for k in batch[0].keys:
-        if k in ("x", "edge_attr", "y"):
+        if k in ("x", "edges"):  # , "y"):
             kw[k] = torch.cat([torch.as_tensor(sample[k]) for sample in batch], dim=0)
         elif k == "edge_index":
             kw[k] = torch.cat(
@@ -139,9 +139,6 @@ class Data:
 
 
 class BaseDataset:
-    def __init__(self) -> None:
-        self._collate = default_collate
-
     def _collate(self, batch: Iterable[luz.Data]) -> luz.Data:
         return default_collate(batch)
 
@@ -208,15 +205,19 @@ class BaseDataset:
         luz.Subset
             Generated subset.
         """
-        return Subset(dataset=self, indices=indices)
+        return Subset(dataset=self, indices=indices).use_collate(self._collate)
 
-    def random_split(self, lengths: Iterable[int]) -> Tuple[BaseDataset]:
-        """Randomly split Dataset into multiple subsets of given lengths.
+    def split(
+        self, lengths: Iterable[int], shuffle: Optional[int] = True
+    ) -> Tuple[BaseDataset]:
+        """Split Dataset into multiple subsets of given lengths.
 
         Parameters
         ----------
         lengths
-            Lengths of random subsets.
+            Lengths of subsets.
+        shuffle
+            If True, shuffle before splitting; by default True.
 
         Returns
         -------
@@ -225,11 +226,12 @@ class BaseDataset:
         """
         # adapted from
         # https://pytorch.org/docs/stable/_modules/torch/utils/data/dataset.html#random_split
-        indices = torch.randperm(sum(lengths)).tolist()
+        if shuffle:
+            indices = torch.randperm(sum(lengths)).tolist()
+        else:
+            indices = torch.arange(sum(lengths)).tolist()
         return tuple(
-            Subset(dataset=self, indices=indices[offset - l : offset]).use_collate(
-                self._collate
-            )
+            self.subset(indices=indices[offset - l : offset]).use_collate(self._collate)
             for offset, l in zip(itertools.accumulate(lengths), lengths)
         )
 
@@ -244,19 +246,20 @@ class Dataset(torch.utils.data.Dataset, BaseDataset):
             Iterable of Data objects comprising the dataset.
         """
         self.data = tuple(data)
+        self.len = len(data)
 
     def __getitem__(self, index: int) -> luz.Data:
         return self.data[index]
 
     def __len__(self) -> int:
-        return len(self.data)
+        return self.len
 
 
 class ConcatDataset(BaseDataset, torch.utils.data.ConcatDataset):
     pass
 
 
-class Subset(torch.utils.data.Subset, BaseDataset):
+class Subset(BaseDataset, torch.utils.data.Subset):
     pass
 
 
