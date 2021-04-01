@@ -32,11 +32,8 @@ jobs:
     - name: Run tests on editable install
       run: conda run -n dev python manage/manage.py test -t ${{ secrets.CODECOV_TOKEN }}
 
-    - name: Build sdist and wheel
-      run: conda run -n dev python manage/manage.py build
-
-    - name: Build conda package
-      run: conda run -n dev python manage/manage.py build -c
+    - name: Build sdist, wheel, and conda package
+      run: conda run -n dev python manage/manage.py build -c -l conda-forge pytorch
 
     - name: Deploy to PyPI and Anaconda
       run: conda run -n dev python manage/manage.py publish -p ${{ secrets.PYPI_TOKEN }} -c ${{ secrets.CONDA_TOKEN }}
