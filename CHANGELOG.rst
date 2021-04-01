@@ -97,7 +97,33 @@
 * feat: Rename FC and FCRNN to Dense and DenseRNN, respectively. Add EdgeAttention, MultiheadEdgeAttention, Squeeze, and Unsqueeze modules. (`5caf7bd <https://github.com/kijanac/luz/commit/5caf7bdf9d293b5da1fb671dc7330efcb3bb6c41>`__)
 
 
-`Version 4.0.0 <https://github.com/kijanac/luz/compare/v4.0.0...v4.0.0>`__
+`Version 5.0.0 <https://github.com/kijanac/luz/compare/v4.0.0...v5.0.0>`__
+--------------------------------------------------------------------------
+
+* feat: Add Standardize, Center, CenterPerTensor transforms. (`5ab3647 <https://github.com/kijanac/luz/commit/5ab364721651489b767f7f22d4d7a74028caf3a6>`__)
+* feat: Add functionality to save and load Trainer state. (`ef4423a <https://github.com/kijanac/luz/commit/ef4423a6ce7c18993831d372bc44e7ffb15964ea>`__)
+* feat: Greatly expand Module functionality and modularity. (`b02ee08 <https://github.com/kijanac/luz/commit/b02ee0800d39eddd96a1623ea98fcf1fa20b915c>`__)
+* feat: Convert Learner to an AbstractBaseClass (`b55cbc2 <https://github.com/kijanac/luz/commit/b55cbc28df59d9cab91446c16339242cce3a03ab>`__)
+* fix: Fix bug which prevented use of BaseDataset.Subset (`036b120 <https://github.com/kijanac/luz/commit/036b12032f3b0136e58bf05079b37a9e4c640684>`__)
+* feat: Add VALIDATING flag for use in training handlers. (`7245363 <https://github.com/kijanac/luz/commit/7245363a4885cfc66ab573cbc4213dd40991496b>`__)
+* feat: Remove Predictor and move functionality to Module. (`a59bd4c <https://github.com/kijanac/luz/commit/a59bd4c1e992eb3ce66639bcd3fca80c1ae7121b>`__)
+* feat: Add PlotHistory handler. (`30cb8d1 <https://github.com/kijanac/luz/commit/30cb8d12f9c6f736b70663dacd93cefd42d7c65b>`__)
+* feat: Add ActualVsPredicted handler. (`3a29d6b <https://github.com/kijanac/luz/commit/3a29d6b3d9029a26f25208cc42d465343b9a4a39>`__)
+* feat: Enable CUDA functionality. (`2bb8741 <https://github.com/kijanac/luz/commit/2bb8741b8a3bdcbcd974ffb509db121065b1b4e7>`__)
+* feat: Add Accuracy and FBeta handlers. Remove superfluous Validate handler. (`f2bfd96 <https://github.com/kijanac/luz/commit/f2bfd9645cb87e64ad1056a30ef8d86ace8d93e8>`__)
+* feat: Add early stopping capabilities to Trainer. (`281fda4 <https://github.com/kijanac/luz/commit/281fda4b5559ea7c606ecc8682a0e607b1cbc79a>`__)
+* feat: Add Validate handler. (`0e91c33 <https://github.com/kijanac/luz/commit/0e91c33ad380c3dc722baa46a5544352f00aeca7>`__)
+* feat: Implement validation dataset in Trainer.run. (`07402c5 <https://github.com/kijanac/luz/commit/07402c52498e5a5f9944f4b2c899c57945476a6a>`__)
+* fix: Fix bug which prevented Trainer from skipping gradient calculations in test mode. (`2690368 <https://github.com/kijanac/luz/commit/2690368cfcf65b49a41820707f2dd1ccc56e6603>`__)
+* feat: Update Predictor.eval to include no_grad option. (`2368e04 <https://github.com/kijanac/luz/commit/2368e046a66d34dfa9934e016460a333eff65214>`__)
+* feat: Rename attention utility function to dot_product_attention. (`233900b <https://github.com/kijanac/luz/commit/233900b662b3ff3bccee2cff4ea9b6695aa13840>`__)
+* feat: Add AdditiveNodeAttention, DotProductAttention, and MaskedSoftmax modules. Remove WAVE module. (`cb0bd2b <https://github.com/kijanac/luz/commit/cb0bd2b2212bfb0f3f15748b9f74172743ac07b1>`__)
+* feat: Add AdditiveAttention and GraphConvAttention modules. (`14153ad <https://github.com/kijanac/luz/commit/14153adc7a468940d265b9bf9a0049259b61b6a8>`__)
+* feat: Add GraphConv module. (`d649f07 <https://github.com/kijanac/luz/commit/d649f0743699960471be8b4568a9ee6472fd1401>`__)
+* feat: Add adjacency, in_degree, out_degree utility functions for graph manipulations. (`ad3f3b6 <https://github.com/kijanac/luz/commit/ad3f3b624c26f0db2976ace794f1f5dd1622e3b7>`__)
+
+
+`Version 5.0.0 <https://github.com/kijanac/luz/compare/v5.0.0...v5.0.0>`__
 --------------------------------------------------------------------------
 
 
