@@ -4,8 +4,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "luz"
-version = "5.0.0"
-description = "blahblah"
+version = "4.0.0"
+description = "Framework for rapid research and development of machine learning projects using PyTorch."
 authors = [ "Ki-Jana Carter <kijana@mit.edu>",]
 license = "MIT"
 readme = "README.rst"
@@ -16,7 +16,7 @@ homepage = "https://github.com/kijanac/luz"
 name = "luz"
 
 [tool.poetry.dependencies]
-python = "3.8"
+python = "^3.9"
 matplotlib = "^3.3.2"
 torch = "^1.7.0"
 networkx = "^2.5"
