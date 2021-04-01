@@ -4,10 +4,11 @@ Custom PyTorch modules.
 
 """
 from __future__ import annotations
-from typing import Callable, Iterable, Optional
+from typing import Any, Callable, Iterable, Optional, Union
 
 import contextlib
 import luz
+import pathlib
 import torch
 
 __all__ = [
@@ -18,22 +19,51 @@ __all__ = [
     "DenseRNN",
     "DotProductAttention",
     "ElmanRNN",
-    "EdgeAttention",
+    "EdgeAggregateLocal",
+    "EdgeAggregateLocalHead",
+    "EdgeAggregateGlobal",
+    "EdgeAggregateGlobalHead",
     "GraphConv",
     "GraphConvAttention",
     "GraphNetwork",
     "MaskedSoftmax",
     "Module",
-    "MultiheadEdgeAttention",
+    "NodeAggregate",
     "Reshape",
     "Squeeze",
+    "StandardizeInput",
     "Unsqueeze",
 ]
 
 Activation = Callable[[torch.Tensor], torch.Tensor]
+Device = Union[str, torch.device]
+Loss = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 
 class Module(torch.nn.Module):
+    @property
+    def num_parameters(self) -> int:
+        """Number of trainable parameters.
+
+        Returns
+        -------
+        int
+            Number of trainable parameters.
+        """
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+    def save(self, path: Union[str, pathlib.Path]) -> None:
+        torch.save(
+            {"model": self.state_dict(), "trainer": self.trainer.state_dict()}, path
+        )
+
+    def load(self, path: Union[str, pathlib.Path]):
+        state_dict = torch.load(path)
+        self.load_state_dict(state_dict["model"])
+
+        self.trainer = luz.Trainer()
+        self.trainer.load_state_dict(state_dict["trainer"])
+
     def predict(self, x: torch.Tensor) -> torch.Tensor:
         """Compute forward pass in eval mode.
 
@@ -70,6 +100,175 @@ class Module(torch.nn.Module):
             finally:
                 if training:
                     self.train()
+
+    def migrate(self, device: Device) -> None:
+        self.to(device=device)
+
+    def log(self, **kwargs: Any) -> None:
+        self.trainer._state.update(**kwargs)
+
+    def _call_event(self, event: luz.Event) -> None:
+        for h in self.handlers:
+            getattr(h, event.name.lower())(**self._state)
+
+    def fit(
+        self,
+        dataset: luz.Dataset,
+        val_dataset: Optional[luz.Dataset] = None,
+        device: Optional[Device] = "cpu",
+    ) -> luz.Module:
+        """Fit model.
+
+        Parameters
+        ----------
+        dataset
+            Training data.
+        val_dataset
+            Validation data, by default None.
+        device
+            Device to use for training, by default "cpu".
+
+        Returns
+        -------
+        luz.Module
+            Trained model.
+        """
+        self.trainer.fit(self, dataset, val_dataset, device)
+
+        return self
+
+    def validate(self, dataset: luz.Dataset, device: Optional[Device] = "cpu") -> float:
+        """Validate model.
+
+        Parameters
+        ----------
+        dataset
+            Validation data.
+        device
+            Device to use for validation, by default "cpu".
+
+        Returns
+        -------
+        float
+            Validation loss.
+        """
+        loader = dataset.loader(**self.loader_kwargs)
+        with self.eval():
+            val_loss = self.run_epoch(loader, device, train=False)
+
+        self._state["val_history"].append(val_loss)
+
+        try:
+            # FIXME: replace 0.0 with self.delta_thresh?
+            if min(self._state["val_history"]) - val_loss < 0.0:
+                self._state["patience"] -= 1
+            else:
+                self._state["patience"] = self.patience
+        except ValueError:
+            pass
+
+        return val_loss
+
+    def test(
+        self,
+        dataset: luz.Dataset,
+        device: Optional[Device] = "cpu",
+    ) -> float:
+        return self.trainer.test(self, dataset, device)
+
+    def run_batch(
+        self,
+        data: torch.Tensor,
+        target: torch.Tensor,
+        device: Device,
+        optimizer: Optional[torch.optim.Optimizer] = None,
+    ) -> float:
+        """Run training algorithm on a single batch.
+
+        Parameters
+        ----------
+        dataset
+            Batch of training data.
+        target
+            Target tensor.
+        device
+            Device to use for training.
+        optimizer
+            Training optimizer, by default None.
+
+        Returns
+        -------
+        float
+            Batch loss.
+        """
+        output = self(data)
+        loss = self.loss(output, target)
+
+        if optimizer is not None:
+            self.backward(loss)
+            self.optimizer_step(optimizer)
+
+        self.log(output=output, loss=loss)
+
+        return loss.item()
+
+    def use_fit_params(self, **kwargs) -> None:
+        self.trainer = luz.Trainer(**kwargs)
+
+    @property
+    def loss(self) -> Loss:
+        return self.trainer.loss
+
+    def backward(self, loss: torch.Tensor) -> None:
+        """Backpropagate loss.
+
+        Parameters
+        ----------
+        loss
+            Loss tensor.
+        """
+        loss.backward()
+
+    def optimizer_step(self, optimizer: torch.optim.Optimizer) -> None:
+        """Step training optimizer.
+
+        Parameters
+        ----------
+        optimizer
+            Training optimizer.
+        """
+        optimizer.step()
+        optimizer.zero_grad()
+
+    def get_input(self, batch: luz.Data) -> torch.Tensor:
+        """Get input from batched data.
+
+        Parameters
+        ----------
+        batch
+            Batched data.
+
+        Returns
+        -------
+        torch.Tensor
+            Input tensor.
+        """
+        return batch.x
+
+    def get_target(self, batch: luz.Data) -> Optional[torch.Tensor]:
+        """Get target from batched data.
+
+        Parameters
+        ----------
+        batch
+            Batched data.
+
+        Returns
+        -------
+        Optional[torch.Tensor]
+            Target tensor.
+        """
+        return batch.y
 
 
 class AdditiveAttention(Module):
@@ -153,16 +352,16 @@ class AdditiveNodeAttention(Module):
         ----------
         nodes
             Node features.
-            Shape: :math:`(N_v,d_v)`
+            Shape: :math:`(N_{nodes},d_v)`
         edge_index
             Edge index tensor.
-            Shape: :math:`(2,N_e)`
+            Shape: :math:`(2,N_{edges})`
 
         Returns
         -------
         torch.Tensor
             Output tensor.
-            Shape: :math:`(N_e,N_v)`
+            Shape: :math:`(N_{edges},N_{nodes})`
         """
         mask = luz.nodewise_mask(edge_index, device=nodes.device)
         s, r = edge_index
@@ -298,24 +497,24 @@ class DotProductAttention(Module):
         ----------
         query
             Query vectors.
-            Shape: :math:`(N,d_q)`
+            Shape: :math:`(N_{queries},d_q)`
         key
             Key vectors.
-            Shape: :math:`(N,d_q)`
+            Shape: :math:`(N_{keys},d_q)`
         mask
             Mask tensor to ignore query-key pairs, by default None.
-            Shape: :math:`(N,N)`
+            Shape: :math:`(N_{queries},N_{keys})`
 
         Returns
         -------
         torch.Tensor
             Scaled dot product attention between each query and key vector.
-            Shape: :math:`(N,N)`
+            Shape: :math:`(N_{queries},N_{keys})`
         """
         return luz.dot_product_attention(query, key, mask)
 
 
-class EdgeAttention(Module):
+class EdgeAggregateLocalHead(Module):
     def __init__(
         self,
         d_v: int,
@@ -336,8 +535,6 @@ class EdgeAttention(Module):
             Global feature length.
         d_attn
             Attention vector length.
-        nodewise
-            If True perform nodewise edge aggregation, by default True.
         """
         super().__init__()
         act = torch.nn.LeakyReLU()
@@ -348,7 +545,7 @@ class EdgeAttention(Module):
         self.concat = Concatenate(dim=1)
         self.attn = DotProductAttention()
 
-        self.nodewise = nodewise
+        self.lin = Dense(d_attn, d_e, activation=act)
 
     def forward(
         self,
@@ -364,13 +561,13 @@ class EdgeAttention(Module):
         ----------
         nodes
             Node features.
-            Shape: :math:`(N_v,d_v)`
+            Shape: :math:`(N_{nodes},d_v)`
         edges
             Edge features.
-            Shape: :math:`(N_e,d_e)`
+            Shape: :math:`(N_{edges},d_e)`
         edge_index
             Edge index tensor.
-            Shape: :math:`(2,N_e)`
+            Shape: :math:`(2,N_{edges})`
         u
             Global features.
             Shape: :math:`(N_{batch},d_u)`
@@ -381,18 +578,111 @@ class EdgeAttention(Module):
         -------
         torch.Tensor
             Output tensor.
+            Shape: :math:`(N_{nodes},d_e)`
         """
-        if self.nodewise:
-            mask = luz.nodewise_mask(edge_index, device=edges.device)
-        else:
-            mask = luz.batchwise_mask(batch, edge_index, device=edges.device)
+        mask = luz.nodewise_mask(edge_index, device=edges.device)
 
         s, r = edge_index
         q = self.query(self.concat(nodes, u[batch]))
         k = self.key(self.concat(nodes[s], u[batch[s]]))
         v = self.value(self.concat(edges, u[batch[s]]))
 
-        return self.attn(q, k, mask) @ v
+        attn = self.attn(q, k, mask)
+
+        x = attn @ v
+
+        return self.lin(x)
+
+
+class EdgeAggregateGlobalHead(Module):
+    def __init__(self, d_v: int, d_e: int, d_u: int, d_attn: int) -> None:
+        """Aggregates graph edges using attention.
+
+        Parameters
+        ----------
+        d_v
+            Node feature length.
+        d_e
+            Edge feature length.
+        d_u
+            Global feature length.
+        d_attn
+            Attention vector length.
+        """
+        super().__init__()
+        act = torch.nn.LeakyReLU()
+        self.query = Dense(d_e + d_u, d_attn, activation=act)
+        self.key = Dense(d_u, d_attn, activation=act)
+        self.value = Dense(d_e + d_u, d_attn, activation=act)
+
+        self.concat = Concatenate(dim=1)
+        self.attn = DotProductAttention()
+
+        self.lin = Dense(d_attn, d_e, activation=act)
+
+    def forward(
+        self,
+        nodes: torch.Tensor,
+        edges: torch.Tensor,
+        edge_index: torch.Tensor,
+        u: torch.Tensor,
+        batch: torch.Tensor,
+    ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_{nodes},d_v)`
+        edges
+            Edge features.
+            Shape: :math:`(N_{edges},d_e)`
+        edge_index
+            Edge index tensor.
+            Shape: :math:`(2,N_{edges})`
+        u
+            Global features.
+            Shape: :math:`(N_{batch},d_u)`
+        batch
+            Nodewise batch tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+            Shape: :math:`(N_{batch},d_e)`
+        """
+        mask = luz.batchwise_mask(batch, edge_index, device=edges.device).t()
+
+        s, r = edge_index
+        q = self.query(self.concat(edges, u[batch[s]]))
+        k = self.key(self.concat(u))
+        v = self.value(self.concat(edges, u[batch[s]]))
+
+        attn = self.attn(q, k, mask).t()
+
+        x = attn @ v
+
+        return self.lin(x)
+
+
+class StandardizeInput(Module):
+    def __init__(self, mean, std):
+        super().__init__()
+        self.mean = mean
+        self.std = std
+
+    def forward(self, x):
+        # if self.training:
+        # return x
+
+        # if mean is not None:
+        # if std is not None:
+        return (x - self.mean) / self.std
+        # return x - mean
+
+        # return x
 
 
 class ElmanRNN(Module):
@@ -460,19 +750,21 @@ class GraphConv(Module):
         ----------
         nodes
             Node features.
-            Shape: :math:`(N_v,d_v)`
+            Shape: :math:`(N_{nodes},d_v)`
         edge_index
             Edge indices.
-            Shape: :math:`(2,N_e)`
+            Shape: :math:`(2,N_{edges})`
 
         Returns
         -------
         torch.Tensor
             Output tensor.
-            Shape: :math:`(N_v,d_v)`
+            Shape: :math:`(N_{nodes},d_v)`
         """
         N_v, _ = nodes.shape
-        A = luz.adjacency(edge_index) + torch.eye(N_v)
+        A = luz.adjacency(edge_index, device=nodes.device) + torch.eye(
+            N_v, device=nodes.device
+        )
         d = luz.in_degree(A).pow(-0.5)
         d.masked_fill(d == float("inf"), 0)
         D = torch.diag(d)
@@ -481,7 +773,7 @@ class GraphConv(Module):
 
 
 class GraphConvAttention(Module):
-    def __init__(self, d_v: int, activation: Activation) -> None:
+    def __init__(self, d_v: int, activation: Optional[Activation] = None) -> None:
         """Compute node attention weights using graph convolutional network.
 
         Parameters
@@ -492,6 +784,9 @@ class GraphConvAttention(Module):
             Activation function.
         """
         super().__init__()
+        if activation is None:
+            activation = torch.nn.Identity()
+
         self.gcn = GraphConv(d_v, torch.nn.Identity())
         self.lin = Dense(d_v, 1, activation=activation)
 
@@ -504,19 +799,19 @@ class GraphConvAttention(Module):
         ----------
         nodes
             Node features.
-            Shape: :math:`(N_v,d_v)`
+            Shape: :math:`(N_{nodes},d_v)`
         edge_index
             Edge indices.
-            Shape: :math:`(2,N_e)`
+            Shape: :math:`(2,N_{edges})`
         batch
             Batch indices.
-            Shape: :math:`(N_v,)`
+            Shape: :math:`(N_{nodes},)`
 
         Returns
         -------
         torch.Tensor
             Attention weights.
-            Shape: :math:`(N_{batch},N_v)`
+            Shape: :math:`(N_{batch},N_{nodes})`
         """
         pre_attn = self.lin(self.gcn(nodes, edge_index)).t()
         M = luz.batchwise_mask(batch, device=nodes.device)
@@ -568,37 +863,37 @@ class GraphNetwork(Module):
         ----------
         nodes
             Node features.
-            Shape: :math:`(N_v,d_v)`
+            Shape: :math:`(N_{nodes},d_v)`
         edge_index
             Edge index tensor.
-            Shape: :math:`(2,N_e)`
+            Shape: :math:`(2,N_{edges})`
         edges
             Edge features, by default None.
-            Shape: :math:`(N_e,d_e)`
+            Shape: :math:`(N_{edges},d_e)`
         u
             Global features, by default None.
             Shape: :math:`(N_{batch},d_u)`
         batch
             Nodewise batch tensor, by default None.
-            Shape: :math:`(N_v,)`
+            Shape: :math:`(N_{nodes},)`
 
         Returns
         -------
         torch.Tensor
             Output node feature tensor.
-            Shape: :math:`(N_v,d_v)`
+            Shape: :math:`(N_{nodes},d_v)`
         torch.Tensor
             Output edge index tensor.
-            Shape: :math:`(2,N_e)`
+            Shape: :math:`(2,N_{edges})`
         torch.Tensor
             Output edge feature tensor.
-            Shape: :math:`(N_e,d_e)`
+            Shape: :math:`(N_{edges},d_e)`
         torch.Tensor
             Output global feature tensor.
             Shape: :math:`(N_{batch},d_u)`
         torch.Tensor
             Output batch tensor.
-            Shape: :math:`(N_v,)`
+            Shape: :math:`(N_{nodes},)`
         """
         if batch is None:
             N_v, *_ = nodes.shape
@@ -652,22 +947,19 @@ class MaskedSoftmax(Module):
         return luz.masked_softmax(x, mask, self.dim)
 
 
-class MultiheadEdgeAttention(Module):
+class EdgeAggregateLocal(Module):
     def __init__(
         self,
-        num_heads: int,
         d_v: int,
         d_e: int,
         d_u: int,
         d_attn: int,
-        nodewise: Optional[bool] = True,
+        num_heads: Optional[int] = 1,
     ) -> None:
         """Aggregates graph edges using multihead attention.
 
         Parameters
         ----------
-        num_heads
-            Number of attention heads.
         d_v
             Node feature length.
         d_e
@@ -676,8 +968,8 @@ class MultiheadEdgeAttention(Module):
             Global feature length.
         d_attn
             Attention vector length.
-        nodewise
-            If True perform nodewise edge aggregation, by default True.
+        num_heads
+            Number of attention heads.
         """
         super().__init__()
         self.concat = luz.Concatenate(dim=1)
@@ -685,7 +977,7 @@ class MultiheadEdgeAttention(Module):
         self.gates = torch.nn.ModuleList()
 
         for _ in range(num_heads):
-            h = EdgeAttention(d_v, d_e, d_u, d_attn, nodewise)
+            h = EdgeAggregateLocalHead(d_v, d_e, d_u, d_attn)
             g = Dense(d_v + d_u, 1, activation=torch.nn.LeakyReLU())
 
             self.heads.append(h)
@@ -705,19 +997,25 @@ class MultiheadEdgeAttention(Module):
         ----------
         nodes
             Node features.
-        edges
-            Edge features.
+            Shape: :math:`(N_{nodes},d_v)`
         edge_index
             Edge index tensor.
+            Shape: :math:`(2,N_{edges})`
+        edges
+            Edge features, by default None.
+            Shape: :math:`(N_{edges},d_e)`
         u
-            Global features.
+            Global features, by default None.
+            Shape: :math:`(N_{batch},d_u)`
         batch
-            Nodewise batch tensor.
+            Nodewise batch tensor, by default None.
+            Shape: :math:`(N_{nodes},)`
 
         Returns
         -------
         torch.Tensor
             Output tensor.
+            Shape: :math:`(N_{nodes},d_e)`
         """
         x = self.concat(nodes, u[batch])
 
@@ -725,6 +1023,154 @@ class MultiheadEdgeAttention(Module):
         gates = torch.stack([g(x).squeeze(-1) for g in self.gates])
 
         return torch.einsum("ijk, ij -> jk", heads, gates)
+
+
+class EdgeAggregateGlobal(Module):
+    def __init__(
+        self,
+        d_v: int,
+        d_e: int,
+        d_u: int,
+        d_attn: int,
+        num_heads: Optional[int] = 1,
+    ) -> None:
+        """Aggregates graph edges using multihead attention.
+
+        Parameters
+        ----------
+        d_v
+            Node feature length.
+        d_e
+            Edge feature length.
+        d_u
+            Global feature length.
+        d_attn
+            Attention vector length.
+        num_heads
+            Number of attention heads.
+        """
+        super().__init__()
+        self.concat = luz.Concatenate(dim=1)
+        self.heads = torch.nn.ModuleList()
+        self.gates = torch.nn.ModuleList()
+
+        for _ in range(num_heads):
+            h = EdgeAggregateGlobalHead(d_v, d_e, d_u, d_attn)
+            g = Dense(d_u, 1, activation=torch.nn.LeakyReLU())
+
+            self.heads.append(h)
+            self.gates.append(g)
+
+    def forward(
+        self,
+        nodes: torch.Tensor,
+        edges: torch.Tensor,
+        edge_index: torch.Tensor,
+        u: torch.Tensor,
+        batch: torch.Tensor,
+    ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_{nodes},d_v)`
+        edge_index
+            Edge index tensor.
+            Shape: :math:`(2,N_{edges})`
+        edges
+            Edge features, by default None.
+            Shape: :math:`(N_{edges},d_e)`
+        u
+            Global features, by default None.
+            Shape: :math:`(N_{batch},d_u)`
+        batch
+            Nodewise batch tensor, by default None.
+            Shape: :math:`(N_{nodes},)`
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+            Shape: :math:`(N_{batch},d_e)`
+        """
+        heads = torch.stack([h(nodes, edges, edge_index, u, batch) for h in self.heads])
+        gates = torch.stack([g(u).squeeze(-1) for g in self.gates])
+
+        return torch.einsum("ijk, ij -> jk", heads, gates)
+
+
+class NodeAggregate(Module):
+    def __init__(
+        self,
+        d_v: int,
+        d_u: int,
+        num_heads: Optional[int] = 1,
+    ) -> None:
+        """Aggregates graph edges using multihead attention.
+
+        Parameters
+        ----------
+        d_v
+            Node feature length.
+        d_u
+            Global feature length.
+        d_attn
+            Attention vector length.
+        num_heads
+            Number of attention heads.
+        """
+        super().__init__()
+        self.concat = luz.Concatenate(dim=1)
+        self.heads = torch.nn.ModuleList()
+        self.gates = torch.nn.ModuleList()
+
+        for _ in range(num_heads):
+            h = GraphConvAttention(d_v, activation=torch.nn.LeakyReLU())
+            g = Dense(d_u, 1, activation=torch.nn.LeakyReLU())
+
+            self.heads.append(h)
+            self.gates.append(g)
+
+    def forward(
+        self,
+        nodes: torch.Tensor,
+        edges: torch.Tensor,
+        edge_index: torch.Tensor,
+        u: torch.Tensor,
+        batch: torch.Tensor,
+    ) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_{nodes},d_v)`
+        edge_index
+            Edge index tensor.
+            Shape: :math:`(2,N_{edges})`
+        edges
+            Edge features, by default None.
+            Shape: :math:`(N_{edges},d_e)`
+        u
+            Global features, by default None.
+            Shape: :math:`(N_{batch},d_u)`
+        batch
+            Nodewise batch tensor, by default None.
+            Shape: :math:`(N_{nodes},)`
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+            Shape: :math:`(N_{batch},d_v)
+        """
+        heads = torch.stack([h(nodes, edge_index, batch) for h in self.heads])
+        gates = torch.stack([g(u).squeeze(-1) for g in self.gates])
+
+        return torch.einsum("ijk, ij -> jk", heads @ nodes, gates)
 
 
 class Reshape(Module):
