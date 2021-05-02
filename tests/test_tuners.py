@@ -17,7 +17,10 @@ class DummyModel(luz.Module):
 
 
 class DummyLearner(luz.Learner):
-    def learn(self, train_dataset, val_dataset=None, device="cpu"):
+    def model(self):
+        pass
+
+    def fit_params(self, train_dataset, val_dataset, device):
         pass
 
 
@@ -30,10 +33,9 @@ def test_random_search():
 
     learner = DummyLearner()
     learner.learn = mock.MagicMock(return_value=m)
+    learner.use_scorer(luz.Holdout(test_fraction=0.2))
 
-    scorer = luz.Holdout(test_fraction=0.2)
-
-    tuner = luz.RandomSearch(5, scorer)
+    tuner = luz.RandomSearch(5)
 
     hps = []
 
@@ -61,10 +63,9 @@ def test_grid_search():
 
     learner = DummyLearner()
     learner.learn = mock.MagicMock(return_value=m)
+    learner.use_scorer(luz.Holdout(test_fraction=0.2))
 
-    scorer = luz.Holdout(test_fraction=0.2)
-
-    tuner = luz.GridSearch(scorer)
+    tuner = luz.GridSearch()
 
     hps = []
 

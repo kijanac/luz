@@ -17,7 +17,10 @@ class DummyModel(luz.Module):
 
 
 class DummyLearner(luz.Learner):
-    def learn(self, train_dataset, val_dataset=None, device="cpu"):
+    def model(self):
+        pass
+
+    def fit_params(self, train_dataset, val_dataset, device):
         pass
 
 
