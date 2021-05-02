@@ -4,7 +4,7 @@ Custom PyTorch modules.
 
 """
 from __future__ import annotations
-from typing import Any, Callable, Iterable, Optional, Union
+from typing import Callable, Iterable, Optional, Tuple, Union
 
 import contextlib
 import luz
@@ -14,6 +14,7 @@ import torch
 __all__ = [
     "AdditiveAttention",
     "AdditiveNodeAttention",
+    "AverageGraphPool",
     "Concatenate",
     "Dense",
     "DenseRNN",
@@ -41,6 +42,101 @@ Loss = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 
 class Module(torch.nn.Module):
+    def run_batch(
+        self,
+        data: torch.Tensor,
+        target: torch.Tensor,
+        optimizer: Optional[torch.optim.Optimizer] = None,
+    ) -> float:
+        """Run training algorithm on a single batch.
+
+        Parameters
+        ----------
+        dataset
+            Batch of training data.
+        target
+            Target tensor.
+        optimizer
+            Training optimizer, by default None.
+
+        Returns
+        -------
+        float
+            Batch loss.
+        """
+        output = self(data)
+        loss = self.loss(output, target)
+
+        if optimizer is not None:
+            self.backward(loss)
+            self.optimizer_step(optimizer)
+
+        self.trainer.update_state(output=output, loss=loss)
+
+        return loss.item()
+
+    def run_train_batch(self, data, target, optimizer):
+        return self.run_batch(data, target, optimizer)
+
+    def run_validate_batch(self, data, target):
+        return self.run_batch(data, target)
+
+    def run_test_batch(self, data, target):
+        return self.run_batch(data, target)
+
+    def backward(self, loss: torch.Tensor) -> None:
+        """Backpropagate loss.
+
+        Parameters
+        ----------
+        loss
+            Loss tensor.
+        """
+        loss.backward()
+
+    def optimizer_step(self, optimizer: torch.optim.Optimizer) -> None:
+        """Step training optimizer.
+
+        Parameters
+        ----------
+        optimizer
+            Training optimizer.
+        """
+        optimizer.step()
+        optimizer.zero_grad()
+
+    def get_input(self, batch: luz.Data) -> torch.Tensor:
+        """Get input from batched data.
+
+        Parameters
+        ----------
+        batch
+            Batched data.
+
+        Returns
+        -------
+        torch.Tensor
+            Input tensor.
+        """
+        return batch.x
+
+    def get_target(self, batch: luz.Data) -> Optional[torch.Tensor]:
+        """Get target from batched data.
+
+        Parameters
+        ----------
+        batch
+            Batched data.
+
+        Returns
+        -------
+        Optional[torch.Tensor]
+            Target tensor.
+        """
+        return batch.y
+
+    # NON-CONFIGURABLE METHODS BELOW
+
     @property
     def num_parameters(self) -> int:
         """Number of trainable parameters.
@@ -51,6 +147,10 @@ class Module(torch.nn.Module):
             Number of trainable parameters.
         """
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+    @property
+    def loss(self) -> Loss:
+        return self.trainer.loss
 
     def save(self, path: Union[str, pathlib.Path]) -> None:
         torch.save(
@@ -104,12 +204,12 @@ class Module(torch.nn.Module):
     def migrate(self, device: Device) -> None:
         self.to(device=device)
 
-    def log(self, **kwargs: Any) -> None:
-        self.trainer._state.update(**kwargs)
+    def log(self, msg: str) -> None:
+        self.trainer.log(msg)
 
-    def _call_event(self, event: luz.Event) -> None:
-        for h in self.handlers:
-            getattr(h, event.name.lower())(**self._state)
+    # def call_event(self, event: luz.Event, **kwargs: Any) -> None:
+    #     for h in self.trainer.handlers:
+    #         getattr(h, event.name.lower())(model=self, **kwargs)
 
     def fit(
         self,
@@ -176,99 +276,8 @@ class Module(torch.nn.Module):
     ) -> float:
         return self.trainer.test(self, dataset, device)
 
-    def run_batch(
-        self,
-        data: torch.Tensor,
-        target: torch.Tensor,
-        device: Device,
-        optimizer: Optional[torch.optim.Optimizer] = None,
-    ) -> float:
-        """Run training algorithm on a single batch.
-
-        Parameters
-        ----------
-        dataset
-            Batch of training data.
-        target
-            Target tensor.
-        device
-            Device to use for training.
-        optimizer
-            Training optimizer, by default None.
-
-        Returns
-        -------
-        float
-            Batch loss.
-        """
-        output = self(data)
-        loss = self.loss(output, target)
-
-        if optimizer is not None:
-            self.backward(loss)
-            self.optimizer_step(optimizer)
-
-        self.log(output=output, loss=loss)
-
-        return loss.item()
-
     def use_fit_params(self, **kwargs) -> None:
         self.trainer = luz.Trainer(**kwargs)
-
-    @property
-    def loss(self) -> Loss:
-        return self.trainer.loss
-
-    def backward(self, loss: torch.Tensor) -> None:
-        """Backpropagate loss.
-
-        Parameters
-        ----------
-        loss
-            Loss tensor.
-        """
-        loss.backward()
-
-    def optimizer_step(self, optimizer: torch.optim.Optimizer) -> None:
-        """Step training optimizer.
-
-        Parameters
-        ----------
-        optimizer
-            Training optimizer.
-        """
-        optimizer.step()
-        optimizer.zero_grad()
-
-    def get_input(self, batch: luz.Data) -> torch.Tensor:
-        """Get input from batched data.
-
-        Parameters
-        ----------
-        batch
-            Batched data.
-
-        Returns
-        -------
-        torch.Tensor
-            Input tensor.
-        """
-        return batch.x
-
-    def get_target(self, batch: luz.Data) -> Optional[torch.Tensor]:
-        """Get target from batched data.
-
-        Parameters
-        ----------
-        batch
-            Batched data.
-
-        Returns
-        -------
-        Optional[torch.Tensor]
-            Target tensor.
-        """
-        return batch.y
 
 
 class AdditiveAttention(Module):
@@ -366,6 +375,81 @@ class AdditiveNodeAttention(Module):
         mask = luz.nodewise_mask(edge_index, device=nodes.device)
         s, r = edge_index
         return self.attn(nodes[s], nodes[r], mask)
+
+
+class AverageGraphPool(Module):
+    def __init__(self, num_clusters: int) -> None:
+        super().__init__()
+        self.num_clusters = num_clusters
+
+    def forward(
+        self,
+        nodes: torch.Tensor,
+        edges: torch.Tensor,
+        edge_index: torch.Tensor,
+        batch: torch.Tensor,
+        assignment: torch.Tensor,
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Pool graph by average node clustering.
+
+        Parameters
+        ----------
+        nodes
+            Node features.
+            Shape: :math:`(N_{nodes},d_v)`
+        edges
+            Edge features.
+            Shape: :math:`(N_{edges},d_e)`
+        edge_index
+            Edge index tensor.
+            Shape: :math:`(2,N_{edges})`
+        batch
+            Nodewise batch tensor.
+            Shape: :math:`(N_{nodes},)`
+        assignment
+            Soft cluster assignment tensor.
+            Shape: :math:`(N_{nodes},N_{clusters})`
+
+        Returns
+        -------
+        torch.Tensor
+            Pooled node features.
+            Shape: :math:`(N_{nodes}',d_v)`
+        torch.Tensor
+            Pooled edge features.
+            Shape: :math:`(N_{edges}',d_e)`
+        torch.Tensor
+            Pooled edge index tensor.
+            Shape: :math:`(2,N_{edges}')`
+        """
+        M = luz.batchwise_mask(batch).repeat_interleave(self.num_clusters, dim=0).T
+        A = assignment.tile(batch.max() + 1)
+        _, cluster = luz.masked_softmax(A, M).argmax(dim=1).unique(return_inverse=True)
+
+        # FIXME: compute new node features using internal node AND edge features?
+        # intuition: benzene functional group feature should depend on edge features,
+        # else losing internal bonding info to distinguish e.g. benzene from cyclohexane
+        N_v, _ = nodes.shape
+        M = luz.aggregate_mask(
+            cluster, cluster.max() + 1, N_v, mean=True, device=nodes.device
+        )
+        coarse_nodes = M @ nodes
+
+        coarse_edge_index, coarse_edges = luz.remove_self_loops(
+            cluster[edge_index], edges
+        )
+
+        N_e, _ = coarse_edges.shape
+        if N_e > 0:
+            coarse_edge_index, indices = coarse_edge_index.unique(
+                dim=1, return_inverse=True
+            )
+            M = luz.aggregate_mask(
+                indices, indices.max() + 1, N_e, mean=True, device=edges.device
+            )
+            coarse_edges = M @ coarse_edges
+
+        return coarse_nodes, coarse_edges, coarse_edge_index
 
 
 class Concatenate(Module):
@@ -573,6 +657,7 @@ class EdgeAggregateLocalHead(Module):
             Shape: :math:`(N_{batch},d_u)`
         batch
             Nodewise batch tensor.
+            Shape: :math:`(N_{nodes},)`
 
         Returns
         -------
@@ -646,6 +731,7 @@ class EdgeAggregateGlobalHead(Module):
             Shape: :math:`(N_{batch},d_u)`
         batch
             Nodewise batch tensor.
+            Shape: :math:`(N_{nodes},)`
 
         Returns
         -------
