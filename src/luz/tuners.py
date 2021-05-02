@@ -86,7 +86,6 @@ class Tuner(ABC):
     def __init__(
         self,
         num_iterations: int,
-        scorer: luz.Scorer,
         seed: Optional[int] = 0,
         save_experiments: Optional[bool] = False,
     ) -> None:
@@ -96,13 +95,10 @@ class Tuner(ABC):
         ----------
         num_iterations
             Number of tuning iterations.
-        scorer
-            Algorithm to score each set of hyperparameters.
         seed
             Random seed for consistency across tuning iterations; by default 0.
         """
         self.num_iterations = num_iterations
-        self.scorer = scorer
         self.seed = seed
         self.save_experiments = save_experiments
 
@@ -216,7 +212,7 @@ class Tuner(ABC):
     def score(
         self, learner: luz.Learner, dataset: luz.Dataset, device: Device
     ) -> luz.Score:
-        model, score = self.scorer.score(learner, dataset, device)
+        model, score = learner.score(dataset, device)
 
         if self.best_model is None or score < self.best_score:
             self.best_model = copy.deepcopy(model)
@@ -259,17 +255,15 @@ class BayesianTuner(Tuner):
 
 
 class GridSearch(Tuner):
-    def __init__(self, scorer: luz.Scorer, seed_loop: Optional[bool] = False) -> None:
+    def __init__(self, seed_loop: Optional[bool] = False) -> None:
         """Hyperparameter tuning algorithm.
 
         Parameters
         ----------
-        scorer
-            Algorithm to score each set of hyperparameters.
         seed_loop
             If True seed each iteration, by default False.
         """
-        super().__init__(0, scorer, seed_loop)
+        super().__init__(0, seed_loop)
         self.grid = None
 
     def tune(self, **kwargs: Union[Choose, Conditional, Pin, Sample]) -> Iterator[Any]:
