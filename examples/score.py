@@ -32,25 +32,22 @@ class Net(luz.Module):
 
 
 class Learner(luz.Learner):
-    def learn(self, train_dataset, val_dataset, device):
-        nn = Net()
+    def model(self):
+        return Net()
 
-        nn.use_fit_params(
+    def fit_params(self, train_dataset, val_dataset, device):
+        return dict(
             loss=torch.nn.MSELoss(),
             optimizer=luz.Optimizer(torch.optim.Adam),
             stop_epoch=10,
             early_stopping=True,
+            handlers=[luz.Loss()],
         )
-        nn.use_handlers(luz.Loss())
-
-        nn.fit(train_dataset, val_dataset, device)
-
-        return nn
 
 
 if __name__ == "__main__":
     d = get_dataset(100)
+    learner = Learner()
+    learner.use_scorer(luz.Holdout(test_fraction=0.2, val_fraction=0.2))
 
-    scorer = luz.Holdout(test_fraction=0.2, val_fraction=0.2)
-
-    model, score = scorer.score(Learner(), d)
+    model, score = learner.score(d)

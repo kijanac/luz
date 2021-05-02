@@ -22,35 +22,25 @@ class Net(luz.Module):
 
 
 class Learner(luz.Learner):
-    def learn(self, train_dataset, val_dataset=None, device="cpu"):
-        nn = Net()
-        nn.use_training_params(
+    def model(self):
+        return Net()
+
+    def hyperparams(self):
+        return dict(batch_size=self.tuner.sample(1, 20))
+
+    def fit_params(self, train_dataset, val_dataset, device):
+        return dict(
             loss=torch.nn.MSELoss(),
             optimizer=luz.Optimizer(torch.optim.Adam),
             stop_epoch=10,
-            batch_size=batch_size,
+            batch_size=self.hyperparams.batch_size,
             early_stopping=True,
+            handlers=[],  # [luz.Accuracy(),luz.ActualVsPredicted(),luz.PlotHistory()]
         )
-        nn.use_handlers(*handlers)
-
-        nn.fit(train_dataset, val_dataset, device)
-
-        return nn
 
 
-tuner = luz.RandomSearch(7, luz.Holdout(0.25, 0.3))
+learner = Learner()
+learner.use_scorer(luz.Holdout(0.25, 0.3))
+learner.use_tuner(luz.RandomSearch(7))
 d = get_dataset(1000)
-
-
-handlers = []  # [luz.Accuracy(),luz.ActualVsPredicted(),luz.PlotHistory()]
-
-for batch_size in tuner.tune(batch_size=tuner.sample(1, 20)):
-    print(batch_size)
-    learner = Learner()
-
-    # l = luz.Learner(trainer, Net)
-
-    score = tuner.score(learner, d, device="cpu")
-    print(score)
-
-print(tuner.best_hyperparameters)
+print(learner.tune(d, "cpu"))

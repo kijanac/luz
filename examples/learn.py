@@ -22,26 +22,21 @@ class Net(luz.Module):
 
 
 class Learner(luz.Learner):
-    def learn(self, model, dataset, device):
-        d_train, d_val, d_test = dataset.split([600, 200, 200])
+    def model(self):
+        return Net()
 
-        nn.fit(d_train, d_val, device)
+    def fit_params(self, train_dataset, val_dataset, device):
+        return dict(
+            loss=torch.nn.MSELoss(),
+            optimizer=luz.Optimizer(torch.optim.Adam),
+            stop_epoch=10,
+            batch_size=20,
+            handlers=[luz.Accuracy(), luz.ActualVsPredicted()],  # ,luz.PlotHistory()]
+        )
 
-        test_loss = nn.test(d_test, device)
 
-        return nn, test_loss
-
-
-nn = Net()
-
-nn.use_training_params(
-    loss=torch.nn.MSELoss(),
-    optimizer=luz.Optimizer(torch.optim.Adam),
-    stop_epoch=10,
-    batch_size=20,
-)
-nn.use_handlers(luz.Accuracy(), luz.ActualVsPredicted())  # ,luz.PlotHistory()]
+learner = Learner()
+learner.use_scorer(luz.Holdout(0.2, 0.2))
 
 d = get_dataset(1000)
-
-Learner().learn(nn, d, "cpu")
+learner.score(d, "cpu")

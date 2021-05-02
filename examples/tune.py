@@ -35,42 +35,32 @@ class Net(luz.Module):
 
 
 class Learner(luz.Learner):
-    def __init__(self, d_hidden, early_stopping, batch_size):
-        self.d_hidden = d_hidden
-        self.batch_size = batch_size
-        self.early_stopping = early_stopping
+    def hyperparams(self):
+        return dict(
+            d_hidden=self.tuner.sample(2, 9),
+            early_stopping=self.tuner.choose(True, False),
+            batch_size=self.tuner.sample(1, 40),
+        )
 
-    def learn(self, train_dataset, val_dataset, device):
-        nn = Net(self.d_hidden)
+    def model(self):
+        return Net(self.hyperparams.d_hidden)
 
-        nn.use_fit_params(
+    def fit_params(self, train_dataset, val_dataset, device):
+        return dict(
             loss=torch.nn.MSELoss(),
             optimizer=luz.Optimizer(torch.optim.Adam),
             stop_epoch=10,
-            batch_size=self.batch_size,
-            early_stopping=self.early_stopping,
+            batch_size=self.hyperparams.batch_size,
+            early_stopping=self.hyperparams.early_stopping,
             handlers=[luz.Loss()],
         )
-
-        nn.fit(train_dataset, val_dataset, device)
-
-        return nn
 
 
 if __name__ == "__main__":
     d = get_dataset(100)
 
-    scorer = luz.Holdout(test_fraction=0.2, val_fraction=0.2)
-    tuner = luz.RandomSearch(num_iterations=5, scorer=scorer, save_experiments=True)
+    learner = Learner()
+    learner.use_scorer(luz.Holdout(test_fraction=0.2, val_fraction=0.2))
+    learner.use_tuner(luz.RandomSearch(num_iterations=5, save_experiments=True))
 
-    for exp in tuner.tune(
-        d_hidden=tuner.sample(2, 9),
-        early_stopping=tuner.choose(True, False),
-        batch_size=tuner.sample(1, 40),
-    ):
-        learner = Learner(exp.d_hidden, exp.early_stopping, exp.batch_size)
-        model, score = tuner.score(learner, d, "cpu")
-
-    model = tuner.best_model
-    print(tuner.best_hyperparameters)
-    print(tuner.best_score)
+    print(learner.tune(d, "cpu"))
