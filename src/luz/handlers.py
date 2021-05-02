@@ -24,9 +24,8 @@ __all__ = [
     "ActualVsPredicted",
     # "Checkpoint",
     # "DataAndFit",
-    # "DurbinWatson",
+    "DurbinWatson",
     "FBeta",
-    # "LogToFile",
     "Loss",
     "PlotHistory",
     "Progress",
@@ -91,10 +90,10 @@ class Accuracy(Handler):
         self.correct += (predicted == correct).sum().item()
         self.total += target.size(0)
 
-    def epoch_ended(self, epoch: int, **kwargs: Any) -> None:
+    def epoch_ended(self, model, epoch: int, **kwargs: Any) -> None:
         acc = self.correct / self.total
         s = f"[Epoch {epoch}] Classification accuracy: {acc}"
-        print(s)
+        model.log(s)
 
 
 class ActualVsPredicted(Handler):
@@ -209,9 +208,8 @@ class DurbinWatson(Handler):
         self.last_residual = residual
         self.denominator += residual ** 2
 
-    def compute(self):
-        print("DW: {0}".format(self.numerator / self.denominator))
-        return self.numerator / self.denominator
+    def epoch_ended(self, model, **kwargs):
+        model.log(f"DW: {self.numerator / self.denominator}")
 
 
 class FBeta(Handler):
@@ -249,7 +247,7 @@ class FBeta(Handler):
         self.predicted_positive += predicted.sum().item()
         self.actual_positive += correct.sum().item()
 
-    def epoch_ended(self, epoch: int, **kwargs: Any) -> None:
+    def epoch_ended(self, model, epoch: int, **kwargs: Any) -> None:
         try:
             precision = self.true_positive / self.predicted_positive
             recall = self.true_positive / self.actual_positive
@@ -263,23 +261,7 @@ class FBeta(Handler):
             F = 1
 
         s = f"[Epoch {epoch}] F-score: {F}"
-        print(s)
-
-
-class LogToFile(Handler):
-    def __init__(self, log_path, log_list):
-        # FIXME: rewrite this whole class
-        assert False, "TODO: Finish writing LogToFile"
-
-        self.log_path = log_path
-        self.log_list = log_list
-
-    # def _compute_confusion_matrix(self):
-
-    def on_epoch_end(self):
-        with open(self.log_path, "w") as f:
-            for log_compute in self.log_list:
-                f.write(log_compute)
+        model.log(s)
 
 
 class Loss(Handler):
@@ -307,6 +289,7 @@ class Loss(Handler):
 
     def batch_ended(
         self,
+        model,
         flag: luz.Flag,
         loader: torch.utils.data.DataLoader,
         epoch: int,
@@ -340,10 +323,16 @@ class Loss(Handler):
             cur = ind + 1
             if cur % batch_interval == 0 or cur == num_batches:
                 avg_loss = self.running_loss / cur / loader.batch_size
-                print(f"[Epoch {epoch}] Running average loss: {avg_loss}.")
+                model.log(f"[Epoch {epoch}] Running average loss: {avg_loss}.")
 
 
 class PlotHistory(Handler):
+    def __init__(
+        self, show_plot: Optional[bool] = True, save_filepath: Optional[str] = None
+    ) -> None:
+        self.show_plot = show_plot
+        self.save_filepath = save_filepath
+
     def training_ended(
         self,
         train_history: Iterable[float],
@@ -366,7 +355,12 @@ class PlotHistory(Handler):
             plt.legend((line1,), ("Training loss",))
 
         fig.tight_layout()
-        plt.show()
+
+        if self.save_filepath is not None:
+            plt.savefig(self.save_filepath)
+
+        if self.show_plot:
+            plt.show()
 
 
 class Progress(Handler):
@@ -383,6 +377,7 @@ class Progress(Handler):
 
     def batch_ended(
         self,
+        model,
         loader: torch.utils.data.DataLoader,
         epoch: int,
         flag: luz.Flag,
@@ -396,23 +391,23 @@ class Progress(Handler):
                 num_eqs = int(progress * self.bar_length)
                 num_spaces = self.bar_length - num_eqs
                 bar = "=" * num_eqs + ">" + " " * num_spaces
-                print(f"[Epoch {epoch}]: [{bar}] {int(100*progress)}%")
+                model.log(f"[Epoch {epoch}]: [{bar}] {int(100*progress)}%")
                 self._last += 1
 
     def epoch_started(self, **kwargs: Any) -> None:
         self._last = 0
 
-    def training_started(self, **kwargs: Any) -> None:
-        print("Training started.")
+    def training_started(self, model, **kwargs: Any) -> None:
+        model.log("Training started.")
 
-    def training_ended(self, **kwargs: Any) -> None:
-        print("Training ended.")
+    def training_ended(self, model, **kwargs: Any) -> None:
+        model.log("Training ended.")
 
-    def testing_started(self, flag, **kwargs: Any) -> None:
-        print("Testing started.")
+    def testing_started(self, model, **kwargs: Any) -> None:
+        model.log("Testing started.")
 
-    def testing_ended(self, flag, **kwargs: Any) -> None:
-        print("Testing complete.")
+    def testing_ended(self, model, **kwargs: Any) -> None:
+        model.log("Testing complete.")
 
 
 class RVP(Handler):
@@ -446,7 +441,7 @@ class Timer(Handler):
     def epoch_started(self, **kwargs: Any) -> None:
         self.start_time = datetime.datetime.now().replace(microsecond=0)
 
-    def epoch_ended(self, epoch: int, flag: luz.Flag, **kwargs: Any) -> None:
+    def epoch_ended(self, model, epoch: int, flag: luz.Flag, **kwargs: Any) -> None:
         self.end_time = datetime.datetime.now().replace(microsecond=0)
 
         if flag == luz.Flag.TRAINING:
@@ -456,4 +451,4 @@ class Timer(Handler):
         else:
             mode = "test"
 
-        print(f"[Epoch {epoch}]: {self.end_time-self.start_time} to {mode}.")
+        model.log(f"[Epoch {epoch}]: {self.end_time-self.start_time} to {mode}.")
