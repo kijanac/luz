@@ -21,6 +21,7 @@ class Trainer:
         early_stopping: Optional[bool] = False,
         handlers: Optional[Iterable[luz.Handler]] = None,
         patience: Optional[int] = 5,
+        log_filepath: Optional[str] = None,
         **loader_kwargs: Union[int, bool, luz.Transform],
     ) -> None:
         """Algorithm to train a model using data.
@@ -55,6 +56,7 @@ class Trainer:
         self.patience = patience
         self.loader_kwargs = loader_kwargs
         self.handlers = handlers
+        self.log_filepath = log_filepath
         self._state = {}
 
     def state_dict(self):
@@ -108,7 +110,7 @@ class Trainer:
 
         loader = dataset.loader(**self.loader_kwargs)
         self._state = {}
-        self.log(
+        self.update_state(
             flag=luz.Flag.TRAINING,
             trainer=self,
             model=model,
@@ -118,24 +120,24 @@ class Trainer:
             val_history=[],
         )
         if self.early_stopping:
-            self.log(patience=self.patience)
+            self.update_state(patience=self.patience)
 
         self._call_event(luz.Event.TRAINING_STARTED)
 
         for epoch in range(self.start_epoch, self.stop_epoch):
-            self.log(epoch=epoch)
+            self.update_state(epoch=epoch)
             self._call_event(luz.Event.EPOCH_STARTED)
 
-            self.run_epoch(model, loader, device, True, optimizer)
+            self.run_epoch(model, loader, device, optimizer)
 
             if val_dataset is not None:
-                self.log(flag=luz.Flag.VALIDATING)
+                self.update_state(flag=luz.Flag.VALIDATING)
                 val_loss = self.validate(model, val_dataset, device)
-                print(f"[Epoch {epoch}] Validation loss: {val_loss}.")
+                self.log(f"[Epoch {epoch}] Validation loss: {val_loss}.")
                 if self.early_stopping and self._state["patience"] == 0:
-                    print(f"[Epoch {epoch}]: Stopping early.")
+                    self.log(f"[Epoch {epoch}]: Stopping early.")
                     break
-                self.log(flag=luz.Flag.TRAINING)
+                self.update_state(flag=luz.Flag.TRAINING)
 
         self._call_event(luz.Event.TRAINING_ENDED)
 
@@ -160,7 +162,7 @@ class Trainer:
         """
         loader = dataset.loader(**self.loader_kwargs)
         with model.eval():
-            val_loss = self.run_epoch(model, loader, device, train=False)
+            val_loss = self.run_epoch(model, loader, device)
 
         self._state["val_history"].append(val_loss)
 
@@ -196,7 +198,7 @@ class Trainer:
 
         loader = dataset.loader(**self.loader_kwargs)
         self._state = {}
-        self.log(
+        self.update_state(
             flag=luz.Flag.TESTING,
             trainer=self,
             model=model,
@@ -204,10 +206,10 @@ class Trainer:
         )
         self._call_event(luz.Event.TESTING_STARTED)
 
-        self.log(epoch=1)
+        self.update_state(epoch=1)
         self._call_event(luz.Event.EPOCH_STARTED)
 
-        test_loss = self.run_epoch(model, loader, device, train=False)
+        test_loss = self.run_epoch(model, loader, device)
 
         self._call_event(luz.Event.TESTING_ENDED)
 
@@ -218,7 +220,6 @@ class Trainer:
         model: luz.Module,
         loader: torch.utils.data.DataLoader,
         device: Device,
-        train: bool,
         optimizer: Optional[torch.optim.Optimizer] = None,
     ) -> float:
         running_loss = 0.0
@@ -227,17 +228,20 @@ class Trainer:
             data = model.get_input(batch)
             target = model.get_target(batch)
 
-            self.log(ind=i, data=data, target=target)
+            self.update_state(ind=i, data=data, target=target)
             self._call_event(luz.Event.BATCH_STARTED)
 
             # migrate the input and target tensors to the appropriate device
             data, target = data.to(device), target.to(device)
 
-            if train:
-                running_loss += model.run_batch(data, target, device, optimizer)
-            else:
+            if self.flag == luz.Flag.TRAINING:
+                running_loss += model.run_train_batch(data, target, optimizer)
+            elif self.flag == luz.Flag.VALIDATING:
                 with model.eval():
-                    running_loss += model.run_batch(data, target, device)
+                    running_loss += model.run_validate_batch(data, target)
+            elif self.flag == luz.Flag.TESTING:
+                with model.eval():
+                    running_loss += model.run_test_batch(data, target)
             # from https://coolnesss.github.io/2019-02-05/pytorch-gotchas
             # All of the variables defined above are now out of scope!
             # On CPU, they are already deallocated.
@@ -251,15 +255,22 @@ class Trainer:
 
         loss = running_loss / len(loader)
 
-        if train:
+        if self.flag == luz.Flag.TRAINING:
             self._state["train_history"].append(loss)
 
         self._call_event(luz.Event.EPOCH_ENDED)
 
         return loss
 
-    def log(self, **kwargs: Any) -> None:
+    def update_state(self, **kwargs: Any) -> None:
         self._state.update(**kwargs)
+
+    def log(self, msg: str) -> None:
+        print(msg)
+
+        if self.log_filepath is not None:
+            with open(self.log_filepath, "a") as f:
+                f.write(f"{msg}\n")
 
     def _call_event(self, event: luz.Event) -> None:
         for h in self.handlers:
