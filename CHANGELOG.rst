@@ -123,7 +123,18 @@
 * feat: Add adjacency, in_degree, out_degree utility functions for graph manipulations. (`ad3f3b6 <https://github.com/kijanac/luz/commit/ad3f3b624c26f0db2976ace794f1f5dd1622e3b7>`__)
 
 
-`Version 5.0.0 <https://github.com/kijanac/luz/compare/v5.0.0...v5.0.0>`__
+`Version 6.0.0 <https://github.com/kijanac/luz/compare/v5.0.0...v6.0.0>`__
+--------------------------------------------------------------------------
+
+* feat: Add functionality for Trainer to log messages to a file through Trainer.log and Trainer.log_filepath. (`4d0aec2 <https://github.com/kijanac/luz/commit/4d0aec215658d2623b648173eb17e1035c7bd847>`__)
+* feat: Add DurbinWatson handler. Add options to show plot and save plot to PlotHistory. Replace print statements in all handlers with model.log (`37bd946 <https://github.com/kijanac/luz/commit/37bd9467f925e9b8667a21fed50f1130ef15a02d>`__)
+* feat: Add aggregate_mask and remove_self_loops functions (`16844bb <https://github.com/kijanac/luz/commit/16844bb47b159991aa562a371cf7b827c519369b>`__)
+* feat: Add AverageGraphPool module. Modify Module.log to refer to logging messages rather than updating Trainer state. (`63d4cc2 <https://github.com/kijanac/luz/commit/63d4cc260adfa2fb85096a981d04e6d5690de5b0>`__)
+* feat: Update tuners to conform with new Learner interface (`93b141e <https://github.com/kijanac/luz/commit/93b141e4a902c29ec2501f9e9a24b0a49e46c53c>`__)
+* feat: Add new features to Learner to reduce boilerplate code and simplify scoring and tuning (`cc879e5 <https://github.com/kijanac/luz/commit/cc879e5a0586800afe87fb1af290cd2fc25e96ac>`__)
+
+
+`Version 6.0.0 <https://github.com/kijanac/luz/compare/v6.0.0...v6.0.0>`__
 --------------------------------------------------------------------------
 
 
