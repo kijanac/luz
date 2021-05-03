@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.scorers module &mdash; luz 5.0.0 documentation</title>
+  <title>luz.scorers module &mdash; luz 6.0.0 documentation</title>
   
 
   
@@ -32,6 +32,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -63,7 +64,7 @@
             
             
               <div class="version">
-                5.0.0
+                6.0.0
               </div>
             
           
@@ -187,7 +188,7 @@
 <span id="luz-scorers-module"></span><h1>luz.scorers module<a class="headerlink" href="#module-luz.scorers" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="luz.scorers.CrossValidation">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">CrossValidation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">CrossValidation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_folds</span></em>, <em class="sig-param"><span class="n">val_fraction</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fold_seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.scorers.Scorer</span></code></a></p>
 <p>Object which scores a learning algorithm using cross validation.</p>
 <dl class="field-list simple">
@@ -202,7 +203,7 @@
 </dl>
 <dl class="py method">
 <dt id="luz.scorers.CrossValidation.score">
-<code class="sig-name descname"><span class="pre">score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidation.score" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.CrossValidation.score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Learn a model and score it using cross validation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -225,7 +226,7 @@
 
 <dl class="py class">
 <dt id="luz.scorers.Holdout">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Holdout</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_fraction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Holdout" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Holdout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_fraction</span></em>, <em class="sig-param"><span class="n">val_fraction</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Holdout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.scorers.Scorer" title="luz.scorers.Scorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.scorers.Scorer</span></code></a></p>
 <p>Object which scores a learning algorithm using the holdout method.</p>
 <dl class="field-list simple">
@@ -238,7 +239,7 @@
 </dl>
 <dl class="py method">
 <dt id="luz.scorers.Holdout.score">
-<code class="sig-name descname"><span class="pre">score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Holdout.score" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Holdout.score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Learn a model and estimate its error using the holdout method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -261,18 +262,18 @@
 
 <dl class="py class">
 <dt id="luz.scorers.Score">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Score" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">score</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
 <p>Create new instance of Score(model, score)</p>
 <dl class="py attribute">
 <dt id="luz.scorers.Score.model">
-<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#luz.scorers.Score.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">model</code><a class="headerlink" href="#luz.scorers.Score.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="luz.scorers.Score.score">
-<code class="sig-name descname"><span class="pre">score</span></code><a class="headerlink" href="#luz.scorers.Score.score" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">score</code><a class="headerlink" href="#luz.scorers.Score.score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
@@ -280,11 +281,11 @@
 
 <dl class="py class">
 <dt id="luz.scorers.Scorer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Scorer</span></code><a class="headerlink" href="#luz.scorers.Scorer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Scorer</code><a class="headerlink" href="#luz.scorers.Scorer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <dl class="py method">
 <dt id="luz.scorers.Scorer.score">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Scorer.score" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learner</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.scorers.Scorer.score" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#luz.scorers.Score" title="luz.scorers.Score"><code class="xref py py-class docutils literal notranslate"><span class="pre">Score</span></code></a></p>

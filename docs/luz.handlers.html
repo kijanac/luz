@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.handlers module &mdash; luz 5.0.0 documentation</title>
+  <title>luz.handlers module &mdash; luz 6.0.0 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                5.0.0
+                6.0.0
               </div>
             
           
@@ -189,11 +189,11 @@
 <p>Contains callback objects which perform various functions during the training process.</p>
 <dl class="py class">
 <dt id="luz.handlers.Accuracy">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Accuracy</span></code><a class="headerlink" href="#luz.handlers.Accuracy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Accuracy</code><a class="headerlink" href="#luz.handlers.Accuracy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
 <dl class="py method">
 <dt id="luz.handlers.Accuracy.batch_ended">
-<code class="sig-name descname"><span class="pre">batch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.batch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.batch_ended" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute on batch end.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -212,7 +212,7 @@ Shape: <span class="math notranslate nohighlight">\((N,C)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Accuracy.epoch_ended">
-<code class="sig-name descname"><span class="pre">epoch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.epoch_ended" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -222,7 +222,7 @@ Shape: <span class="math notranslate nohighlight">\((N,C)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Accuracy.epoch_started">
-<code class="sig-name descname"><span class="pre">epoch_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.epoch_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Accuracy.epoch_started" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute on epoch start.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -235,7 +235,7 @@ Shape: <span class="math notranslate nohighlight">\((N,C)\)</span></p></li>
 
 <dl class="py class">
 <dt id="luz.handlers.ActualVsPredicted">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ActualVsPredicted</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.ActualVsPredicted" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">ActualVsPredicted</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.ActualVsPredicted" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
 <p>Plot actual labels vs. predicted labels.</p>
 <dl class="field-list simple">
@@ -245,7 +245,7 @@ Shape: <span class="math notranslate nohighlight">\((N,C)\)</span></p></li>
 </dl>
 <dl class="py method">
 <dt id="luz.handlers.ActualVsPredicted.batch_ended">
-<code class="sig-name descname"><span class="pre">batch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.ActualVsPredicted.batch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.ActualVsPredicted.batch_ended" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute on batch end.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -264,7 +264,7 @@ Shape: <span class="math notranslate nohighlight">\((N,)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.ActualVsPredicted.testing_ended">
-<code class="sig-name descname"><span class="pre">testing_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.ActualVsPredicted.testing_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">testing_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.ActualVsPredicted.testing_ended" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute on testing end.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -275,7 +275,7 @@ Shape: <span class="math notranslate nohighlight">\((N,)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.ActualVsPredicted.testing_started">
-<code class="sig-name descname"><span class="pre">testing_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.ActualVsPredicted.testing_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">testing_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.ActualVsPredicted.testing_started" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute on testing start.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -287,12 +287,28 @@ Shape: <span class="math notranslate nohighlight">\((N,)\)</span></p></li>
 </dd></dl>
 
 <dl class="py class">
+<dt id="luz.handlers.DurbinWatson">
+<em class="property">class </em><code class="sig-name descname">DurbinWatson</code><a class="headerlink" href="#luz.handlers.DurbinWatson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
+<dl class="py method">
+<dt id="luz.handlers.DurbinWatson.batch_ended">
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.DurbinWatson.batch_ended" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.handlers.DurbinWatson.epoch_ended">
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.DurbinWatson.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="luz.handlers.FBeta">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">FBeta</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">FBeta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">beta</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
 <dl class="py method">
 <dt id="luz.handlers.FBeta.batch_ended">
-<code class="sig-name descname"><span class="pre">batch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.batch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.batch_ended" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute on batch end.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -311,7 +327,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.FBeta.epoch_ended">
-<code class="sig-name descname"><span class="pre">epoch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.epoch_ended" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -321,7 +337,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.FBeta.epoch_started">
-<code class="sig-name descname"><span class="pre">epoch_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.epoch_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.FBeta.epoch_started" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute on epoch start.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -334,53 +350,53 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py class">
 <dt id="luz.handlers.Handler">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Handler</span></code><a class="headerlink" href="#luz.handlers.Handler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Handler</code><a class="headerlink" href="#luz.handlers.Handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt id="luz.handlers.Handler.batch_ended">
-<code class="sig-name descname"><span class="pre">batch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.batch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.batch_ended" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.handlers.Handler.batch_started">
-<code class="sig-name descname"><span class="pre">batch_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.batch_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.batch_started" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.handlers.Handler.epoch_ended">
-<code class="sig-name descname"><span class="pre">epoch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.epoch_ended" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.handlers.Handler.epoch_started">
-<code class="sig-name descname"><span class="pre">epoch_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.epoch_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.epoch_started" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.handlers.Handler.testing_ended">
-<code class="sig-name descname"><span class="pre">testing_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.testing_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">testing_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.testing_ended" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.handlers.Handler.testing_started">
-<code class="sig-name descname"><span class="pre">testing_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.testing_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">testing_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.testing_started" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.handlers.Handler.training_ended">
-<code class="sig-name descname"><span class="pre">training_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.training_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.training_ended" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.handlers.Handler.training_started">
-<code class="sig-name descname"><span class="pre">training_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.training_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Handler.training_started" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.handlers.Loss">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Loss</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Loss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_interval</span><span class="o">=</span><span class="default_value">0.25</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
 <p>Calculate running loss throughout each epoch.</p>
 <dl class="field-list simple">
@@ -393,7 +409,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 </dl>
 <dl class="py method">
 <dt id="luz.handlers.Loss.batch_ended">
-<code class="sig-name descname"><span class="pre">batch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss.batch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="n">loader</span></em>, <em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="n">loss</span></em>, <em class="sig-param"><span class="n">ind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss.batch_ended" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute at end of batch.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -414,7 +430,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Loss.epoch_started">
-<code class="sig-name descname"><span class="pre">epoch_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss.epoch_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Loss.epoch_started" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -426,11 +442,11 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py class">
 <dt id="luz.handlers.PlotHistory">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">PlotHistory</span></code><a class="headerlink" href="#luz.handlers.PlotHistory" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">PlotHistory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_filepath</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.PlotHistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
 <dl class="py method">
 <dt id="luz.handlers.PlotHistory.training_ended">
-<code class="sig-name descname"><span class="pre">training_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_history</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.PlotHistory.training_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">train_history</span></em>, <em class="sig-param"><span class="n">val_history</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.PlotHistory.training_ended" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -442,11 +458,11 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py class">
 <dt id="luz.handlers.Progress">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Progress</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_interval</span><span class="o">=</span><span class="default_value">0.25</span></em>, <em class="sig-param"><span class="n">bar_length</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
 <dl class="py method">
 <dt id="luz.handlers.Progress.batch_ended">
-<code class="sig-name descname"><span class="pre">batch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.batch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">batch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">loader</span></em>, <em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="n">ind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.batch_ended" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -456,7 +472,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Progress.epoch_started">
-<code class="sig-name descname"><span class="pre">epoch_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.epoch_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.epoch_started" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -466,7 +482,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Progress.testing_ended">
-<code class="sig-name descname"><span class="pre">testing_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.testing_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">testing_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.testing_ended" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -476,7 +492,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Progress.testing_started">
-<code class="sig-name descname"><span class="pre">testing_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.testing_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">testing_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.testing_started" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -486,7 +502,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Progress.training_ended">
-<code class="sig-name descname"><span class="pre">training_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.training_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.training_ended" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -496,7 +512,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Progress.training_started">
-<code class="sig-name descname"><span class="pre">training_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.training_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Progress.training_started" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -508,11 +524,11 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py class">
 <dt id="luz.handlers.Timer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Timer</span></code><a class="headerlink" href="#luz.handlers.Timer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Timer</code><a class="headerlink" href="#luz.handlers.Timer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.handlers.Handler" title="luz.handlers.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.handlers.Handler</span></code></a></p>
 <dl class="py method">
 <dt id="luz.handlers.Timer.epoch_ended">
-<code class="sig-name descname"><span class="pre">epoch_ended</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Timer.epoch_ended" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_ended</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">epoch</span></em>, <em class="sig-param"><span class="n">flag</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Timer.epoch_ended" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -522,7 +538,7 @@ Shape: <span class="math notranslate nohighlight">\((N,2)\)</span></p></li>
 
 <dl class="py method">
 <dt id="luz.handlers.Timer.epoch_started">
-<code class="sig-name descname"><span class="pre">epoch_started</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Timer.epoch_started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.handlers.Timer.epoch_started" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>

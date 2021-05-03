@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.modules module &mdash; luz 5.0.0 documentation</title>
+  <title>luz.modules module &mdash; luz 6.0.0 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                5.0.0
+                6.0.0
               </div>
             
           
@@ -189,7 +189,7 @@
 <p>Custom PyTorch modules.</p>
 <dl class="py class">
 <dt id="luz.modules.AdditiveAttention">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">AdditiveAttention</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_attn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveAttention" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">AdditiveAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Additive attention, from <a class="reference external" href="https://arxiv.org/abs/1409.0473">https://arxiv.org/abs/1409.0473</a>.</p>
 <p>Additive attention, from <a class="reference external" href="https://arxiv.org/abs/1409.0473">https://arxiv.org/abs/1409.0473</a>.</p>
@@ -204,7 +204,7 @@
 </dl>
 <dl class="py method">
 <dt id="luz.modules.AdditiveAttention.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveAttention.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">h</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveAttention.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -226,14 +226,14 @@ Shape: <span class="math notranslate nohighlight">\((1,N)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.AdditiveAttention.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.AdditiveAttention.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.AdditiveAttention.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.AdditiveNodeAttention">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">AdditiveNodeAttention</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_attn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveNodeAttention" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">AdditiveNodeAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveNodeAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Additive node attention on graphs. From <a class="reference external" href="https://arxiv.org/abs/1710.10903">https://arxiv.org/abs/1710.10903</a>.</p>
 <dl class="field-list simple">
@@ -247,7 +247,7 @@ Shape: <span class="math notranslate nohighlight">\((1,N)\)</span></p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.AdditiveNodeAttention.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveNodeAttention.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AdditiveNodeAttention.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -270,14 +270,62 @@ Shape: <span class="math notranslate nohighlight">\((N_{edges},N_{nodes})\)</spa
 
 <dl class="py attribute">
 <dt id="luz.modules.AdditiveNodeAttention.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.AdditiveNodeAttention.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.AdditiveNodeAttention.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.modules.AverageGraphPool">
+<em class="property">class </em><code class="sig-name descname">AverageGraphPool</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_clusters</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AverageGraphPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
+<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+<dl class="py method">
+<dt id="luz.modules.AverageGraphPool.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">batch</span></em>, <em class="sig-param"><span class="n">assignment</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.AverageGraphPool.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pool graph by average node clustering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Node features.
+Shape: <span class="math notranslate nohighlight">\((N_{nodes},d_v)\)</span></p></li>
+<li><p><strong>edges</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge features.
+Shape: <span class="math notranslate nohighlight">\((N_{edges},d_e)\)</span></p></li>
+<li><p><strong>edge_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Edge index tensor.
+Shape: <span class="math notranslate nohighlight">\((2,N_{edges})\)</span></p></li>
+<li><p><strong>batch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Nodewise batch tensor.
+Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></li>
+<li><p><strong>assignment</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Soft cluster assignment tensor.
+Shape: <span class="math notranslate nohighlight">\((N_{nodes},N_{clusters})\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>torch.Tensor</em> – Pooled node features.
+Shape: <span class="math notranslate nohighlight">\((N_{nodes}',d_v)\)</span></p></li>
+<li><p><em>torch.Tensor</em> – Pooled edge features.
+Shape: <span class="math notranslate nohighlight">\((N_{edges}',d_e)\)</span></p></li>
+<li><p><em>torch.Tensor</em> – Pooled edge index tensor.
+Shape: <span class="math notranslate nohighlight">\((2,N_{edges}')\)</span></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="luz.modules.AverageGraphPool.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.AverageGraphPool.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.Concatenate">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Concatenate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Concatenate" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Concatenate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Concatenate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Concatenate tensors along a given dimension.</p>
 <dl class="field-list simple">
@@ -287,7 +335,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{edges},N_{nodes})\)</spa
 </dl>
 <dl class="py method">
 <dt id="luz.modules.Concatenate.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tensors</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Concatenate.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">tensors</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Concatenate.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -305,14 +353,14 @@ Shape: <span class="math notranslate nohighlight">\((N,*)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.Concatenate.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.Concatenate.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Concatenate.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.Dense">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Dense</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Dense" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Dense</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">features</span></em>, <em class="sig-param"><span class="n">bias</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Dense" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Dense feed-forward neural network.</p>
 <dl class="field-list simple">
@@ -326,7 +374,7 @@ Shape: <span class="math notranslate nohighlight">\((N,*)\)</span></p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.Dense.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Dense.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Dense.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -345,19 +393,19 @@ Shape: <span class="math notranslate nohighlight">\((N, *, H_{out})\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.Dense.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.Dense.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Dense.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.DenseRNN">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">DenseRNN</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.DenseRNN" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">DenseRNN</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_size</span></em>, <em class="sig-param"><span class="n">hidden_size</span></em>, <em class="sig-param"><span class="n">output_size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.DenseRNN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt id="luz.modules.DenseRNN.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.DenseRNN.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.DenseRNN.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -374,20 +422,20 @@ Shape: <span class="math notranslate nohighlight">\((N, *, H_{out})\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.DenseRNN.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.DenseRNN.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.DenseRNN.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.DotProductAttention">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">DotProductAttention</span></code><a class="headerlink" href="#luz.modules.DotProductAttention" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">DotProductAttention</code><a class="headerlink" href="#luz.modules.DotProductAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Scaled dot product attention.</p>
 <p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt id="luz.modules.DotProductAttention.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.DotProductAttention.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.DotProductAttention.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -412,14 +460,14 @@ Shape: <span class="math notranslate nohighlight">\((N_{queries},N_{keys})\)</sp
 
 <dl class="py attribute">
 <dt id="luz.modules.DotProductAttention.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.DotProductAttention.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.DotProductAttention.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.EdgeAggregateGlobal">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">EdgeAggregateGlobal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_attn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateGlobal" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">EdgeAggregateGlobal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_u</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">num_heads</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateGlobal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Aggregates graph edges using multihead attention.</p>
 <dl class="field-list simple">
@@ -435,7 +483,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{queries},N_{keys})\)</sp
 </dl>
 <dl class="py method">
 <dt id="luz.modules.EdgeAggregateGlobal.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateGlobal.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateGlobal.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -464,14 +512,14 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_e)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.EdgeAggregateGlobal.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.EdgeAggregateGlobal.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.EdgeAggregateGlobal.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.EdgeAggregateGlobalHead">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">EdgeAggregateGlobalHead</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_attn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateGlobalHead" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">EdgeAggregateGlobalHead</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_u</span></em>, <em class="sig-param"><span class="n">d_attn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateGlobalHead" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Aggregates graph edges using attention.</p>
 <dl class="field-list simple">
@@ -486,7 +534,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_e)\)</span></p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.EdgeAggregateGlobalHead.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateGlobalHead.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateGlobalHead.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -499,7 +547,8 @@ Shape: <span class="math notranslate nohighlight">\((N_{edges},d_e)\)</span></p>
 Shape: <span class="math notranslate nohighlight">\((2,N_{edges})\)</span></p></li>
 <li><p><strong>u</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Global features.
 Shape: <span class="math notranslate nohighlight">\((N_{batch},d_u)\)</span></p></li>
-<li><p><strong>batch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Nodewise batch tensor.</p></li>
+<li><p><strong>batch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Nodewise batch tensor.
+Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -514,14 +563,14 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_e)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.EdgeAggregateGlobalHead.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.EdgeAggregateGlobalHead.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.EdgeAggregateGlobalHead.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.EdgeAggregateLocal">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">EdgeAggregateLocal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_attn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateLocal" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">EdgeAggregateLocal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_u</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">num_heads</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateLocal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Aggregates graph edges using multihead attention.</p>
 <dl class="field-list simple">
@@ -537,7 +586,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_e)\)</span></p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.EdgeAggregateLocal.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateLocal.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateLocal.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -566,14 +615,14 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},d_e)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.EdgeAggregateLocal.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.EdgeAggregateLocal.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.EdgeAggregateLocal.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.EdgeAggregateLocalHead">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">EdgeAggregateLocalHead</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_attn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodewise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateLocalHead" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">EdgeAggregateLocalHead</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_e</span></em>, <em class="sig-param"><span class="n">d_u</span></em>, <em class="sig-param"><span class="n">d_attn</span></em>, <em class="sig-param"><span class="n">nodewise</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateLocalHead" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Aggregates graph edges using attention.</p>
 <dl class="field-list simple">
@@ -588,7 +637,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},d_e)\)</span></p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.EdgeAggregateLocalHead.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateLocalHead.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.EdgeAggregateLocalHead.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -601,7 +650,8 @@ Shape: <span class="math notranslate nohighlight">\((N_{edges},d_e)\)</span></p>
 Shape: <span class="math notranslate nohighlight">\((2,N_{edges})\)</span></p></li>
 <li><p><strong>u</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Global features.
 Shape: <span class="math notranslate nohighlight">\((N_{batch},d_u)\)</span></p></li>
-<li><p><strong>batch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Nodewise batch tensor.</p></li>
+<li><p><strong>batch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Nodewise batch tensor.
+Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -616,19 +666,19 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},d_e)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.EdgeAggregateLocalHead.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.EdgeAggregateLocalHead.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.EdgeAggregateLocalHead.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.ElmanRNN">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ElmanRNN</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.ElmanRNN" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">ElmanRNN</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_size</span></em>, <em class="sig-param"><span class="n">hidden_size</span></em>, <em class="sig-param"><span class="n">num_layers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nonlinearity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch_first</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dropout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bidirectional</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h0</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.ElmanRNN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt id="luz.modules.ElmanRNN.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.ElmanRNN.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.ElmanRNN.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -642,14 +692,14 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="py attribute">
 <dt id="luz.modules.ElmanRNN.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.ElmanRNN.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.ElmanRNN.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.GraphConv">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">GraphConv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphConv" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">GraphConv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">activation</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphConv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Graph convolutional network from <a class="reference external" href="https://arxiv.org/abs/1609.02907">https://arxiv.org/abs/1609.02907</a>.</p>
 <dl class="field-list simple">
@@ -662,7 +712,7 @@ registered hooks while the latter silently ignores them.</p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.GraphConv.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphConv.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edge_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphConv.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -685,14 +735,14 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},d_v)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.GraphConv.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.GraphConv.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.GraphConv.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.GraphConvAttention">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">GraphConvAttention</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphConvAttention" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">GraphConvAttention</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphConvAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Compute node attention weights using graph convolutional network.</p>
 <dl class="field-list simple">
@@ -705,7 +755,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},d_v)\)</span></p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.GraphConvAttention.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphConvAttention.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphConvAttention.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -730,14 +780,14 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},N_{nodes})\)</spa
 
 <dl class="py attribute">
 <dt id="luz.modules.GraphConvAttention.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.GraphConvAttention.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.GraphConvAttention.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.GraphNetwork">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">GraphNetwork</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphNetwork" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">GraphNetwork</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">global_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_layers</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Graph Network from <a class="reference external" href="https://arxiv.org/abs/1806.01261">https://arxiv.org/abs/1806.01261</a>.</p>
 <p>[summary]</p>
@@ -753,7 +803,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},N_{nodes})\)</spa
 </dl>
 <dl class="py method">
 <dt id="luz.modules.GraphNetwork.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphNetwork.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">edges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">u</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.GraphNetwork.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -793,20 +843,20 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py attribute">
 <dt id="luz.modules.GraphNetwork.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.GraphNetwork.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.GraphNetwork.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.MaskedSoftmax">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">MaskedSoftmax</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MaskedSoftmax" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MaskedSoftmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MaskedSoftmax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Compute softmax of a tensor using a mask.</p>
 <p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt id="luz.modules.MaskedSoftmax.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MaskedSoftmax.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.MaskedSoftmax.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -826,19 +876,19 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py attribute">
 <dt id="luz.modules.MaskedSoftmax.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.MaskedSoftmax.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.MaskedSoftmax.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.Module">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Module</span></code><a class="headerlink" href="#luz.modules.Module" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Module</code><a class="headerlink" href="#luz.modules.Module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt id="luz.modules.Module.backward">
-<code class="sig-name descname"><span class="pre">backward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.backward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">backward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loss</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.backward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Backpropagate loss.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -852,7 +902,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.eval">
-<code class="sig-name descname"><span class="pre">eval</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">no_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.eval" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">no_grad</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.eval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Context manager to operate in eval mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -866,7 +916,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.fit">
-<code class="sig-name descname"><span class="pre">fit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.fit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">val_dataset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -887,7 +937,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.get_input">
-<code class="sig-name descname"><span class="pre">get_input</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.get_input" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.get_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get input from batched data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -904,7 +954,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.get_target">
-<code class="sig-name descname"><span class="pre">get_target</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.get_target" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_target</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.get_target" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get target from batched data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -921,12 +971,12 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.load">
-<code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.load" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.modules.Module.log">
-<code class="sig-name descname"><span class="pre">log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.log" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -936,7 +986,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.loss">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">loss</span></code><a class="headerlink" href="#luz.modules.Module.loss" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">loss</code><a class="headerlink" href="#luz.modules.Module.loss" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]</p>
@@ -946,7 +996,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.migrate">
-<code class="sig-name descname"><span class="pre">migrate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.migrate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">migrate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.migrate" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -956,7 +1006,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.num_parameters">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_parameters</span></code><a class="headerlink" href="#luz.modules.Module.num_parameters" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">num_parameters</code><a class="headerlink" href="#luz.modules.Module.num_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of trainable parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -970,7 +1020,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.optimizer_step">
-<code class="sig-name descname"><span class="pre">optimizer_step</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.optimizer_step" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">optimizer_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optimizer</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.optimizer_step" title="Permalink to this definition">¶</a></dt>
 <dd><p>Step training optimizer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -984,7 +1034,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.predict">
-<code class="sig-name descname"><span class="pre">predict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.predict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass in eval mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1001,14 +1051,13 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.run_batch">
-<code class="sig-name descname"><span class="pre">run_batch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.run_batch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">optimizer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.run_batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run training algorithm on a single batch.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset</strong> – Batch of training data.</p></li>
 <li><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>) – Target tensor.</p></li>
-<li><p><strong>device</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">device</span></code>]) – Device to use for training.</p></li>
 <li><p><strong>optimizer</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code>]) – Training optimizer, by default None.</p></li>
 </ul>
 </dd>
@@ -1022,8 +1071,23 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 </dd></dl>
 
 <dl class="py method">
+<dt id="luz.modules.Module.run_test_batch">
+<code class="sig-name descname">run_test_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.run_test_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.modules.Module.run_train_batch">
+<code class="sig-name descname">run_train_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">optimizer</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.run_train_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="luz.modules.Module.run_validate_batch">
+<code class="sig-name descname">run_validate_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.run_validate_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="luz.modules.Module.save">
-<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.save" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -1033,7 +1097,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.test">
-<code class="sig-name descname"><span class="pre">test</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.test" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.test" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -1043,12 +1107,12 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py attribute">
 <dt id="luz.modules.Module.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.Module.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Module.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="luz.modules.Module.use_fit_params">
-<code class="sig-name descname"><span class="pre">use_fit_params</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.use_fit_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">use_fit_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.use_fit_params" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -1058,7 +1122,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py method">
 <dt id="luz.modules.Module.validate">
-<code class="sig-name descname"><span class="pre">validate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.validate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Module.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1080,7 +1144,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 
 <dl class="py class">
 <dt id="luz.modules.NodeAggregate">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">NodeAggregate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.NodeAggregate" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">NodeAggregate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_v</span></em>, <em class="sig-param"><span class="n">d_u</span></em>, <em class="sig-param"><span class="n">num_heads</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.NodeAggregate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Aggregates graph edges using multihead attention.</p>
 <dl class="field-list simple">
@@ -1095,7 +1159,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{nodes},)\)</span></p></l
 </dl>
 <dl class="py method">
 <dt id="luz.modules.NodeAggregate.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.NodeAggregate.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">edges</span></em>, <em class="sig-param"><span class="n">edge_index</span></em>, <em class="sig-param"><span class="n">u</span></em>, <em class="sig-param"><span class="n">batch</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.NodeAggregate.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1124,14 +1188,14 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_v)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.NodeAggregate.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.NodeAggregate.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.NodeAggregate.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.Reshape">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Reshape</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Reshape" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Reshape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">out_shape</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Reshape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Reshape tensor.</p>
 <dl class="field-list simple">
@@ -1141,7 +1205,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_v)\)</span></p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.Reshape.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Reshape.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Reshape.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1158,14 +1222,14 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_v)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.Reshape.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.Reshape.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Reshape.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.Squeeze">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Squeeze</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Squeeze" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Squeeze</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dim</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Squeeze" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Squeeze tensor.</p>
 <dl class="field-list simple">
@@ -1175,7 +1239,7 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_v)\)</span></p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.Squeeze.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Squeeze.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Squeeze.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1192,19 +1256,19 @@ Shape: <span class="math notranslate nohighlight">\((N_{batch},d_v)\)</span></p>
 
 <dl class="py attribute">
 <dt id="luz.modules.Squeeze.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.Squeeze.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Squeeze.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.StandardizeInput">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">StandardizeInput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.StandardizeInput" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">StandardizeInput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mean</span></em>, <em class="sig-param"><span class="n">std</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.StandardizeInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt id="luz.modules.StandardizeInput.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.StandardizeInput.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.StandardizeInput.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -1218,14 +1282,14 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="py attribute">
 <dt id="luz.modules.StandardizeInput.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.StandardizeInput.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.StandardizeInput.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.modules.Unsqueeze">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Unsqueeze</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Unsqueeze" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Unsqueeze</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dim</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Unsqueeze" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.modules.Module" title="luz.modules.Module"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.modules.Module</span></code></a></p>
 <p>Unsqueeze tensor.</p>
 <dl class="field-list simple">
@@ -1235,7 +1299,7 @@ registered hooks while the latter silently ignores them.</p>
 </dl>
 <dl class="py method">
 <dt id="luz.modules.Unsqueeze.forward">
-<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Unsqueeze.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.modules.Unsqueeze.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute forward pass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1252,7 +1316,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="py attribute">
 <dt id="luz.modules.Unsqueeze.training">
-<code class="sig-name descname"><span class="pre">training</span></code><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#luz.modules.Unsqueeze.training" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#luz.modules.Unsqueeze.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
