@@ -29,22 +29,31 @@ class Trainer:
         Parameters
         ----------
         loss
-            Loss function to be minimized during training, by default None
+            Loss function to be minimized during training.
+            By default None.
         optimizer
-            Training optimizer, by default None
+            Training optimizer.
+            By default None
         start_epoch
-            First training epoch, by default 1
+            First training epoch.
+            By default 1
         stop_epoch
-            Last training epoch, by default 2
+            Last training epoch.
+            By default 2.
         early_stopping
-            If True, then use `val_dataset` for early stopping; by default False.
+            If True, then use `val_dataset` for early stopping.
             Ignored if `val_dataset` is `None`.
+            By default False.
         patience
             Number of epochs of non-improving validation loss
-            before training stops early; by default 5.
-            Ignored if `early_stopping` is `False`.
+            before training stops early. Ignored if `early_stopping` is `False`.
+            By default 5.
         handlers
-            Handlers to run, by default None.
+            Handlers to run.
+            By default None.
+        log_filepath
+            Filepath to log progress, handler updates, etc.
+            By default None.
         **loader_kwargs
             Dataset.loader kwargs.
         """
@@ -69,6 +78,7 @@ class Trainer:
             "patience": self.patience,
             "loader_kwargs": self.loader_kwargs,
             "handlers": self.handlers,
+            "log_filepath": self.log_filepath,
             # "_state": self._state,
         }
 
@@ -81,6 +91,7 @@ class Trainer:
         self.patience = state_dict["patience"]
         self.loader_kwargs = state_dict["loader_kwargs"]
         self.handlers = state_dict["handlers"]
+        self.log_filepath = state_dict["log_filepath"]
         # self._state = state_dict["_state"]
 
     def fit(
