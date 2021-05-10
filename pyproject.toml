@@ -19,7 +19,6 @@ name = "luz"
 python = "^3.9"
 matplotlib = "^3.3.2"
 torch = "^1.7.0"
-networkx = "^2.5"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
