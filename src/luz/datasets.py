@@ -3,6 +3,7 @@ from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
 import itertools
 import luz
+import matplotlib.pyplot as plt
 import numpy as np
 import pathlib
 import torch
@@ -239,6 +240,76 @@ class BaseDataset:
             self.subset(indices=indices[offset - l : offset]).use_collate(self._collate)
             for offset, l in zip(itertools.accumulate(lengths), lengths)
         )
+
+    def mean_std(self, key: str) -> torch.Tensor:
+        for x in self:
+            mean = torch.zeros_like(x[key])
+            variance = torch.zeros_like(x[key])
+            break
+
+        n = len(self)
+
+        for i in range(n):
+            delta = self[i][key] - mean
+            mean += delta / (i + 1)
+            variance += delta * (self[i][key] - mean)
+
+        std = torch.sqrt(variance / n)
+
+        return mean, std
+
+    def max(self, key: str, dim: int) -> float:
+        for x in self:
+            m = x[key][dim]
+            break
+
+        for i in range(len(self)):
+            m = max(m, self[i][key][dim])
+
+        return m.item()
+
+    def min(self, key: str, dim: int) -> float:
+        for x in self:
+            m = x[key][dim]
+            break
+
+        for i in range(len(self)):
+            m = min(m, self[i][key][dim])
+
+        return m.item()
+
+    def plot_histogram(
+        self,
+        key: str,
+        dim: int,
+        num_bins: Optional[int] = 100,
+        data_min: Optional[float] = None,
+        data_max: Optional[float] = None,
+        filepath: Optional[Union[str, pathlib.Path]] = None,
+    ) -> None:
+        if data_min is None:
+            data_min = self.min(key, dim)
+
+        if data_max is None:
+            data_max = self.max(key, dim)
+
+        for x in self:
+            histc = torch.zeros_like(
+                torch.histc(x[key][dim], bins=num_bins, min=data_min, max=data_max)
+            )
+            break
+
+        for i in range(len(self)):
+            histc += torch.histc(
+                self[i][key][dim], bins=num_bins, min=data_min, max=data_max
+            )
+
+        bins = np.linspace(data_min, data_max, num_bins + 1)
+
+        plt.hist(bins[:-1], bins, weights=histc.numpy())
+        if self.filepath is not None:
+            plt.savefig(luz.expand_path(self.filepath))
+        plt.show()
 
 
 class Dataset(torch.utils.data.Dataset, BaseDataset):
