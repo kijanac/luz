@@ -18,6 +18,16 @@ Next level: simplified training algorithms with transforms and handlers.
 
 Next level: straightforward hyperparameter tuning with various scoring mechanisms.
 
+#. Data preparation scheme.
+
+  #. Transforms: Functions for conditionining the training process which are invertible and whose inverse is applied to the resulting predictor.
+  #. Preprocessors: Functions for altering the prediction task which are not necessarily invertible.
+#. Model.
+#. Training scheme.
+#. Overall learning algorithm.
+
+  #. Hyperparameter selectin.
+
 ---------------
 Getting Started
 ---------------

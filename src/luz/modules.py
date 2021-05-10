@@ -12,6 +12,7 @@ import torch
 __all__ = [
     "AdditiveAttention",
     "AdditiveNodeAttention",
+    "ApplyFunction",
     "AverageGraphPool",
     "Concatenate",
     "Dense",
@@ -27,10 +28,6 @@ __all__ = [
     "GraphNetwork",
     "MaskedSoftmax",
     "NodeAggregate",
-    "Reshape",
-    "Squeeze",
-    "StandardizeInput",
-    "Unsqueeze",
 ]
 
 Activation = Callable[[torch.Tensor], torch.Tensor]
@@ -133,7 +130,27 @@ class AdditiveNodeAttention(torch.nn.Module):
         return self.attn(nodes[s], nodes[r], mask)
 
 
-class AverageGraphPool(torch.nn.Module):
+class ApplyFunction(Module):
+    def __init__(self, f: Callable[torch.Tensor, torch.Tensor]) -> None:
+        self.f = f
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute forward pass.
+
+        Parameters
+        ----------
+        x
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor.
+        """
+        return self.f(x)
+
+
+class AverageGraphPool(Module):
     def __init__(self, num_clusters: int) -> None:
         super().__init__()
         self.num_clusters = num_clusters
@@ -509,25 +526,7 @@ class EdgeAggregateGlobalHead(torch.nn.Module):
         return self.lin(x)
 
 
-class StandardizeInput(torch.nn.Module):
-    def __init__(self, mean, std):
-        super().__init__()
-        self.mean = mean
-        self.std = std
-
-    def forward(self, x):
-        # if self.training:
-        # return x
-
-        # if mean is not None:
-        # if std is not None:
-        return (x - self.mean) / self.std
-        # return x - mean
-
-        # return x
-
-
-class ElmanRNN(torch.nn.Module):
+class ElmanRNN(Module):
     def __init__(
         self,
         input_size,
@@ -1013,87 +1012,3 @@ class NodeAggregate(torch.nn.Module):
         gates = torch.stack([g(u).squeeze(-1) for g in self.gates])
 
         return torch.einsum("ijk, ij -> jk", heads @ nodes, gates)
-
-
-class Reshape(torch.nn.Module):
-    def __init__(self, out_shape: Iterable[int]) -> None:
-        """Reshape tensor.
-
-        Parameters
-        ----------
-        out_shape
-            Desired output shape.
-        """
-        super().__init__()
-        self.shape = tuple(out_shape)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Compute forward pass.
-
-        Parameters
-        ----------
-        x
-            Input tensor.
-
-        Returns
-        -------
-        torch.Tensor
-            Reshaped output tensor.
-        """
-        return x.view(self.shape)
-
-
-class Squeeze(torch.nn.Module):
-    def __init__(self, dim: Optional[int]) -> None:
-        """Squeeze tensor.
-
-        Parameters
-        ----------
-        dim
-            Dimension to be squeezed.
-        """
-        super().__init__()
-        self.dim = dim
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Compute forward pass.
-
-        Parameters
-        ----------
-        x
-            Input tensor.
-
-        Returns
-        -------
-        torch.Tensor
-            Squeezed output tensor.
-        """
-        return x.squeeze(dim=self.dim)
-
-
-class Unsqueeze(torch.nn.Module):
-    def __init__(self, dim: int) -> None:
-        """Unsqueeze tensor.
-
-        Parameters
-        ----------
-        dim
-            Dimension to be unsqueezed.
-        """
-        super().__init__()
-        self.dim = dim
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Compute forward pass.
-
-        Parameters
-        ----------
-        x
-            Input tensor.
-
-        Returns
-        -------
-        torch.Tensor
-            Unsueezed output tensor.
-        """
-        return x.unsqueeze(dim=self.dim)
