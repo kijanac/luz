@@ -161,15 +161,20 @@ class BaseDataset:
         Parameters
         ----------
         batch_size
-            Batch size, by default 1.
+            Batch size.
+            By default 1.
         shuffle
-            If True, shuffle dataset; by default True.
+            If True, shuffle dataset.
+            By default True.
         num_workers
-            Number of workers, by default 1.
+            Number of workers.
+            By default 1.
         pin_memory
-            If True, put fetched tensors in pinned memory; by default True.
+            If True, put fetched tensors in pinned memory.
+            By default True.
         transform
-            Data transform, by default None.
+            Data transform.
+            By default None.
 
         Returns
         -------
