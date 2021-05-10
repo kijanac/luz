@@ -4,7 +4,7 @@ Custom PyTorch modules.
 
 """
 from __future__ import annotations
-from typing import Callable, Iterable, Optional
+from typing import Callable, Optional
 
 import luz
 import torch
