@@ -11,7 +11,7 @@ class IntegerDataset(luz.Dataset):
         super().__init__(data)
 
 
-class DummyModel(luz.Module):
+class DummyModel(luz.Model):
     def forward(self, x):
         pass
 

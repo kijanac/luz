@@ -28,7 +28,6 @@ __all__ = [
     "GraphConvAttention",
     "GraphNetwork",
     "MaskedSoftmax",
-    "Module",
     "NodeAggregate",
     "Reshape",
     "Squeeze",
@@ -41,246 +40,7 @@ Device = Union[str, torch.device]
 Loss = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 
-class Module(torch.nn.Module):
-    def run_batch(
-        self,
-        data: torch.Tensor,
-        target: torch.Tensor,
-        optimizer: Optional[torch.optim.Optimizer] = None,
-    ) -> float:
-        """Run training algorithm on a single batch.
-
-        Parameters
-        ----------
-        dataset
-            Batch of training data.
-        target
-            Target tensor.
-        optimizer
-            Training optimizer, by default None.
-
-        Returns
-        -------
-        float
-            Batch loss.
-        """
-        output = self(data)
-        loss = self.loss(output, target)
-
-        if optimizer is not None:
-            self.backward(loss)
-            self.optimizer_step(optimizer)
-
-        self.trainer.update_state(output=output, loss=loss)
-
-        return loss.item()
-
-    def run_train_batch(self, data, target, optimizer):
-        return self.run_batch(data, target, optimizer)
-
-    def run_validate_batch(self, data, target):
-        return self.run_batch(data, target)
-
-    def run_test_batch(self, data, target):
-        return self.run_batch(data, target)
-
-    def backward(self, loss: torch.Tensor) -> None:
-        """Backpropagate loss.
-
-        Parameters
-        ----------
-        loss
-            Loss tensor.
-        """
-        loss.backward()
-
-    def optimizer_step(self, optimizer: torch.optim.Optimizer) -> None:
-        """Step training optimizer.
-
-        Parameters
-        ----------
-        optimizer
-            Training optimizer.
-        """
-        optimizer.step()
-        optimizer.zero_grad()
-
-    def get_input(self, batch: luz.Data) -> torch.Tensor:
-        """Get input from batched data.
-
-        Parameters
-        ----------
-        batch
-            Batched data.
-
-        Returns
-        -------
-        torch.Tensor
-            Input tensor.
-        """
-        return batch.x
-
-    def get_target(self, batch: luz.Data) -> Optional[torch.Tensor]:
-        """Get target from batched data.
-
-        Parameters
-        ----------
-        batch
-            Batched data.
-
-        Returns
-        -------
-        Optional[torch.Tensor]
-            Target tensor.
-        """
-        return batch.y
-
-    # NON-CONFIGURABLE METHODS BELOW
-
-    @property
-    def num_parameters(self) -> int:
-        """Number of trainable parameters.
-
-        Returns
-        -------
-        int
-            Number of trainable parameters.
-        """
-        return sum(p.numel() for p in self.parameters() if p.requires_grad)
-
-    @property
-    def loss(self) -> Loss:
-        return self.trainer.loss
-
-    def save(self, path: Union[str, pathlib.Path]) -> None:
-        torch.save(
-            {"model": self.state_dict(), "trainer": self.trainer.state_dict()}, path
-        )
-
-    def load(self, path: Union[str, pathlib.Path]):
-        state_dict = torch.load(path)
-        self.load_state_dict(state_dict["model"])
-
-        self.trainer = luz.Trainer()
-        self.trainer.load_state_dict(state_dict["trainer"])
-
-    def predict(self, x: torch.Tensor) -> torch.Tensor:
-        """Compute forward pass in eval mode.
-
-        Parameters
-        ----------
-        x
-            Input tensor.
-
-        Returns
-        -------
-        torch.Tensor
-            Output tensor.
-        """
-        with self.eval():
-            return self.__call__(x)
-
-    @contextlib.contextmanager
-    def eval(self, no_grad: Optional[bool] = True) -> None:
-        """Context manager to operate in eval mode.
-
-        Parameters
-        ----------
-        no_grad
-            If True use torch.no_grad(), by default True.
-        """
-        training = True if self.training else False
-
-        nc = contextlib.nullcontext()
-        with torch.no_grad() if no_grad else nc:
-            try:
-                if training:
-                    super().eval()
-                yield
-            finally:
-                if training:
-                    self.train()
-
-    def migrate(self, device: Device) -> None:
-        self.to(device=device)
-
-    def log(self, msg: str) -> None:
-        self.trainer.log(msg)
-
-    # def call_event(self, event: luz.Event, **kwargs: Any) -> None:
-    #     for h in self.trainer.handlers:
-    #         getattr(h, event.name.lower())(model=self, **kwargs)
-
-    def fit(
-        self,
-        dataset: luz.Dataset,
-        val_dataset: Optional[luz.Dataset] = None,
-        device: Optional[Device] = "cpu",
-    ) -> luz.Module:
-        """Fit model.
-
-        Parameters
-        ----------
-        dataset
-            Training data.
-        val_dataset
-            Validation data, by default None.
-        device
-            Device to use for training, by default "cpu".
-
-        Returns
-        -------
-        luz.Module
-            Trained model.
-        """
-        self.trainer.fit(self, dataset, val_dataset, device)
-
-        return self
-
-    def validate(self, dataset: luz.Dataset, device: Optional[Device] = "cpu") -> float:
-        """Validate model.
-
-        Parameters
-        ----------
-        dataset
-            Validation data.
-        device
-            Device to use for validation, by default "cpu".
-
-        Returns
-        -------
-        float
-            Validation loss.
-        """
-        loader = dataset.loader(**self.loader_kwargs)
-        with self.eval():
-            val_loss = self.run_epoch(loader, device, train=False)
-
-        self._state["val_history"].append(val_loss)
-
-        try:
-            # FIXME: replace 0.0 with self.delta_thresh?
-            if min(self._state["val_history"]) - val_loss < 0.0:
-                self._state["patience"] -= 1
-            else:
-                self._state["patience"] = self.patience
-        except ValueError:
-            pass
-
-        return val_loss
-
-    def test(
-        self,
-        dataset: luz.Dataset,
-        device: Optional[Device] = "cpu",
-    ) -> float:
-        return self.trainer.test(self, dataset, device)
-
-    def use_fit_params(self, **kwargs) -> None:
-        self.trainer = luz.Trainer(**kwargs)
-
-
-class AdditiveAttention(Module):
+class AdditiveAttention(torch.nn.Module):
     """Additive attention, from https://arxiv.org/abs/1409.0473."""
 
     def __init__(
@@ -332,7 +92,7 @@ class AdditiveAttention(Module):
         return self.ms(pre_attn, mask)
 
 
-class AdditiveNodeAttention(Module):
+class AdditiveNodeAttention(torch.nn.Module):
     def __init__(
         self, d: int, d_attn: int, activation: Optional[Activation] = None
     ) -> None:
@@ -377,7 +137,7 @@ class AdditiveNodeAttention(Module):
         return self.attn(nodes[s], nodes[r], mask)
 
 
-class AverageGraphPool(Module):
+class AverageGraphPool(torch.nn.Module):
     def __init__(self, num_clusters: int) -> None:
         super().__init__()
         self.num_clusters = num_clusters
@@ -452,7 +212,7 @@ class AverageGraphPool(Module):
         return coarse_nodes, coarse_edges, coarse_edge_index
 
 
-class Concatenate(Module):
+class Concatenate(torch.nn.Module):
     def __init__(self, dim: Optional[int] = 0) -> None:
         """Concatenate tensors along a given dimension.
 
@@ -481,7 +241,7 @@ class Concatenate(Module):
         return torch.cat(tensors, dim=self.dim)
 
 
-class Dense(Module):
+class Dense(torch.nn.Module):
     def __init__(
         self,
         *features: int,
@@ -530,7 +290,7 @@ class Dense(Module):
         return self.seq(x)
 
 
-class DenseRNN(Module):
+class DenseRNN(torch.nn.Module):
     def __init__(self, input_size: int, hidden_size: int, output_size: int) -> None:
         super().__init__()
 
@@ -566,7 +326,7 @@ class DenseRNN(Module):
         return torch.zeros(1, self.hidden_size)
 
 
-class DotProductAttention(Module):
+class DotProductAttention(torch.nn.Module):
     """Scaled dot product attention."""
 
     def forward(
@@ -598,7 +358,7 @@ class DotProductAttention(Module):
         return luz.dot_product_attention(query, key, mask)
 
 
-class EdgeAggregateLocalHead(Module):
+class EdgeAggregateLocalHead(torch.nn.Module):
     def __init__(
         self,
         d_v: int,
@@ -679,7 +439,7 @@ class EdgeAggregateLocalHead(Module):
         return self.lin(x)
 
 
-class EdgeAggregateGlobalHead(Module):
+class EdgeAggregateGlobalHead(torch.nn.Module):
     def __init__(self, d_v: int, d_e: int, d_u: int, d_attn: int) -> None:
         """Aggregates graph edges using attention.
 
@@ -753,7 +513,7 @@ class EdgeAggregateGlobalHead(Module):
         return self.lin(x)
 
 
-class StandardizeInput(Module):
+class StandardizeInput(torch.nn.Module):
     def __init__(self, mean, std):
         super().__init__()
         self.mean = mean
@@ -771,7 +531,7 @@ class StandardizeInput(Module):
         # return x
 
 
-class ElmanRNN(Module):
+class ElmanRNN(torch.nn.Module):
     def __init__(
         self,
         input_size,
@@ -815,7 +575,7 @@ class ElmanRNN(Module):
         return output
 
 
-class GraphConv(Module):
+class GraphConv(torch.nn.Module):
     def __init__(self, d_v: int, activation: Activation) -> None:
         """Graph convolutional network from https://arxiv.org/abs/1609.02907.
 
@@ -858,7 +618,7 @@ class GraphConv(Module):
         return self.lin(D @ A @ D @ nodes)
 
 
-class GraphConvAttention(Module):
+class GraphConvAttention(torch.nn.Module):
     def __init__(self, d_v: int, activation: Optional[Activation] = None) -> None:
         """Compute node attention weights using graph convolutional network.
 
@@ -906,7 +666,7 @@ class GraphConvAttention(Module):
         return attn
 
 
-class GraphNetwork(Module):
+class GraphNetwork(torch.nn.Module):
     """Graph Network from https://arxiv.org/abs/1806.01261."""
 
     def __init__(
@@ -1004,7 +764,7 @@ class GraphNetwork(Module):
         return nodes, edge_index, edges, u, batch
 
 
-class MaskedSoftmax(Module):
+class MaskedSoftmax(torch.nn.Module):
     """Compute softmax of a tensor using a mask."""
 
     def __init__(self, dim: Optional[int] = None) -> None:
@@ -1033,7 +793,7 @@ class MaskedSoftmax(Module):
         return luz.masked_softmax(x, mask, self.dim)
 
 
-class EdgeAggregateLocal(Module):
+class EdgeAggregateLocal(torch.nn.Module):
     def __init__(
         self,
         d_v: int,
@@ -1111,7 +871,7 @@ class EdgeAggregateLocal(Module):
         return torch.einsum("ijk, ij -> jk", heads, gates)
 
 
-class EdgeAggregateGlobal(Module):
+class EdgeAggregateGlobal(torch.nn.Module):
     def __init__(
         self,
         d_v: int,
@@ -1187,7 +947,7 @@ class EdgeAggregateGlobal(Module):
         return torch.einsum("ijk, ij -> jk", heads, gates)
 
 
-class NodeAggregate(Module):
+class NodeAggregate(torch.nn.Module):
     def __init__(
         self,
         d_v: int,
@@ -1259,7 +1019,7 @@ class NodeAggregate(Module):
         return torch.einsum("ijk, ij -> jk", heads @ nodes, gates)
 
 
-class Reshape(Module):
+class Reshape(torch.nn.Module):
     def __init__(self, out_shape: Iterable[int]) -> None:
         """Reshape tensor.
 
@@ -1287,7 +1047,7 @@ class Reshape(Module):
         return x.view(self.shape)
 
 
-class Squeeze(Module):
+class Squeeze(torch.nn.Module):
     def __init__(self, dim: Optional[int]) -> None:
         """Squeeze tensor.
 
@@ -1315,7 +1075,7 @@ class Squeeze(Module):
         return x.squeeze(dim=self.dim)
 
 
-class Unsqueeze(Module):
+class Unsqueeze(torch.nn.Module):
     def __init__(self, dim: int) -> None:
         """Unsqueeze tensor.
 
