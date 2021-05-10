@@ -4,11 +4,9 @@ Custom PyTorch modules.
 
 """
 from __future__ import annotations
-from typing import Callable, Iterable, Optional, Tuple, Union
+from typing import Callable, Iterable, Optional
 
-import contextlib
 import luz
-import pathlib
 import torch
 
 __all__ = [
@@ -36,8 +34,6 @@ __all__ = [
 ]
 
 Activation = Callable[[torch.Tensor], torch.Tensor]
-Device = Union[str, torch.device]
-Loss = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 
 class AdditiveAttention(torch.nn.Module):
@@ -149,7 +145,7 @@ class AverageGraphPool(torch.nn.Module):
         edge_index: torch.Tensor,
         batch: torch.Tensor,
         assignment: torch.Tensor,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Pool graph by average node clustering.
 
         Parameters
