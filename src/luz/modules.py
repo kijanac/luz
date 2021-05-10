@@ -130,7 +130,7 @@ class AdditiveNodeAttention(torch.nn.Module):
         return self.attn(nodes[s], nodes[r], mask)
 
 
-class ApplyFunction(Module):
+class ApplyFunction(torch.nn.Module):
     def __init__(self, f: Callable[torch.Tensor, torch.Tensor]) -> None:
         self.f = f
 
@@ -150,7 +150,7 @@ class ApplyFunction(Module):
         return self.f(x)
 
 
-class AverageGraphPool(Module):
+class AverageGraphPool(torch.nn.Module):
     def __init__(self, num_clusters: int) -> None:
         super().__init__()
         self.num_clusters = num_clusters
@@ -526,7 +526,7 @@ class EdgeAggregateGlobalHead(torch.nn.Module):
         return self.lin(x)
 
 
-class ElmanRNN(Module):
+class ElmanRNN(torch.nn.Module):
     def __init__(
         self,
         input_size,
