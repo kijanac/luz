@@ -10,7 +10,6 @@ __all__ = [
     "Argmax",
     "Compose",
     "Identity",
-    "InverseStandardize",
     "Lookup",
     "Normalize",
     "PowerSeries",
@@ -187,31 +186,7 @@ class Standardize(TensorTransform):
         return (x - self.mean) / self.std
 
     def inverse(self) -> TensorTransform:
-        return InverseStandardize(self.mean, self.std)
-
-
-class InverseStandardize(TensorTransform):
-    def __init__(self, mean: torch.Tensor, std: Optional[torch.Tensor] = None) -> None:
-        self.mean = mean
-        self.std = std
-
-    def __call__(self, x: torch.Tensor) -> torch.Tensor:
-        """Transform tensor.
-
-        Parameters
-        ----------
-        x
-            Input tensor.
-
-        Returns
-        -------
-        torch.Tensor
-            Output tensor.
-        """
-        return x * self.std + self.mean
-
-    def inverse(self) -> TensorTransform:
-        return Standardize(self.mean, self.std)
+        return Standardize(-self.mean / self.std, 1 / self.std)
 
 
 class Transpose(TensorTransform):
