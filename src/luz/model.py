@@ -249,3 +249,18 @@ class Model(torch.nn.Module):
 
     def use_fit_params(self, **kwargs) -> None:
         self.trainer = luz.Trainer(**kwargs)
+
+    # def transform_inputs(self, *args, **kwargs):
+    #     return
+
+    # def use_transform(self, transform: Optional[luz.TensorTransform] = None) -> None:
+    #     """Use transform.
+
+    #     Parameters
+    #     ----------
+    #     transform
+    #         Invertible tensor transform applied to the target during training.
+    #         Inverse transform is applied during inference.
+    #     """
+    #     self.transform = transform
+    #     self.inverse_transform = transform.inverse()
