@@ -64,7 +64,7 @@ class Trainer:
         self.early_stopping = early_stopping
         self.patience = patience
         self.loader_kwargs = loader_kwargs
-        self.handlers = handlers
+        self.handlers = handlers or []
         self.log_filepath = log_filepath
         self._state = {}
 
