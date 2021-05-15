@@ -149,6 +149,8 @@ class Model(torch.nn.Module):
             Output tensor.
         """
         with self.eval():
+            if hasattr(self, "transform"):
+                return self.transform(self.__call__(x))
             return self.__call__(x)
 
     @contextlib.contextmanager
@@ -253,14 +255,12 @@ class Model(torch.nn.Module):
     # def transform_inputs(self, *args, **kwargs):
     #     return
 
-    # def use_transform(self, transform: Optional[luz.TensorTransform] = None) -> None:
-    #     """Use transform.
+    def use_transform(self, transform: luz.TensorTransform) -> None:
+        """Use transform.
 
-    #     Parameters
-    #     ----------
-    #     transform
-    #         Invertible tensor transform applied to the target during training.
-    #         Inverse transform is applied during inference.
-    #     """
-    #     self.transform = transform
-    #     self.inverse_transform = transform.inverse()
+        Parameters
+        ----------
+        transform
+            Tensor transform applied to output during inference.
+        """
+        self.transform = transform
