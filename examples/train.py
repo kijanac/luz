@@ -22,7 +22,7 @@ def get_dataset(size):
     return luz.Dataset([d] * size).use_collate(luz.graph_collate)
 
 
-class Net(luz.Module):
+class Net(luz.Model):
     def __init__(self):
         super().__init__()
         self.lin = torch.nn.Linear(10, 1)

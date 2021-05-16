@@ -64,7 +64,7 @@ class Trainer:
         self.early_stopping = early_stopping
         self.patience = patience
         self.loader_kwargs = loader_kwargs
-        self.handlers = handlers
+        self.handlers = handlers or []
         self.log_filepath = log_filepath
         self._state = {}
 
@@ -245,12 +245,12 @@ class Trainer:
             # migrate the input and target tensors to the appropriate device
             data, target = data.to(device), target.to(device)
 
-            if self.flag == luz.Flag.TRAINING:
+            if self._state["flag"] == luz.Flag.TRAINING:
                 running_loss += model.run_train_batch(data, target, optimizer)
-            elif self.flag == luz.Flag.VALIDATING:
+            elif self._state["flag"] == luz.Flag.VALIDATING:
                 with model.eval():
                     running_loss += model.run_validate_batch(data, target)
-            elif self.flag == luz.Flag.TESTING:
+            elif self._state["flag"] == luz.Flag.TESTING:
                 with model.eval():
                     running_loss += model.run_test_batch(data, target)
             # from https://coolnesss.github.io/2019-02-05/pytorch-gotchas
@@ -266,7 +266,7 @@ class Trainer:
 
         loss = running_loss / len(loader)
 
-        if self.flag == luz.Flag.TRAINING:
+        if self._state["flag"] == luz.Flag.TRAINING:
             self._state["train_history"].append(loss)
 
         self._call_event(luz.Event.EPOCH_ENDED)

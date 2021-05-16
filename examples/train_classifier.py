@@ -12,7 +12,7 @@ def get_dataset(size):
     return luz.Dataset([d] * size)
 
 
-class Net(luz.Module):
+class Net(luz.Model):
     def __init__(self):
         super().__init__()
         self.lin = torch.nn.Linear(10, 5)
