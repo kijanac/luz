@@ -12,6 +12,7 @@ Submodules
    luz.flags
    luz.handlers
    luz.learner
+   luz.model
    luz.modules
    luz.optimizer
    luz.scorers

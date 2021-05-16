@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.transforms module &mdash; luz 6.0.0 documentation</title>
+  <title>luz.transforms module &mdash; luz 7.0.0 documentation</title>
   
 
   
@@ -32,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -64,7 +63,7 @@
             
             
               <div class="version">
-                6.0.0
+                7.0.0
               </div>
             
           
@@ -99,6 +98,7 @@
 <li class="toctree-l4"><a class="reference internal" href="luz.flags.html">luz.flags module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.handlers.html">luz.handlers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.learner.html">luz.learner module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.model.html">luz.model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.modules.html">luz.modules module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.optimizer.html">luz.optimizer module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.scorers.html">luz.scorers module</a></li>
@@ -188,86 +188,174 @@
 <span id="luz-transforms-module"></span><h1>luz.transforms module<a class="headerlink" href="#module-luz.transforms" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="luz.transforms.Argmax">
-<em class="property">class </em><code class="sig-name descname">Argmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdim</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Argmax" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="luz.transforms.Center">
-<em class="property">class </em><code class="sig-name descname">Center</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Center" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="luz.transforms.CenterPerTensor">
-<em class="property">class </em><code class="sig-name descname">CenterPerTensor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">dim</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.CenterPerTensor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Argmax</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Argmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.Compose">
-<em class="property">class </em><code class="sig-name descname">Compose</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">transforms</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Compose" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Compose</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">transforms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Compose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
+<dl class="py method">
+<dt id="luz.transforms.Compose.inverse">
+<code class="sig-name descname"><span class="pre">inverse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Compose.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorTransform</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py class">
-<dt id="luz.transforms.DigraphToTensors">
-<em class="property">class </em><code class="sig-name descname">DigraphToTensors</code><a class="headerlink" href="#luz.transforms.DigraphToTensors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="luz.transforms.Expand">
-<em class="property">class </em><code class="sig-name descname">Expand</code><a class="headerlink" href="#luz.transforms.Expand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.Identity">
-<em class="property">class </em><code class="sig-name descname">Identity</code><a class="headerlink" href="#luz.transforms.Identity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Identity</span></code><a class="headerlink" href="#luz.transforms.Identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
+<dl class="py method">
+<dt id="luz.transforms.Identity.inverse">
+<code class="sig-name descname"><span class="pre">inverse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Identity.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorTransform</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.Lookup">
-<em class="property">class </em><code class="sig-name descname">Lookup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lookup_dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Lookup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Lookup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lookup_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.Normalize">
-<em class="property">class </em><code class="sig-name descname">Normalize</code><a class="headerlink" href="#luz.transforms.Normalize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Normalize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.PowerSeries">
-<em class="property">class </em><code class="sig-name descname">PowerSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">degree</span></em>, <em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.PowerSeries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">PowerSeries</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">degree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.PowerSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.transforms.Reshape">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Reshape</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Reshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
+<p>Reshape tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>out_shape</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Desired output shape.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.transforms.Squeeze">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Squeeze</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Squeeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
+<p>Squeeze tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dim</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Dimension to be squeezed.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="luz.transforms.Squeeze.inverse">
+<code class="sig-name descname"><span class="pre">inverse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Squeeze.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorTransform</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.Standardize">
-<em class="property">class </em><code class="sig-name descname">Standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Standardize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Standardize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Standardize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
+<dl class="py method">
+<dt id="luz.transforms.Standardize.inverse">
+<code class="sig-name descname"><span class="pre">inverse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Standardize.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorTransform</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.transforms.TensorTransform">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">TensorTransform</span></code><a class="headerlink" href="#luz.transforms.TensorTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="py method">
+<dt id="luz.transforms.TensorTransform.inverse">
+<code class="sig-name descname"><span class="pre">inverse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.TensorTransform.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorTransform</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.Transform">
-<em class="property">class </em><code class="sig-name descname">Transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">transforms</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Transform" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Transform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">transforms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.Transpose">
-<em class="property">class </em><code class="sig-name descname">Transpose</code><a class="headerlink" href="#luz.transforms.Transpose" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Transpose</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Transpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
+<dl class="py method">
+<dt id="luz.transforms.Transpose.inverse">
+<code class="sig-name descname"><span class="pre">inverse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Transpose.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorTransform</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="luz.transforms.Unsqueeze">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Unsqueeze</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Unsqueeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
+<p>Unsqueeze tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dim</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Dimension to be unsqueezed.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="luz.transforms.Unsqueeze.inverse">
+<code class="sig-name descname"><span class="pre">inverse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#luz.transforms.Unsqueeze.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorTransform</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt id="luz.transforms.ZeroMeanPerTensor">
-<em class="property">class </em><code class="sig-name descname">ZeroMeanPerTensor</code><a class="headerlink" href="#luz.transforms.ZeroMeanPerTensor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ZeroMeanPerTensor</span></code><a class="headerlink" href="#luz.transforms.ZeroMeanPerTensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#luz.transforms.TensorTransform" title="luz.transforms.TensorTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.transforms.TensorTransform</span></code></a></p>
 </dd></dl>
 
 </div>

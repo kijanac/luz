@@ -1,0 +1,7 @@
+luz.model module
+================
+
+.. automodule:: luz.model
+   :members:
+   :undoc-members:
+   :show-inheritance:

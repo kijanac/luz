@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.optimizer module &mdash; luz 6.0.0 documentation</title>
+  <title>luz.optimizer module &mdash; luz 7.0.0 documentation</title>
   
 
   
@@ -32,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -64,7 +63,7 @@
             
             
               <div class="version">
-                6.0.0
+                7.0.0
               </div>
             
           
@@ -99,6 +98,7 @@
 <li class="toctree-l4"><a class="reference internal" href="luz.flags.html">luz.flags module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.handlers.html">luz.handlers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.learner.html">luz.learner module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.model.html">luz.model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.modules.html">luz.modules module</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">luz.optimizer module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.scorers.html">luz.scorers module</a></li>
@@ -188,11 +188,11 @@
 <span id="luz-optimizer-module"></span><h1>luz.optimizer module<a class="headerlink" href="#module-luz.optimizer" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="luz.optimizer.Optimizer">
-<em class="property">class </em><code class="sig-name descname">Optimizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optim_cls</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.optimizer.Optimizer" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Optimizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optim_cls</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.optimizer.Optimizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt id="luz.optimizer.Optimizer.builder">
-<em class="property">static </em><code class="sig-name descname">builder</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.optimizer.Optimizer.builder" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">builder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.optimizer.Optimizer.builder" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[…, <a class="reference internal" href="#luz.optimizer.Optimizer" title="luz.optimizer.Optimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></a>]</p>
@@ -202,13 +202,8 @@
 
 <dl class="py method">
 <dt id="luz.optimizer.Optimizer.link">
-<code class="sig-name descname">link</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.optimizer.Optimizer.link" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></p>
-</dd>
-</dl>
-</dd></dl>
+<code class="sig-name descname"><span class="pre">link</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.optimizer.Optimizer.link" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
