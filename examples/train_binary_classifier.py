@@ -21,19 +21,31 @@ class Net(luz.Model):
         return self.lin(x)
 
 
-nn = Net()
+class Learner(luz.Learner):
+    def model(self):
+        return Net()
+
+    def criterion(self):
+        return torch.nn.MSELoss()
+
+    def optimizer(self, model):
+        return torch.optim.Adam(model.parameters())
+
+    def handlers(self):
+        return luz.Accuracy(), luz.FBeta(2)
+
+    def loader(self, dataset):
+        return dataset.loader(batch_size=20)
+
+    def fit_params(self):
+        return dict(
+            stop_epoch=100,
+        )
+
 
 d = get_dataset(1000)
 d_train, d_val, d_test = d.split([60, 20, 20])
 
-nn.use_fit_params(
-    loss=torch.nn.MSELoss(),
-    optimizer=luz.Optimizer(torch.optim.Adam),
-    stop_epoch=100,
-    batch_size=20,
-    handlers=[luz.Accuracy(), luz.FBeta(2)],
-)
-
-print(nn.test(d_test, "cpu"))
-nn.fit(d_train, d_val, "cpu")
-print(nn.test(d_test, "cpu"))
+learner = Learner()
+nn = learner.learn(d_train, d_val, "cpu")
+print(learner.test(nn, d_test, "cpu"))

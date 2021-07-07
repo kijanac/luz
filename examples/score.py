@@ -35,7 +35,7 @@ class Learner(luz.Learner):
     def model(self):
         return Net()
 
-    def fit_params(self, train_dataset, val_dataset, device):
+    def fit_params(self):
         return dict(
             loss=torch.nn.MSELoss(),
             optimizer=luz.Optimizer(torch.optim.Adam),
@@ -51,3 +51,4 @@ if __name__ == "__main__":
     learner.use_scorer(luz.Holdout(test_fraction=0.2, val_fraction=0.2))
 
     model, score = learner.score(d)
+    print(score)
