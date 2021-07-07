@@ -25,14 +25,22 @@ class Learner(luz.Learner):
     def model(self):
         return Net()
 
-    def fit_params(self, train_dataset, val_dataset, device):
+    def criterion(self):
+        return torch.nn.MSELoss()
+
+    def optimizer(self, model):
+        return torch.optim.Adam(model.parameters())
+
+    def fit_params(self):
         return dict(
-            loss=torch.nn.MSELoss(),
-            optimizer=luz.Optimizer(torch.optim.Adam),
             stop_epoch=10,
-            batch_size=20,
-            handlers=[luz.Accuracy(), luz.ActualVsPredicted()],  # ,luz.PlotHistory()]
         )
+
+    def loader(self, dataset):
+        return dataset.loader(batch_size=20)
+
+    def handlers(self):
+        return luz.Accuracy(), luz.ActualVsPredicted(), luz.PlotHistory()
 
 
 learner = Learner()

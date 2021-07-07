@@ -26,28 +26,40 @@ class Net(luz.Model):
 
 class Learner(luz.Learner):
     def __init__(self, degree):
+        super().__init__()
         self.degree = degree
 
-    def fit_params(self, train_dataset, val_dataset, device):
+    def criterion(self):
+        return torch.nn.MSELoss()
+
+    def optimizer(self, model):
+        return torch.optim.Adam(model.parameters())
+
+    def handlers(self):
+        return luz.ActualVsPredicted()
+
+    def fit_params(self):
         return {
-            "loss": torch.nn.MSELoss(),
-            "transform": luz.Transform(x=luz.PowerSeries(self.degree)),
-            "optimizer": luz.Optimizer(torch.optim.Adam),
             "stop_epoch": 1000,
             "early_stopping": True,
             "patience": 10,
-            "handlers": [luz.ActualVsPredicted()],
         }
+
+    def loader(self, dataset):
+        transform = luz.Transform(x=luz.PowerSeries(self.degree))
+        return dataset.loader(transform=transform)
 
     def model(self):
         return Net(self.degree)
+
+    def scorer(self):
+        return luz.Holdout(0.2, 0.2)
 
 
 if __name__ == "__main__":
     d = get_dataset()
 
-    learner = Learner(2)
-    learner.use_scorer(luz.Holdout(0.2, 0.2))
+    learner = Learner(degree=2)
     model, score = learner.score(d)
     model.use_transform(luz.Squeeze(0))
     print(score)

@@ -3,11 +3,10 @@ from luz.events import *
 from luz.flags import *
 from luz.handlers import *
 from luz.learner import *
+from luz.loggers import *
 from luz.model import *
 from luz.modules import *
-from luz.optimizer import *
 from luz.scorers import *
-from luz.trainers import *
 from luz.transforms import *
 from luz.tuners import *
 from luz.utils import *

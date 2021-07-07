@@ -20,7 +20,13 @@ class DummyLearner(luz.Learner):
     def model(self):
         pass
 
-    def fit_params(self, train_dataset, val_dataset, device):
+    def criterion(self):
+        pass
+
+    def optimizer(self, model):
+        pass
+
+    def fit_params(self):
         pass
 
 

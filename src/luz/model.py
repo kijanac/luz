@@ -9,7 +9,7 @@ import torch
 __all__ = ["Model"]
 
 Device = Union[str, torch.device]
-Loss = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
+Criterion = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 
 class Model(torch.nn.Module):
@@ -17,6 +17,7 @@ class Model(torch.nn.Module):
         self,
         data: torch.Tensor,
         target: torch.Tensor,
+        criterion: Optional[Criterion] = None,
         optimizer: Optional[torch.optim.Optimizer] = None,
     ) -> float:
         """Run training algorithm on a single batch.
@@ -27,33 +28,35 @@ class Model(torch.nn.Module):
             Batch of training data.
         target
             Target tensor.
+        criterion
+            Training criterion, by default None.
         optimizer
             Training optimizer, by default None.
 
         Returns
         -------
+        torch.Tensor
+            Model output.
         float
             Batch loss.
         """
         output = self(data)
-        loss = self.loss(output, target)
+        batch_loss = criterion(output, target)
 
         if optimizer is not None:
-            self.backward(loss)
+            self.backward(batch_loss)
             self.optimizer_step(optimizer)
 
-        self.trainer.update_state(output=output, loss=loss)
+        return output, batch_loss
 
-        return loss.item()
+    def run_train_batch(self, data, target, criterion, optimizer):
+        return self.run_batch(data, target, criterion, optimizer)
 
-    def run_train_batch(self, data, target, optimizer):
-        return self.run_batch(data, target, optimizer)
+    def run_validate_batch(self, data, target, criterion):
+        return self.run_batch(data, target, criterion)
 
-    def run_validate_batch(self, data, target):
-        return self.run_batch(data, target)
-
-    def run_test_batch(self, data, target):
-        return self.run_batch(data, target)
+    def run_test_batch(self, data, target, criterion):
+        return self.run_batch(data, target, criterion)
 
     def backward(self, loss: torch.Tensor) -> None:
         """Backpropagate loss.
@@ -119,21 +122,17 @@ class Model(torch.nn.Module):
         """
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
-    @property
-    def loss(self) -> Loss:
-        return self.trainer.loss
-
     def save(self, path: Union[str, pathlib.Path]) -> None:
-        torch.save(
-            {"model": self.state_dict(), "trainer": self.trainer.state_dict()}, path
-        )
+        torch.save(self.state_dict(), path)
+        #     {"model": self.state_dict(), "trainer": self.trainer.state_dict()}, path
+        # )
 
     def load(self, path: Union[str, pathlib.Path]):
         state_dict = torch.load(path)
-        self.load_state_dict(state_dict["model"])
+        self.load_state_dict(state_dict)  # ["model"])
 
-        self.trainer = luz.Trainer()
-        self.trainer.load_state_dict(state_dict["trainer"])
+        # self.trainer = luz.Trainer()
+        # self.trainer.load_state_dict(state_dict["trainer"])
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
         """Compute forward pass in eval mode.
@@ -176,81 +175,6 @@ class Model(torch.nn.Module):
 
     def migrate(self, device: Device) -> None:
         self.to(device=device)
-
-    def log(self, msg: str) -> None:
-        self.trainer.log(msg)
-
-    # def call_event(self, event: luz.Event, **kwargs: Any) -> None:
-    #     for h in self.trainer.handlers:
-    #         getattr(h, event.name.lower())(model=self, **kwargs)
-
-    def fit(
-        self,
-        dataset: luz.Dataset,
-        val_dataset: Optional[luz.Dataset] = None,
-        device: Optional[Device] = "cpu",
-    ) -> luz.Module:
-        """Fit model.
-
-        Parameters
-        ----------
-        dataset
-            Training data.
-        val_dataset
-            Validation data, by default None.
-        device
-            Device to use for training, by default "cpu".
-
-        Returns
-        -------
-        luz.Module
-            Trained model.
-        """
-        self.trainer.fit(self, dataset, val_dataset, device)
-
-        return self
-
-    def validate(self, dataset: luz.Dataset, device: Optional[Device] = "cpu") -> float:
-        """Validate model.
-
-        Parameters
-        ----------
-        dataset
-            Validation data.
-        device
-            Device to use for validation, by default "cpu".
-
-        Returns
-        -------
-        float
-            Validation loss.
-        """
-        loader = dataset.loader(**self.loader_kwargs)
-        with self.eval():
-            val_loss = self.run_epoch(loader, device, train=False)
-
-        self._state["val_history"].append(val_loss)
-
-        try:
-            # FIXME: replace 0.0 with self.delta_thresh?
-            if min(self._state["val_history"]) - val_loss < 0.0:
-                self._state["patience"] -= 1
-            else:
-                self._state["patience"] = self.patience
-        except ValueError:
-            pass
-
-        return val_loss
-
-    def test(
-        self,
-        dataset: luz.Dataset,
-        device: Optional[Device] = "cpu",
-    ) -> float:
-        return self.trainer.test(self, dataset, device)
-
-    def use_fit_params(self, **kwargs) -> None:
-        self.trainer = luz.Trainer(**kwargs)
 
     # def transform_inputs(self, *args, **kwargs):
     #     return

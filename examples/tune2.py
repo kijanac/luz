@@ -25,22 +25,32 @@ class Learner(luz.Learner):
     def model(self):
         return Net()
 
-    def hyperparams(self):
-        return dict(batch_size=self.tuner.sample(1, 20))
+    def criterion(self):
+        return torch.nn.MSELoss()
 
-    def fit_params(self, train_dataset, val_dataset, device):
+    def optimizer(self, model):
+        return torch.optim.Adam(model.parameters())
+
+    def hyperparams(self, tuner):
+        return dict(batch_size=tuner.sample(1, 20))
+
+    def fit_params(self):
         return dict(
-            loss=torch.nn.MSELoss(),
-            optimizer=luz.Optimizer(torch.optim.Adam),
             stop_epoch=10,
-            batch_size=self.hyperparams.batch_size,
             early_stopping=True,
-            handlers=[],  # [luz.Accuracy(),luz.ActualVsPredicted(),luz.PlotHistory()]
         )
+
+    def loader(self, dataset):
+        return dataset.loader(batch_size=self.hparams.batch_size)
+
+    def scorer(self):
+        return luz.Holdout(0.25, 0.3)
+
+    def tuner(self):
+        return luz.RandomSearch(7)
 
 
 learner = Learner()
-learner.use_scorer(luz.Holdout(0.25, 0.3))
-learner.use_tuner(luz.RandomSearch(7))
+
 d = get_dataset(1000)
 print(learner.tune(d, "cpu"))

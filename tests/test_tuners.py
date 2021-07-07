@@ -20,20 +20,29 @@ class DummyLearner(luz.Learner):
     def model(self):
         pass
 
-    def fit_params(self, train_dataset, val_dataset, device):
+    def criterion(self):
         pass
+
+    def optimizer(self, model):
+        pass
+
+    def fit_params(self):
+        pass
+
+    def scorer(self):
+        return luz.Holdout(test_fraction=0.2)
 
 
 def test_random_search():
     dataset = IntegerDataset(n=15)
 
     m = DummyModel()
-    m.fit = mock.MagicMock(return_value=0.0)
-    m.test = mock.MagicMock(return_value=0.0)
 
     learner = DummyLearner()
     learner.learn = mock.MagicMock(return_value=m)
-    learner.use_scorer(luz.Holdout(test_fraction=0.2))
+    learner._transform = None
+    learner.fit = mock.MagicMock(return_value=0.0)
+    learner.test = mock.MagicMock(return_value=0.0)
 
     tuner = luz.RandomSearch(5)
 
@@ -58,12 +67,11 @@ def test_grid_search():
     dataset = IntegerDataset(n=15)
 
     m = DummyModel()
-    m.fit = mock.MagicMock(return_value=0.0)
-    m.test = mock.MagicMock(return_value=0.0)
 
     learner = DummyLearner()
     learner.learn = mock.MagicMock(return_value=m)
-    learner.use_scorer(luz.Holdout(test_fraction=0.2))
+    learner.fit = mock.MagicMock(return_value=0.0)
+    learner.test = mock.MagicMock(return_value=0.0)
 
     tuner = luz.GridSearch()
 

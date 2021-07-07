@@ -12,3 +12,9 @@ class Event(enum.Enum):
     TESTING_ENDED = "TESTING ENDED"
     TRAINING_STARTED = "TRAINING STARTED"
     TRAINING_ENDED = "TRAINING ENDED"
+    VALIDATING_STARTED = "VALIDATING STARTED"
+    VALIDATING_ENDED = "VALIDATING ENDED"
+
+    def __call__(self, handlers, **kwargs):
+        for h in handlers:
+            getattr(h, self.name.lower())(**kwargs)
