@@ -148,7 +148,20 @@
 * feat: Add mean_std, max, min, and plot_histogram functions to Datasets (`b172fdf <https://github.com/kijanac/luz/commit/b172fdf4dd59f123be56da72e0696bc56ee4a7e9>` __)
 
 
-`Version 7.0.0 <https://github.com/kijanac/luz/compare/v7.0.0...v7.0.0>`__
+`Version 8.0.0 <https://github.com/kijanac/luz/compare/v7.0.0...v8.0.0>`__
+--------------------------------------------------------------------------
+
+* feat: Remove Trainers. (`dd6c876 <https://github.com/kijanac/luz/commit/dd6c8766daaa3178ba17d1ebf15249f1ec043be5>` __)
+* feat: Update scorers and tuners to match new Leaner functionality and interface (`d43d76a <https://github.com/kijanac/luz/commit/d43d76a5b9f12285cfc164db7c56a75398392d79>` __)
+* feat: Update Model to match new Learner functionality and interface. (`f993162 <https://github.com/kijanac/luz/commit/f9931622819130533d0a8eb2a73c6b83bf33190a>` __)
+* feat: Significantly expand Learner functionality. (`4e7d43f <https://github.com/kijanac/luz/commit/4e7d43fa6a23b00f1404ecd1601200cfc8201721>` __)
+* feat: Update logging for handlers. (`f6a240f <https://github.com/kijanac/luz/commit/f6a240f4a4dac20127d514f26e055243cd9fbc4c>` __)
+* feat: Update logging for handlers. (`abfcc03 <https://github.com/kijanac/luz/commit/abfcc037f5588f3774597fece47bfdd8bbfadc0f>` __)
+* feat: Add VALIDATING_STARTED and VALIDATING_ENDED events. (`513288a <https://github.com/kijanac/luz/commit/513288a3db8c3aafc3944174bb63d223432eb1db>` __)
+* feat: Add transform functionality to datasets (`cfd7794 <https://github.com/kijanac/luz/commit/cfd779452a2a52de795ba8b581a16350fd7ab66c>` __)
+
+
+`Version 8.0.0 <https://github.com/kijanac/luz/compare/v8.0.0...v8.0.0>`__
 --------------------------------------------------------------------------
 
 
