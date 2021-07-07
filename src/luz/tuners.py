@@ -10,6 +10,7 @@ import json
 import luz
 import numpy as np
 import operator
+import pathlib
 import re
 import torch
 
@@ -37,6 +38,11 @@ class Experiment:
     def json(self, score: float, model: luz.Module) -> str:
         d = {"hyperparameters": self.kwargs, "score": score, "model": model}
         return json.dumps(d, default=self.encode, indent=4)
+
+    def __str__(self):
+        return json.dumps(
+            {"hyperparameters": self.kwargs}, default=self.encode, indent=4
+        )
 
 
 class Sample:
@@ -87,7 +93,7 @@ class Tuner(ABC):
         self,
         num_iterations: int,
         seed: Optional[int] = 0,
-        save_experiments: Optional[bool] = False,
+        json_dir: Optional[str] = None,
     ) -> None:
         """Hyperparameter tuning algorithm.
 
@@ -100,7 +106,7 @@ class Tuner(ABC):
         """
         self.num_iterations = num_iterations
         self.seed = seed
-        self.save_experiments = save_experiments
+        self.json_dir = json_dir
 
         self.hyperparameters = []
 
@@ -178,6 +184,7 @@ class Tuner(ABC):
         """
         for i in range(self.num_iterations):
             self.current_iteration = i
+
             try:
                 sample_hps = {k: v for k, v in kwargs.items() if isinstance(v, Sample)}
                 samples = self.sample_hyperparameters(**sample_hps)
@@ -212,6 +219,23 @@ class Tuner(ABC):
     def score(
         self, learner: luz.Learner, dataset: luz.Dataset, device: Device
     ) -> luz.Score:
+        """
+        Learn a model and estimate its future performance based on a given dataset.
+
+        Parameters
+        ----------
+        learner
+            Learning algorithm to be scored.
+        dataset
+            Dataset used to learn and score a model.
+        device
+            Device to use for learning, by default "cpu".
+
+        Returns
+        -------
+        luz.Score
+            Learned model and estimated performance.
+        """
         model, score = learner.score(dataset, device)
 
         if self.best_model is None or score < self.best_score:
@@ -219,8 +243,9 @@ class Tuner(ABC):
 
         self.scores[self.experiment].append(score)
 
-        if self.save_experiments:
-            with open(f"{self.current_iteration}.json", "w") as f:
+        if self.json_dir is not None:
+            p = pathlib.Path(self.json_dir, f"{self.current_iteration}.json")
+            with open(str(p), "w") as f:
                 f.write(self.experiment.json(score, model))
 
         return luz.Score(model, score)

@@ -180,6 +180,6 @@ class Holdout(Scorer):
 
             model = learner.learn(train_dataset=train_dataset, device=device)
 
-        test_loss = model.test(dataset=test_dataset, device=device)
+        test_loss = learner.test(model, dataset=test_dataset, device=device)
 
         return luz.Score(model, test_loss)
