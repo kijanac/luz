@@ -143,10 +143,25 @@ class BaseDataset:
     def _collate(self, batch: Iterable[luz.Data]) -> luz.Data:
         return default_collate(batch)
 
+    def _transform(self, data: luz.Data) -> luz.Data:
+        return data
+
     def use_collate(
         self, collate: Callable[Iterable[luz.Data], luz.Data]
     ) -> luz._BaseDataset:
         self._collate = collate
+        return self
+
+    def use_transform(self, transform: luz.Transform):
+        """Set data transform.
+
+        Parameters
+        ----------
+        transform
+            Data transform.
+            By default None.
+        """
+        self._transform = transform
         return self
 
     def loader(
@@ -155,7 +170,6 @@ class BaseDataset:
         shuffle: Optional[bool] = True,
         num_workers: Optional[int] = 1,
         pin_memory: Optional[bool] = True,
-        transform: Optional[luz.Transform] = None,
     ) -> torch.utils.data.Dataloader:
         """Generate Dataloader.
 
@@ -173,9 +187,7 @@ class BaseDataset:
         pin_memory
             If True, put fetched tensors in pinned memory.
             By default True.
-        transform
-            Data transform.
-            By default None.
+
 
         Returns
         -------
@@ -184,7 +196,7 @@ class BaseDataset:
         """
 
         def f(batch):
-            return transform(self._collate(batch))
+            return self._transform(self._collate(batch))
 
         return torch.utils.data.DataLoader(
             dataset=self,
@@ -192,7 +204,7 @@ class BaseDataset:
             shuffle=shuffle,
             num_workers=num_workers,
             pin_memory=pin_memory,
-            collate_fn=self._collate if transform is None else f,
+            collate_fn=f,  # self._collate,
         )
 
     def __add__(self, other: luz.Dataset) -> luz.ConcatDataset:
@@ -211,7 +223,11 @@ class BaseDataset:
         luz.Subset
             Generated subset.
         """
-        return Subset(dataset=self, indices=indices).use_collate(self._collate)
+        return (
+            Subset(dataset=self, indices=indices)
+            .use_collate(self._collate)
+            .use_transform(self._transform)
+        )
 
     def split(
         self, lengths: Iterable[int], shuffle: Optional[int] = True
@@ -237,7 +253,9 @@ class BaseDataset:
         else:
             indices = torch.arange(sum(lengths)).tolist()
         return tuple(
-            self.subset(indices=indices[offset - l : offset]).use_collate(self._collate)
+            self.subset(indices=indices[offset - l : offset])
+            .use_collate(self._collate)
+            .use_transform(self._transform)
             for offset, l in zip(itertools.accumulate(lengths), lengths)
         )
 
