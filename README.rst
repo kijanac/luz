@@ -12,6 +12,13 @@ Luz Module
 
 Longer description coming soon!
 
+Important features:
+
+#. Reduced boilerplate and simple specifications of complex workflows
+#. Easy and flexible customization of Learner by overriding methods
+#. Built-in scoring algorithms like holdout and cross validation
+#. Straightforward hyperparameter tuning with built-in tuning algorithms like random search and grid search
+
 Basic usage: custom modules with luz.Module functionality. Simply define your model, inherit from luz.Module, and use model.train/model.test.
 
 Next level: simplified training algorithms with transforms and handlers.
@@ -26,7 +33,9 @@ Next level: straightforward hyperparameter tuning with various scoring mechanism
 #. Training scheme.
 #. Overall learning algorithm.
 
-  #. Hyperparameter selectin.
+  #. Hyperparameter selection.
+
+#. Unified development interface through Learner object. Simply inherit luz.Learner, define the model, loader, and param functions, and you're good to go. Add a hyperparams function to enable tuning and make tuned parameters accessible in the model and param functions.
 
 ---------------
 Getting Started
