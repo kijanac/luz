@@ -14,6 +14,7 @@ import datetime
 import luz
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+import numpy as np
 import os
 import pathlib
 import torch
@@ -59,6 +60,64 @@ class Handler:
     def training_ended(self, **kwargs: Any):
         pass
 
+    def log(self, loggers, msg: str) -> None:
+        for logger in loggers:
+            logger.log(msg)
+
+    # def train_batch_started(self, **kwargs: Any):
+    #         pass
+
+    #     def train_batch_ended(self, **kwargs: Any):
+    #         pass
+
+    #     def test_batch_started(self, **kwargs: Any):
+    #         pass
+
+    #     def test_batch_ended(self, **kwargs: Any):
+    #         pass
+
+    #     def val_batch_started(self, **kwargs: Any):
+    #         pass
+
+    #     def val_batch_ended(self, **kwargs: Any):
+    #         pass
+
+    #     def train_epoch_started(self, **kwargs: Any):
+    #         pass
+
+    #     def train_epoch_ended(self, **kwargs: Any):
+    #         pass
+
+    #     def test_epoch_started(self, **kwargs: Any):
+    #         pass
+
+    #     def test_epoch_ended(self, **kwargs: Any):
+    #         pass
+
+    #     def val_epoch_started(self, **kwargs: Any):
+    #         pass
+
+    #     def val_epoch_ended(self, **kwargs: Any):
+    #         pass
+
+    #     def testing_started(self, **kwargs: Any):
+    #         pass
+
+    #     def testing_ended(self, **kwargs: Any):
+    #         pass
+
+    #     def training_started(self, **kwargs: Any):
+    #         pass
+
+    #     def training_ended(self, **kwargs: Any):
+    #         pass
+
+    def validating_started(self, **kwargs: Any):
+        pass
+
+    def validating_ended(self, **kwargs: Any):
+        pass
+
 
 class Accuracy(Handler):
     def __init__(self) -> None:
@@ -90,10 +149,10 @@ class Accuracy(Handler):
         self.correct += (predicted == correct).sum().item()
         self.total += target.size(0)
 
-    def epoch_ended(self, model, epoch: int, **kwargs: Any) -> None:
+    def epoch_ended(self, model, epoch: int, loggers, **kwargs: Any) -> None:
         acc = self.correct / self.total
         s = f"[Epoch {epoch}] Classification accuracy: {acc}"
-        model.log(s)
+        self.log(loggers, s)
 
 
 class ActualVsPredicted(Handler):
@@ -208,8 +267,8 @@ class DurbinWatson(Handler):
         self.last_residual = residual
         self.denominator += residual ** 2
 
-    def epoch_ended(self, model, **kwargs):
-        model.log(f"DW: {self.numerator / self.denominator}")
+    def epoch_ended(self, model, loggers, **kwargs):
+        self.log(loggers, f"DW: {self.numerator / self.denominator}")
 
 
 class FBeta(Handler):
@@ -247,7 +306,7 @@ class FBeta(Handler):
         self.predicted_positive += predicted.sum().item()
         self.actual_positive += correct.sum().item()
 
-    def epoch_ended(self, model, epoch: int, **kwargs: Any) -> None:
+    def epoch_ended(self, model, epoch: int, loggers, **kwargs: Any) -> None:
         try:
             precision = self.true_positive / self.predicted_positive
             recall = self.true_positive / self.actual_positive
@@ -261,7 +320,7 @@ class FBeta(Handler):
             F = 1
 
         s = f"[Epoch {epoch}] F-score: {F}"
-        model.log(s)
+        self.log(loggers, s)
 
 
 class Loss(Handler):
@@ -289,12 +348,12 @@ class Loss(Handler):
 
     def batch_ended(
         self,
-        model,
         flag: luz.Flag,
         loader: torch.utils.data.DataLoader,
         epoch: int,
         loss: torch.Tensor,
         ind: int,
+        loggers,
         **kwargs: Any,
     ) -> None:
         """Execute at end of batch.
@@ -322,31 +381,50 @@ class Loss(Handler):
             batch_interval = max(1, round(num_batches * self.print_interval))
             cur = ind + 1
             if cur % batch_interval == 0 or cur == num_batches:
-                avg_loss = self.running_loss / cur / loader.batch_size
-                model.log(f"[Epoch {epoch}] Running average loss: {avg_loss}.")
+                avg_loss = self.running_loss / num_batches
+                self.log(loggers, f"[Epoch {epoch}] Running average loss: {avg_loss}.")
 
 
 class PlotHistory(Handler):
     def __init__(
-        self, show_plot: Optional[bool] = True, save_filepath: Optional[str] = None
+        self,
+        show_plot: Optional[bool] = True,
+        save_filepath: Optional[str] = None,
+        reduction: Optional[str] = "mean",
     ) -> None:
         self.show_plot = show_plot
         self.save_filepath = save_filepath
+        self.reduction = reduction
 
     def training_ended(
         self,
         train_history: Iterable[float],
         val_history: Iterable[float],
+        train_loader: torch.utils.data.DataLoader,
+        val_loader: torch.utils.data.DataLoader,
         **kwargs: Any,
     ) -> None:
         x = range(1, len(train_history) + 1)
+
         fig, ax1 = plt.subplots()
         ax1.set_xlabel("Epoch")
-        (line1,) = ax1.plot(x, train_history, color="tab:blue")
+
+        if self.reduction == "mean":
+            # divide each epoch loss (which is the sum of batch averages)
+            # by the number of batches to estimate average epoch loss
+            y1 = np.array(train_history) / len(train_loader)
+
+        (line1,) = ax1.plot(x, y1, color="tab:blue")
 
         if len(val_history) > 0:
             ax2 = ax1.twinx()
-            (line2,) = ax2.plot(x, val_history, color="tab:orange")
+
+            if self.reduction == "mean":
+                # divide each epoch loss (which is the sum of batch averages)
+                # by the number of batches to estimate average epoch loss
+                y2 = np.array(val_history) / len(val_loader)
+
+            (line2,) = ax2.plot(x, y2, color="tab:orange")
 
             plt.title("Loss history")
             plt.legend((line1, line2), ("Training loss", "Validation loss"))
@@ -361,6 +439,8 @@ class PlotHistory(Handler):
 
         if self.show_plot:
             plt.show()
+        else:
+            plt.close(fig)
 
 
 class Progress(Handler):
@@ -377,11 +457,11 @@ class Progress(Handler):
 
     def batch_ended(
         self,
-        model,
         loader: torch.utils.data.DataLoader,
         epoch: int,
         flag: luz.Flag,
         ind: int,
+        loggers,
         **kwargs: Any,
     ) -> None:
         if flag == luz.Flag.TRAINING:
@@ -391,23 +471,23 @@ class Progress(Handler):
                 num_eqs = int(progress * self.bar_length)
                 num_spaces = self.bar_length - num_eqs
                 bar = "=" * num_eqs + ">" + " " * num_spaces
-                model.log(f"[Epoch {epoch}]: [{bar}] {int(100*progress)}%")
+                self.log(loggers, f"[Epoch {epoch}]: [{bar}] {int(100*progress)}%")
                 self._last += 1
 
-    def epoch_started(self, **kwargs: Any) -> None:
+    def epoch_started(self, loggers, **kwargs: Any) -> None:
         self._last = 0
 
-    def training_started(self, model, **kwargs: Any) -> None:
-        model.log("Training started.")
+    def training_started(self, loggers, **kwargs: Any) -> None:
+        self.log(loggers, "Training started.")
 
-    def training_ended(self, model, **kwargs: Any) -> None:
-        model.log("Training ended.")
+    def training_ended(self, loggers, **kwargs: Any) -> None:
+        self.log(loggers, "Training ended.")
 
-    def testing_started(self, model, **kwargs: Any) -> None:
-        model.log("Testing started.")
+    def testing_started(self, loggers, **kwargs: Any) -> None:
+        self.log(loggers, "Testing started.")
 
-    def testing_ended(self, model, **kwargs: Any) -> None:
-        model.log("Testing complete.")
+    def testing_ended(self, loggers, **kwargs: Any) -> None:
+        self.log(loggers, "Testing complete.")
 
 
 class RVP(Handler):
@@ -441,7 +521,7 @@ class Timer(Handler):
     def epoch_started(self, **kwargs: Any) -> None:
         self.start_time = datetime.datetime.now().replace(microsecond=0)
 
-    def epoch_ended(self, model, epoch: int, flag: luz.Flag, **kwargs: Any) -> None:
+    def epoch_ended(self, epoch: int, flag: luz.Flag, loggers, **kwargs: Any) -> None:
         self.end_time = datetime.datetime.now().replace(microsecond=0)
 
         if flag == luz.Flag.TRAINING:
@@ -451,4 +531,6 @@ class Timer(Handler):
         else:
             mode = "test"
 
-        model.log(f"[Epoch {epoch}]: {self.end_time-self.start_time} to {mode}.")
+        self.log(
+            loggers, f"[Epoch {epoch}]: {self.end_time-self.start_time} to {mode}."
+        )
