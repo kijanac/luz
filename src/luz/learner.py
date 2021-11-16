@@ -15,11 +15,6 @@ Criterion = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 
 class Learner(BaseLearner):
-    def __init__(self, **hparams):
-        super().__init__(**hparams)
-        self.model = None
-        self.score = None
-
     # def add_args(self, parser):
     #     raise NotImplementedError
 
@@ -112,15 +107,17 @@ class Learner(BaseLearner):
 
         # self.reset_state()
 
-        self.model = None
+        self.learned_model = None
         self.score = None
 
         transform = self.transform(train_dataset)
 
         if hasattr(self, "get_input"):
-            model = luz.Model(self.nn(), transform, get_input=self.get_input).to(device)
+            model = luz.Model(self.model(), transform, get_input=self.get_input).to(
+                device
+            )
         else:
-            model = luz.Model(self.nn(), transform).to(device)
+            model = luz.Model(self.model(), transform).to(device)
 
         # NOTE: must come after migrate
         optimizer = self.optimizer(model=model)
@@ -158,7 +155,7 @@ class Learner(BaseLearner):
             **params
         )
 
-        self.model = model
+        self.learned_model = model
 
         return model
 
@@ -193,7 +190,7 @@ class Learner(BaseLearner):
         device
             Device to use for testing, by default "cpu".
         """
-        model = self.model
+        model = self.learned_model
 
         model.to(device)
 
