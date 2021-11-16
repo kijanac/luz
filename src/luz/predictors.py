@@ -27,11 +27,11 @@ class Predictor(ABC):
 class BaseLearner(Predictor):
     def __init__(self, **hparams):
         self.hparams = hparams
-        self.model = None
+        self.learned_model = None
         self.score = None
 
     @abstractmethod
-    def nn(self, train_dataset) -> luz.Model:
+    def model(self, train_dataset) -> luz.Model:
         """Return module to be trained.
 
         Parameters
