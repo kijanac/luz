@@ -134,7 +134,7 @@ class Learner(BaseLearner):
         if isinstance(callbacks, luz.Callback):
             # only 1 callback, so wrap it in a list
             callbacks = [callbacks]
-        #metrics = self.metrics()
+        # metrics = self.metrics()
 
         train_loader = self.train_loader(train_dataset)
         if val_dataset is not None:
@@ -153,7 +153,7 @@ class Learner(BaseLearner):
             val_loader=val_loader,
             loggers=loggers,
             callbacks=callbacks,
-            #metrics=metrics,
+            # metrics=metrics,
             device=device,
             **params
         )
@@ -244,7 +244,7 @@ class Learner(BaseLearner):
         val_loader: Optional[torch.utils.data.DataLoader] = None,
         loggers: Iterable[luz.Logger] = None,
         callbacks: Iterable[luz.Callback] = None,
-        #metrics = None,
+        # metrics = None,
         device: Optional[Device] = "cpu",
     ) -> None:
         """Train model.
@@ -288,7 +288,14 @@ class Learner(BaseLearner):
             luz.Event.EPOCH_STARTED(callbacks, **state)
 
             self.run_epoch(
-                model, train_loader, device, callbacks, metrics, criterion, state, optimizer
+                model,
+                train_loader,
+                device,
+                callbacks,
+                # metrics,
+                criterion,
+                state,
+                optimizer,
             )
 
             # for m in metrics:
@@ -337,7 +344,7 @@ class Learner(BaseLearner):
         loader: torch.utils.data.DataLoader,
         device: Device,
         callbacks,
-        #metrics,
+        # metrics,
         criterion: Criterion,
         state,
         optimizer: Optional[torch.optim.Optimizer] = None,
