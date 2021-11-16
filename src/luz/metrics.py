@@ -126,6 +126,7 @@ class FBeta(Metric):
     def __str__(self) -> str:
         return "F-score"
 
+
 class Max(Metric):
     def __init__(self, batch_dim=0) -> None:
         self.batch_dim = batch_dim
@@ -143,6 +144,7 @@ class Max(Metric):
 
     def __str__(self) -> str:
         return "Max"
+
 
 class MeanStd(Metric):
     def __init__(self, batch_dim=0) -> None:
@@ -164,6 +166,7 @@ class MeanStd(Metric):
 
     def __str__(self) -> str:
         return "MeanStd"
+
 
 class Min(Metric):
     def __init__(self, batch_dim=0) -> None:
