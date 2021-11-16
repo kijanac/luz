@@ -183,7 +183,7 @@ class Model(torch.nn.Module):
         torch.Tensor
             Input tensor.
         """
-        return (batch.x, )
+        return (batch.x,)
 
     def get_target(self, batch: luz.Data) -> Optional[torch.Tensor]:
         """Get target from batched data.
