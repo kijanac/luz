@@ -13,23 +13,48 @@ Criterion = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 
 class Model(torch.nn.Module):
+    def __init__(
+        self,
+        net: torch.nn.Module,
+        input_transform: Optional[luz.Transform] = None,
+        output_transform: Optional[luz.TensorTransform] = None,
+        get_input=None,
+    ) -> None:
+        super().__init__()
+        self.net = net
+        self.input_transform = input_transform
+        self.output_transform = output_transform
+        if get_input is not None:
+            self.get_input = get_input
+
+    def forward(self, data: luz.Data) -> torch.Tensor:
+        if self.input_transform is not None:
+            data = self.input_transform(data)
+
+        out = self.net(*self.get_input(data))
+
+        if self.output_transform is not None:
+            out = self.output_transform(out)
+
+        return out
+
     def run_batch(
         self,
         data: torch.Tensor,
         target: torch.Tensor,
-        criterion: Optional[Criterion] = None,
+        criterion: Criterion,
         optimizer: Optional[torch.optim.Optimizer] = None,
-    ) -> float:
-        """Run training algorithm on a single batch.
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run model on a single batch.
 
         Parameters
         ----------
         dataset
-            Batch of training data.
+            Batch of data.
         target
             Target tensor.
         criterion
-            Training criterion, by default None.
+            Model criterion.
         optimizer
             Training optimizer, by default None.
 
@@ -37,7 +62,7 @@ class Model(torch.nn.Module):
         -------
         torch.Tensor
             Model output.
-        float
+        torch.Tensor
             Batch loss.
         """
         output = self(data)
@@ -49,13 +74,79 @@ class Model(torch.nn.Module):
 
         return output, batch_loss
 
-    def run_train_batch(self, data, target, criterion, optimizer):
+    def run_train_batch(
+        self,
+        data: torch.Tensor,
+        target: torch.Tensor,
+        criterion: Criterion,
+        optimizer: torch.optim.Optimizer,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run model on a single batch during training.
+
+        Parameters
+        ----------
+        dataset
+            Batch of data.
+        target
+            Target tensor.
+        criterion
+            Model criterion.
+        optimizer
+            Training optimizer, by default None.
+
+        Returns
+        -------
+        torch.Tensor
+            Model output.
+        torch.Tensor
+            Batch loss.
+        """
         return self.run_batch(data, target, criterion, optimizer)
 
-    def run_validate_batch(self, data, target, criterion):
+    def run_validate_batch(
+        self, data: torch.Tensor, target: torch.Tensor, criterion: Criterion
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run model on a single batch during validation.
+
+        Parameters
+        ----------
+        dataset
+            Batch of data.
+        target
+            Target tensor.
+        criterion
+            Model criterion.
+
+        Returns
+        -------
+        torch.Tensor
+            Model output.
+        torch.Tensor
+            Batch loss.
+        """
         return self.run_batch(data, target, criterion)
 
-    def run_test_batch(self, data, target, criterion):
+    def run_test_batch(
+        self, data: torch.Tensor, target: torch.Tensor, criterion: Criterion
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run model on a single batch during testing.
+
+        Parameters
+        ----------
+        dataset
+            Batch of data.
+        target
+            Target tensor.
+        criterion
+            Model criterion.
+
+        Returns
+        -------
+        torch.Tensor
+            Model output.
+        torch.Tensor
+            Batch loss.
+        """
         return self.run_batch(data, target, criterion)
 
     def backward(self, loss: torch.Tensor) -> None:
@@ -92,7 +183,7 @@ class Model(torch.nn.Module):
         torch.Tensor
             Input tensor.
         """
-        return batch.x
+        return (batch.x, )
 
     def get_target(self, batch: luz.Data) -> Optional[torch.Tensor]:
         """Get target from batched data.
@@ -109,7 +200,7 @@ class Model(torch.nn.Module):
         """
         return batch.y
 
-    # NON-CONFIGURABLE METHODS BELOW
+    # NON-CONFIGURABLE METHODS
 
     @property
     def num_parameters(self) -> int:
@@ -124,15 +215,10 @@ class Model(torch.nn.Module):
 
     def save(self, path: Union[str, pathlib.Path]) -> None:
         torch.save(self.state_dict(), path)
-        #     {"model": self.state_dict(), "trainer": self.trainer.state_dict()}, path
-        # )
 
     def load(self, path: Union[str, pathlib.Path]):
         state_dict = torch.load(path)
-        self.load_state_dict(state_dict)  # ["model"])
-
-        # self.trainer = luz.Trainer()
-        # self.trainer.load_state_dict(state_dict["trainer"])
+        self.load_state_dict(state_dict)
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
         """Compute forward pass in eval mode.
@@ -172,19 +258,3 @@ class Model(torch.nn.Module):
             finally:
                 if training:
                     self.train()
-
-    def migrate(self, device: Device) -> None:
-        self.to(device=device)
-
-    # def transform_inputs(self, *args, **kwargs):
-    #     return
-
-    def use_transform(self, transform: luz.TensorTransform) -> None:
-        """Use transform.
-
-        Parameters
-        ----------
-        transform
-            Tensor transform applied to output during inference.
-        """
-        self.transform = transform
