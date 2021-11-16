@@ -63,7 +63,7 @@ class CrossValidation(Scorer):
         dataset: luz.Dataset,
         device: Optional[Device] = "cpu",
     ) -> luz.Score:
-        """Learn a model and score it using cross validation.
+        """Learn a model and estimate its future performance using cross validation.
 
         Parameters
         ----------
@@ -112,7 +112,7 @@ class CrossValidation(Scorer):
                     device=device,
                 )
 
-                test_loss = model.test(test_dataset, device)
+                test_loss = learner.evaluate(test_dataset, device)
 
             test_losses.append(test_loss)
 
@@ -145,7 +145,7 @@ class Holdout(Scorer):
         dataset: luz.Dataset,
         device: Optional[Device] = "cpu",
     ) -> luz.Score:
-        """Learn a model and estimate its error using the holdout method.
+        """Learn a model and estimate its future performance using the holdout method.
 
         Parameters
         ----------
@@ -180,6 +180,6 @@ class Holdout(Scorer):
 
             model = learner.learn(train_dataset=train_dataset, device=device)
 
-        test_loss = learner.test(model, dataset=test_dataset, device=device)
+        test_loss = learner.evaluate(dataset=test_dataset, device=device)
 
         return luz.Score(model, test_loss)
