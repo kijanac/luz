@@ -22,7 +22,7 @@ def get_dataset(size):
     return luz.Dataset([d] * size).use_collate(luz.graph_collate)
 
 
-class Net(luz.Model):
+class Net(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.lin = torch.nn.Linear(10, 1)
@@ -37,18 +37,24 @@ class Learner(luz.Learner):
 
     def fit_params(self):
         return dict(
-            loss=torch.nn.MSELoss(),
-            optimizer=luz.Optimizer(torch.optim.Adam),
-            stop_epoch=10,
+            max_epochs=10,
             early_stopping=True,
-            handlers=[luz.Loss()],
         )
+
+    def criterion(self):
+        return torch.nn.MSELoss()
+
+    def optimizer(self, model):
+        return torch.optim.Adam(model.parameters())
+
+    def callbacks(self):
+        return luz.Loss()
 
 
 if __name__ == "__main__":
     d = get_dataset(100)
     learner = Learner()
-    learner.use_scorer(luz.Holdout(test_fraction=0.2, val_fraction=0.2))
+    scorer = luz.Holdout(test_fraction=0.2, val_fraction=0.2)
 
-    model, score = learner.score(d)
+    model, score = scorer.score(learner, d, "cpu")
     print(score)

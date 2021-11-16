@@ -12,18 +12,9 @@ def get_dataset(size):
     return luz.Dataset([d] * size)
 
 
-class Net(luz.Model):
-    def __init__(self):
-        super().__init__()
-        self.lin = torch.nn.Linear(10, 5)
-
-    def forward(self, x):
-        return self.lin(x)
-
-
 class Learner(luz.Learner):
     def model(self):
-        return Net()
+        return torch.nn.Linear(10, 5)
 
     def criterion(self):
         return torch.nn.MSELoss()
@@ -33,18 +24,23 @@ class Learner(luz.Learner):
 
     def fit_params(self):
         return dict(
-            stop_epoch=10,
+            max_epochs=10,
         )
 
     def loader(self, dataset):
         return dataset.loader(batch_size=20)
 
-    def handlers(self):
-        return luz.Accuracy(), luz.ActualVsPredicted(), luz.PlotHistory()
+    def callbacks(self):
+        return (
+            luz.LogMetrics([luz.Accuracy()]),
+            luz.ActualVsPredicted(),
+            luz.PlotHistory(),
+        )
 
 
-learner = Learner()
-learner.use_scorer(luz.Holdout(0.2, 0.2))
+if __name__ == "__main__":
+    learner = Learner()
+    scorer = luz.Holdout(0.2, 0.2)
 
-d = get_dataset(1000)
-learner.score(d, "cpu")
+    d = get_dataset(1000)
+    scorer.score(learner, d, "cpu")
