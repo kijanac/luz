@@ -47,6 +47,27 @@ class BaseLearner(Predictor):
         pass
 
     @abstractmethod
+    def run_batch(
+        self,
+        model,
+        data: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run model on a single batch.
+
+        Parameters
+        ----------
+
+
+        Returns
+        -------
+        torch.Tensor
+            Model output.
+        torch.Tensor
+            Batch loss.
+        """
+        pass
+
+    @abstractmethod
     def criterion(self) -> Criterion:
         pass
 

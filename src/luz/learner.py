@@ -27,6 +27,130 @@ class Learner(BaseLearner):
     #     parser = self.parser()
     #     self.args = parser.parse_args()
 
+    def run_train_batch(
+        self,
+        model,
+        data: torch.Tensor,
+        target: torch.Tensor,
+        criterion: Criterion,
+        optimizer: torch.optim.Optimizer,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run model on a single batch during training.
+
+        Parameters
+        ----------
+        dataset
+            Batch of data.
+        target
+            Target tensor.
+        criterion
+            Model criterion.
+        optimizer
+            Training optimizer, by default None.
+
+        Returns
+        -------
+        torch.Tensor
+            Model output.
+        torch.Tensor
+            Batch loss.
+        """
+        output = self.run_batch(model, data)
+        batch_loss = criterion(output, target)
+
+        self.backward(batch_loss)
+        self.optimizer_step(optimizer)
+
+        return output, batch_loss
+
+    def run_validate_batch(
+        self, model, data: torch.Tensor, target: torch.Tensor, criterion: Criterion
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run model on a single batch during validation.
+
+        Parameters
+        ----------
+        dataset
+            Batch of data.
+        target
+            Target tensor.
+        criterion
+            Model criterion.
+
+        Returns
+        -------
+        torch.Tensor
+            Model output.
+        torch.Tensor
+            Batch loss.
+        """
+        with model.eval():
+            output = self.run_batch(model, data)
+            batch_loss = criterion(output, target)
+            return output, batch_loss
+
+    def run_test_batch(
+        self, model, data: torch.Tensor, target: torch.Tensor, criterion: Criterion
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run model on a single batch during testing.
+
+        Parameters
+        ----------
+        dataset
+            Batch of data.
+        target
+            Target tensor.
+        criterion
+            Model criterion.
+
+        Returns
+        -------
+        torch.Tensor
+            Model output.
+        torch.Tensor
+            Batch loss.
+        """
+        with model.eval():
+            output = self.run_batch(model, data)
+            batch_loss = criterion(output, target)
+            return output, batch_loss
+
+    def backward(self, loss: torch.Tensor) -> None:
+        """Backpropagate loss.
+
+        Parameters
+        ----------
+        loss
+            Loss tensor.
+        """
+        loss.backward()
+
+    def optimizer_step(self, optimizer: torch.optim.Optimizer) -> None:
+        """Step training optimizer.
+
+        Parameters
+        ----------
+        optimizer
+            Training optimizer.
+        """
+        optimizer.step()
+        optimizer.zero_grad()
+
+    def get_target(self, batch: luz.Data) -> Optional[torch.Tensor]:
+        """Get target from batched data.
+
+        Parameters
+        ----------
+        batch
+            Batched data.
+
+        Returns
+        -------
+        Optional[torch.Tensor]
+            Target tensor.
+        """
+        return batch.y
+
     # LOADERS
 
     def loader(self, dataset: luz.Dataset) -> torch.utils.data.DataLoader:
@@ -48,7 +172,10 @@ class Learner(BaseLearner):
 
     # TRANSFORM
 
-    def transform(self, dataset):
+    def input_transform(self, dataset):
+        pass
+
+    def output_transform(self, dataset):
         pass
 
     # CALLBACKS
@@ -110,14 +237,12 @@ class Learner(BaseLearner):
         self.learned_model = None
         self.score = None
 
-        transform = self.transform(train_dataset)
+        input_transform = self.input_transform(train_dataset)
+        output_transform = self.output_transform(train_dataset)
 
-        if hasattr(self, "get_input"):
-            model = luz.Model(self.model(), transform, get_input=self.get_input).to(
-                device
-            )
-        else:
-            model = luz.Model(self.model(), transform).to(device)
+        model = luz.Model(
+            self.model(train_dataset), input_transform, output_transform
+        ).to(device)
 
         # NOTE: must come after migrate
         optimizer = self.optimizer(model=model)
@@ -349,8 +474,8 @@ class Learner(BaseLearner):
         running_loss = 0.0
 
         for i, batch in enumerate(loader):
-            data = batch  # self.get_input(batch)
-            target = model.get_target(batch)
+            data = batch  # self.get_inputs(batch)
+            target = self.get_target(batch)
 
             state.update(ind=i, data=data, target=target)
             luz.Event.BATCH_STARTED(callbacks, **state)
@@ -359,17 +484,19 @@ class Learner(BaseLearner):
             data, target = data.to(device), target.to(device)
 
             if state["flag"] == luz.Flag.TRAINING:
-                output, batch_loss = model.run_train_batch(
-                    data, target, criterion, optimizer
+                output, batch_loss = self.run_train_batch(
+                    model, data, target, criterion, optimizer
                 )
             elif state["flag"] == luz.Flag.VALIDATING:
                 with model.eval():
-                    output, batch_loss = model.run_validate_batch(
-                        data, target, criterion
+                    output, batch_loss = self.run_validate_batch(
+                        model, data, target, criterion
                     )
             elif state["flag"] == luz.Flag.TESTING:
                 with model.eval():
-                    output, batch_loss = model.run_test_batch(data, target, criterion)
+                    output, batch_loss = self.run_test_batch(
+                        model, data, target, criterion
+                    )
 
             running_loss += batch_loss.item()
 
