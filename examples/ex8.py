@@ -27,16 +27,16 @@ class Net(torch.nn.Module):
         super().__init__()
         self.lin = luz.Dense(10, d_hidden, 1)
 
-    def forward(self, data):
-        return luz.batchwise_node_mean(self.lin(data.x), data.batch)
+    def forward(self, x, batch):
+        return luz.batchwise_node_mean(self.lin(x), batch)
 
 
 class Learner(luz.Learner):
-    def model(self):
+    def model(self, dataset):
         return Net(self.hparams["d_hidden"])
 
-    def get_input(self, batch):
-        return (batch,)
+    def run_batch(self, model, data):
+        return model.forward(data.x, data.batch)
 
     def criterion(self):
         return torch.nn.MSELoss()
@@ -55,9 +55,6 @@ class Learner(luz.Learner):
 
     def loader(self, dataset):
         return dataset.loader(batch_size=self.hparams["batch_size"])
-
-    def tuner(self):
-        return luz.RandomSearch(num_iterations=5, save_experiments=False)
 
 
 class Tuner(luz.RandomSearchTuner):

@@ -13,8 +13,11 @@ def get_dataset(size):
 
 
 class Learner(luz.Learner):
-    def model(self):
+    def model(self, dataset):
         return torch.nn.Linear(10, 5)
+
+    def run_batch(self, model, data):
+        return model.forward(data.x)
 
     def criterion(self):
         return torch.nn.MSELoss()

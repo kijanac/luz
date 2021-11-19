@@ -32,8 +32,11 @@ class Net(torch.nn.Module):
 
 
 class Learner(luz.Learner):
-    def model(self):
+    def model(self, dataset):
         return Net()
+
+    def run_batch(self, model, data):
+        return model.forward(data.x)
 
     def criterion(self):
         return torch.nn.MSELoss()
