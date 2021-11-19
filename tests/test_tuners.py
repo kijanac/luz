@@ -11,13 +11,16 @@ class IntegerDataset(luz.Dataset):
         super().__init__(data)
 
 
-class DummyModel(luz.Model):
+class DummyModel(torch.nn.Module):
     def forward(self, x):
         pass
 
 
 class DummyLearner(luz.Learner):
-    def model(self):
+    def model(self, dataset):
+        pass
+
+    def run_batch(self):
         pass
 
     def criterion(self):
@@ -33,61 +36,67 @@ class DummyLearner(luz.Learner):
         return luz.Holdout(test_fraction=0.2)
 
 
+class RandomTuner(luz.RandomSearchTuner):
+    def hparams(self):
+        return dict(x=self.choose(1, 2, 3, 4, 5), y=self.sample(1, 4, dtype=int))
+
+    def learner(self, trial):
+        m = DummyModel()
+        learner = DummyLearner()
+        learner.learn = mock.MagicMock(return_value=m)
+        learner.evaluate = mock.MagicMock(return_value=0.0)
+
+        return learner
+
+    def scorer(self):
+        return luz.Holdout(0.1, 0.1)
+
+
+class GridTuner(luz.GridSearchTuner):
+    def hparams(self):
+        return dict(x=self.choose(1, 2, 3, 4, 5), y=self.choose(1, 2, 3))
+
+    def learner(self, trial):
+        m = DummyModel()
+        learner = DummyLearner()
+        learner.learn = mock.MagicMock(return_value=m)
+        learner.evaluate = mock.MagicMock(return_value=0.0)
+
+        return learner
+
+    def scorer(self):
+        return luz.Holdout(0.1, 0.1)
+
+
 def test_random_search():
     dataset = IntegerDataset(n=15)
 
-    m = DummyModel()
+    tuner = RandomTuner(5)
 
-    learner = DummyLearner()
-    learner.learn = mock.MagicMock(return_value=m)
-    learner._transform = None
-    learner.fit = mock.MagicMock(return_value=0.0)
-    learner.test = mock.MagicMock(return_value=0.0)
+    # old_seed = torch.random.initial_seed()
+    tuner.learn(dataset, "cpu")
 
-    tuner = luz.RandomSearch(5)
+    # assert torch.random.initial_seed() == old_seed
+    for t in tuner.trials:
+        assert t.x in [1, 2, 3, 4, 5]
+        assert t.y >= 1 and t.y < 4
 
-    hps = []
-
-    old_seed = torch.random.initial_seed()
-    for exp in tuner.tune(x=tuner.choose(1, 2, 3, 4, 5), y=tuner.sample(1, 4)):
-        assert torch.random.initial_seed() == 0
-        tuner.score(learner, dataset, "cpu")
-        hps.append((exp.x, exp.y))
-
-    assert torch.random.initial_seed() == old_seed
-
-    for x, y in hps:
-        assert x in [1, 2, 3, 4, 5]
-        assert y >= 1 and y < 4
-
-    assert sum(len(s) for s in tuner.scores.values()) == 5
+    assert len(tuner.scores) == 5
 
 
 def test_grid_search():
     dataset = IntegerDataset(n=15)
 
-    m = DummyModel()
+    tuner = GridTuner()
 
-    learner = DummyLearner()
-    learner.learn = mock.MagicMock(return_value=m)
-    learner.fit = mock.MagicMock(return_value=0.0)
-    learner.test = mock.MagicMock(return_value=0.0)
+    # old_seed = torch.random.initial_seed()
+    tuner.learn(dataset, "cpu")
 
-    tuner = luz.GridSearch()
+    # assert torch.random.initial_seed() == old_seed
 
-    hps = []
+    assert len(tuner.scores) == 15
 
-    old_seed = torch.random.initial_seed()
-    for exp in tuner.tune(x=tuner.choose(1, 2, 3, 4, 5), y=tuner.choose(1, 2, 3)):
-        assert torch.random.initial_seed() == 0
-        tuner.score(learner, dataset, "cpu")
-        hps.append((exp.x, exp.y))
-
-    assert torch.random.initial_seed() == old_seed
-
-    assert sum(len(s) for s in tuner.scores.values()) == 15
-
-    assert hps == [
+    assert list((t.x, t.y) for t in tuner.trials) == [
         (1, 1),
         (1, 2),
         (1, 3),

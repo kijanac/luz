@@ -1,4 +1,8 @@
+from __future__ import annotations
+from typing import Any, Iterable
+
 import enum
+import luz
 
 __all__ = ["Event"]
 
@@ -15,6 +19,7 @@ class Event(enum.Enum):
     VALIDATING_STARTED = "VALIDATING STARTED"
     VALIDATING_ENDED = "VALIDATING ENDED"
 
-    def __call__(self, handlers, **kwargs):
-        for h in handlers:
-            getattr(h, self.name.lower())(**kwargs)
+    def __call__(self, callbacks: Iterable[luz.Callback], **kwargs: Any) -> Any:
+        if callbacks is not None:
+            for h in callbacks:
+                getattr(h, self.name.lower())(**kwargs)

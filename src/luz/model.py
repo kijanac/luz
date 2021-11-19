@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Callable, Optional, Union
 
 import contextlib
+import inspect
 import luz
 import pathlib
 import torch
@@ -13,103 +14,40 @@ Criterion = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 
 class Model(torch.nn.Module):
-    def run_batch(
+    def __init__(
         self,
-        data: torch.Tensor,
-        target: torch.Tensor,
-        criterion: Optional[Criterion] = None,
-        optimizer: Optional[torch.optim.Optimizer] = None,
-    ) -> float:
-        """Run training algorithm on a single batch.
+        net: torch.nn.Module,
+        input_transform: Optional[luz.Transform] = None,
+        output_transform: Optional[luz.TensorTransform] = None,
+    ) -> None:
+        super().__init__()
+        self.net = net
+        self.input_transform = input_transform
+        self.output_transform = output_transform
 
-        Parameters
-        ----------
-        dataset
-            Batch of training data.
-        target
-            Target tensor.
-        criterion
-            Training criterion, by default None.
-        optimizer
-            Training optimizer, by default None.
+    def forward(self, *args: torch.Tensor, **kwargs: torch.Tensor) -> torch.Tensor:
+        if self.input_transform:
+            if len(args) > 0:
+                inputs = (
+                    inspect.signature(self.net.forward)
+                    .bind_partial(*args, **kwargs)
+                    .arguments
+                )
+            else:
+                inputs = kwargs
+            for k, t in self.input_transform.transforms.items():
+                inputs[k] = t(inputs[k])
 
-        Returns
-        -------
-        torch.Tensor
-            Model output.
-        float
-            Batch loss.
-        """
-        output = self(data)
-        batch_loss = criterion(output, target)
+            out = self.net(**inputs)
+        else:
+            out = self.net.forward(*args, **kwargs)
 
-        if optimizer is not None:
-            self.backward(batch_loss)
-            self.optimizer_step(optimizer)
+        if self.output_transform:
+            out = self.output_transform(out)
 
-        return output, batch_loss
+        return out
 
-    def run_train_batch(self, data, target, criterion, optimizer):
-        return self.run_batch(data, target, criterion, optimizer)
-
-    def run_validate_batch(self, data, target, criterion):
-        return self.run_batch(data, target, criterion)
-
-    def run_test_batch(self, data, target, criterion):
-        return self.run_batch(data, target, criterion)
-
-    def backward(self, loss: torch.Tensor) -> None:
-        """Backpropagate loss.
-
-        Parameters
-        ----------
-        loss
-            Loss tensor.
-        """
-        loss.backward()
-
-    def optimizer_step(self, optimizer: torch.optim.Optimizer) -> None:
-        """Step training optimizer.
-
-        Parameters
-        ----------
-        optimizer
-            Training optimizer.
-        """
-        optimizer.step()
-        optimizer.zero_grad()
-
-    def get_input(self, batch: luz.Data) -> torch.Tensor:
-        """Get input from batched data.
-
-        Parameters
-        ----------
-        batch
-            Batched data.
-
-        Returns
-        -------
-        torch.Tensor
-            Input tensor.
-        """
-        return batch.x
-
-    def get_target(self, batch: luz.Data) -> Optional[torch.Tensor]:
-        """Get target from batched data.
-
-        Parameters
-        ----------
-        batch
-            Batched data.
-
-        Returns
-        -------
-        Optional[torch.Tensor]
-            Target tensor.
-        """
-        return batch.y
-
-    # NON-CONFIGURABLE METHODS BELOW
+    # NON-CONFIGURABLE METHODS
 
     @property
     def num_parameters(self) -> int:
@@ -124,15 +62,10 @@ class Model(torch.nn.Module):
 
     def save(self, path: Union[str, pathlib.Path]) -> None:
         torch.save(self.state_dict(), path)
-        #     {"model": self.state_dict(), "trainer": self.trainer.state_dict()}, path
-        # )
 
     def load(self, path: Union[str, pathlib.Path]):
         state_dict = torch.load(path)
-        self.load_state_dict(state_dict)  # ["model"])
-
-        # self.trainer = luz.Trainer()
-        # self.trainer.load_state_dict(state_dict["trainer"])
+        self.load_state_dict(state_dict)
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
         """Compute forward pass in eval mode.
@@ -172,19 +105,3 @@ class Model(torch.nn.Module):
             finally:
                 if training:
                     self.train()
-
-    def migrate(self, device: Device) -> None:
-        self.to(device=device)
-
-    # def transform_inputs(self, *args, **kwargs):
-    #     return
-
-    def use_transform(self, transform: luz.TensorTransform) -> None:
-        """Use transform.
-
-        Parameters
-        ----------
-        transform
-            Tensor transform applied to output during inference.
-        """
-        self.transform = transform

@@ -8,10 +8,10 @@ def get_dataset(size):
     x = torch.rand(size, 1)
     y = 3 * x  # -7
 
-    return luz.Dataset([luz.Data(x=_x, y=_y) for _x, _y in zip(x, y)])
+    return luz.TensorDataset(x=x, y=y)
 
 
-class Net(luz.Model):
+class Net(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.lin = torch.nn.Linear(1, 1)  # luz.Dense(1,1,1,1)
@@ -21,8 +21,11 @@ class Net(luz.Model):
 
 
 class Learner(luz.Learner):
-    def model(self):
+    def model(self, dataset):
         return Net()
+
+    def run_batch(self, model, data):
+        return model.forward(data.x)
 
     def criterion(self):
         return torch.nn.MSELoss()
@@ -32,23 +35,27 @@ class Learner(luz.Learner):
 
     def loader(self, dataset):
         return dataset.loader(batch_size=3)
-        # transform = luz.Transform(y=luz.NormalizePerTensor())
-        # return dataset.loader(batch_size=3, transform=transform)
 
-    def handlers(self):
+    def input_transform(self, dataset):
+        t = luz.Transform(x=luz.Normalize())
+        t.fit(dataset)
+        return t
+
+    def callbacks(self):
         return luz.ActualVsPredicted()
 
     def fit_params(self):
         return dict(
-            stop_epoch=500,
+            max_epochs=500,
             early_stopping=True,
         )
 
 
-d = get_dataset(1000)
-d_train, d_val, d_test = d.split([60, 20, 20])
+if __name__ == "__main__":
+    d = get_dataset(1000)
+    d_train, d_val, d_test = d.split([60, 20, 20])
 
-learner = Learner()
-nn = learner.learn(d_train, d_val, "cpu")
-score = learner.test(nn, d_test, "cpu")
-print(score)
+    learner = Learner()
+    nn = learner.learn(d_train, d_val, "cpu")
+    score = learner.evaluate(d_test, "cpu")
+    print(score)

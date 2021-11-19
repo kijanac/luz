@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
+import copy
 import itertools
 import luz
 import matplotlib.pyplot as plt
@@ -16,8 +17,9 @@ __all__ = [
     # "ChainDataset",
     "ConcatDataset",
     # "IterableDataset",
-    "OnDiskDataset",
+    "FolderDataset",
     "Subset",
+    "TensorDataset",
     "UnpackDataset",
     "WrapperDataset",
 ]
@@ -139,6 +141,21 @@ class Data:
         return f"Data({kw_str})"
 
 
+def transform_getitem(getitem):
+    def f(self, index: int) -> luz.Data:
+        return self._transform(getitem(self, index))
+
+    return f
+
+
+def transform_iter(iter):
+    def f(self) -> luz.Data:
+        for x in iter:
+            yield (self._transform(x))
+
+    return f
+
+
 class BaseDataset:
     def _collate(self, batch: Iterable[luz.Data]) -> luz.Data:
         return default_collate(batch)
@@ -162,7 +179,22 @@ class BaseDataset:
             By default None.
         """
         self._transform = transform
+
         return self
+
+    def apply(self, transform: luz.Transform) -> BaseDataset:
+        t1 = self._transform
+        t2 = transform
+
+        if not isinstance(t1, luz.Transform):
+            t1 = luz.Transform()
+        if not isinstance(t2, luz.Transform):
+            t2 = luz.Transform()
+
+        d = copy.copy(self)
+        d.use_transform(t1 * t2)
+
+        return d
 
     def loader(
         self,
@@ -259,20 +291,51 @@ class BaseDataset:
             for offset, l in zip(itertools.accumulate(lengths), lengths)
         )
 
-    def mean_std(self, key: str) -> torch.Tensor:
+    def mean_std(
+        self, key: str, accumulate_along: Optional[int] = None
+    ) -> torch.Tensor:
+        """Compute mean and standard deviation of data using Welford's online algorithm.
+
+        Parameters
+        ----------
+        key
+            Data key.
+        accumulate_along
+
+
+        Returns
+        -------
+        Tuple[BaseDataset]
+            Generated subsets.
+        """
         for x in self:
-            mean = torch.zeros_like(x[key])
-            variance = torch.zeros_like(x[key])
+            if accumulate_along is not None:
+                mean = torch.zeros_like(x[key].sum(accumulate_along))
+                variance = torch.zeros_like(x[key].sum(accumulate_along))
+            else:
+                mean = torch.zeros_like(x[key])
+                variance = torch.zeros_like(x[key])
             break
 
         n = len(self)
 
-        for i in range(n):
-            delta = self[i][key] - mean
-            mean += delta / (i + 1)
-            variance += delta * (self[i][key] - mean)
+        if accumulate_along is not None:
+            denom = 0
+            for i in range(n):
+                m = self[i][key].shape[accumulate_along]
+                denom += m
+                delta = (self[i][key] - mean).sum(accumulate_along)
+                mean += delta / denom
+                variance += delta * ((self[i][key] - mean).sum(accumulate_along))
 
-        std = torch.sqrt(variance / n)
+            std = torch.sqrt(variance / denom)
+        else:
+            for i in range(n):
+                delta = self[i][key] - mean
+                mean += delta / (i + 1)
+                variance += delta * (self[i][key] - mean)
+
+            std = torch.sqrt(variance / n)
 
         return mean, std
 
@@ -282,9 +345,9 @@ class BaseDataset:
             break
 
         for i in range(len(self)):
-            m = max(m, self[i][key][dim])
+            m = torch.max(m, self[i][key][dim])
 
-        return m.item()
+        return m
 
     def min(self, key: str, dim: int) -> float:
         for x in self:
@@ -292,9 +355,9 @@ class BaseDataset:
             break
 
         for i in range(len(self)):
-            m = min(m, self[i][key][dim])
+            m = torch.min(m, self[i][key][dim])
 
-        return m.item()
+        return m
 
     def plot_histogram(
         self,
@@ -319,14 +382,17 @@ class BaseDataset:
 
         for i in range(len(self)):
             histc += torch.histc(
-                self[i][key][dim], bins=num_bins, min=data_min, max=data_max
+                self[i][key][dim],
+                bins=num_bins,
+                min=data_min,
+                max=data_max,
             )
 
         bins = np.linspace(data_min, data_max, num_bins + 1)
 
         plt.hist(bins[:-1], bins, weights=histc.numpy())
-        if self.filepath is not None:
-            plt.savefig(luz.expand_path(self.filepath))
+        if filepath is not None:
+            plt.savefig(luz.expand_path(filepath))
         plt.show()
 
 
@@ -340,8 +406,25 @@ class Dataset(torch.utils.data.Dataset, BaseDataset):
             Iterable of Data objects comprising the dataset.
         """
         self.data = tuple(data)
-        self.len = len(data)
+        self.len = len(self.data)
 
+    @transform_getitem
+    def __getitem__(self, index: int) -> luz.Data:
+        return self.data[index]
+
+    def __len__(self) -> int:
+        return self.len
+
+
+class TensorDataset(torch.utils.data.Dataset, BaseDataset):
+    def __init__(self, **tensors: torch.Tensor) -> None:
+        ks = tensors.keys()
+        self.data = tuple(
+            Data(**dict(zip(ks, torch.atleast_1d(z)))) for z in zip(*tensors.values())
+        )
+        self.len = len(self.data)
+
+    @transform_getitem
     def __getitem__(self, index: int) -> luz.Data:
         return self.data[index]
 
@@ -354,10 +437,12 @@ class ConcatDataset(BaseDataset, torch.utils.data.ConcatDataset):
 
 
 class Subset(BaseDataset, torch.utils.data.Subset):
-    pass
+    @transform_getitem
+    def __getitem__(self, index: int) -> luz.Data:
+        return super().__getitem__(index)
 
 
-class OnDiskDataset(BaseDataset, torch.utils.data.Dataset):
+class FolderDataset(BaseDataset, torch.utils.data.Dataset):
     def __init__(self, root: str) -> None:
         """Dataset which reads data from disk.
 
@@ -368,6 +453,7 @@ class OnDiskDataset(BaseDataset, torch.utils.data.Dataset):
         """
         self.root = luz.expand_path(root)
 
+    @transform_getitem
     def __getitem__(self, index: int) -> luz.Data:
         return torch.load(pathlib.Path(self.root, f"{index}.pt"))
 

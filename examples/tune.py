@@ -22,28 +22,29 @@ def get_dataset(size):
     return luz.Dataset([d] * size).use_collate(luz.graph_collate)
 
 
-class Net(luz.Model):
+class Net(torch.nn.Module):
     def __init__(self, d_hidden):
         super().__init__()
         self.lin = luz.Dense(10, d_hidden, 1)
 
-    def forward(self, data):
-        return luz.batchwise_node_mean(self.lin(data.x), data.batch)
+    def forward(self, x, batch):
+        return luz.batchwise_node_mean(self.lin(x), batch)
 
-    def get_input(self, batch):
-        return batch
+    def test_criterion(self):
+        return torch.nn.MSELoss()
 
-
-class Learner(luz.Learner):
-    def hyperparams(self, tuner):
-        return dict(
-            d_hidden=tuner.sample(2, 9),
-            early_stopping=tuner.choose(True, False),
-            batch_size=tuner.sample(1, 40),
+    def test_loader(self, dataset):
+        return dataset.loader(
+            batch_size=1,
+            shuffle=True,
+            num_workers=1,
+            pin_memory=True,
         )
 
-    def model(self):
-        return Net(self.hparams.d_hidden)
+
+class Trainer(luz.Learner):
+    def nn(self):
+        return Net(d_hidden=self.hparams["d_hidden"])
 
     def criterion(self):
         return torch.nn.MSELoss()
@@ -52,27 +53,83 @@ class Learner(luz.Learner):
         return torch.optim.Adam(model.parameters())
 
     def fit_params(self):
-        return dict(
-            stop_epoch=10,
-            early_stopping=self.hparams.early_stopping,
-        )
+        return dict(max_epochs=10, early_stopping=self.hparams["early_stopping"])
 
-    def handlers(self):
-        return luz.Loss()
+    def callbacks(self):
+        return luz.Loss(1.0)
 
-    def loader(self, dataset):
-        return dataset.loader(batch_size=self.hparams.batch_size)
+    def get_input(self, batch):
+        return batch.x, batch.batch
 
+
+# class Tuner(luz.RandomSearchTuner):
+#     def scorer(self):
+#         return luz.Holdout(test_fraction=0.2, val_fraction=0.2)
+
+#     def hparams(self):
+#         return {
+#             "d_hidden": self.sample(2, 10, int),
+#             "early_stopping": self.conditional("d_hidden > 3", True, False),
+#         }
+
+#     def learner(self, trial):
+#         print(trial.kwargs)
+#         return Trainer(**trial.kwargs)
+
+
+class Tuner(luz.GridSearchTuner):
     def scorer(self):
         return luz.Holdout(test_fraction=0.2, val_fraction=0.2)
 
-    def tuner(self):
-        return luz.RandomSearch(num_iterations=5, save_experiments=False)
+    def hparams(self):
+        return {
+            "d_hidden": self.choose(2, 3, 4, 5),
+            "early_stopping": self.choose(True, False),
+        }
+
+    def learner(self, trial):
+        print(trial.kwargs)
+        return Trainer(**trial.kwargs)
+
+
+# class Learner(luz.Learner):
+#     def fit_params(self):
+#         return dict(
+#             stop_epoch=10,
+#             early_stopping=self.hparams.early_stopping,
+#         )
+
+#     def handlers(self):
+#         return luz.Loss()
+
+#     def loader(self, dataset):
+#         return dataset.loader(batch_size=self.hparams.batch_size)
 
 
 if __name__ == "__main__":
-    d = get_dataset(100)
+    d = get_dataset(size=10)
 
-    learner = Learner()
+    tuner = Tuner()
+    scorer = luz.Holdout(test_fraction=0.2, val_fraction=0.2)
+    s = scorer.score(tuner, d)
+    print(s)
 
-    print(learner.tune(d, "cpu"))
+    # EX 1: TRAIN MODEL
+    learner = Trainer(d_hidden=10, early_stopping=True)
+    model = learner.learn(d)
+
+    # EX 2: SCORE LEARNER
+    scorer = luz.Holdout(test_fraction=0.2, val_fraction=0.2)
+    learner = Trainer(d_hidden=10, early_stopping=True)
+    s = scorer.score(learner, d)
+    print(s)
+
+    # EX 3: TUNE HYPERPARAMETERS
+    tuner = Tuner(early_stopping=True)
+    tuner.learn(d)
+
+    # EX 4: TUNE HYPERPARAMETERS & SCORE OVERALL LEARNER
+    tuner = Tuner(early_stopping=True)
+    scorer = luz.Holdout(test_fraction=0.2, val_fraction=0.2)
+    s = scorer.score(tuner, d)
+    print(s)

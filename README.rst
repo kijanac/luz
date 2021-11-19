@@ -19,16 +19,6 @@ Important features:
 #. Built-in scoring algorithms like holdout and cross validation
 #. Straightforward hyperparameter tuning with built-in tuning algorithms like random search and grid search
 
-Basic usage: custom modules with luz.Module functionality. Simply define your model, inherit from luz.Module, and use model.train/model.test.
-
-Next level: simplified training algorithms with transforms and handlers.
-
-Next level: straightforward hyperparameter tuning with various scoring mechanisms.
-
-#. Data preparation scheme.
-
-  #. Transforms: Functions for conditionining the training process which are invertible and whose inverse is applied to the resulting predictor.
-  #. Preprocessors: Functions for altering the prediction task which are not necessarily invertible.
 #. Model.
 #. Training scheme.
 #. Overall learning algorithm.

@@ -12,23 +12,10 @@ def get_dataset():
     x = torch.rand(1000)
     y = f(x)
 
-    return luz.Dataset([luz.Data(x=[_x], y=[_y]) for _x, _y in zip(x, y)])
-
-
-class Net(luz.Model):
-    def __init__(self, degree):
-        super().__init__()
-        self.dense = luz.Dense(degree, 5, 10, 5, 1)
-
-    def forward(self, x):
-        return self.dense(x)
+    return luz.TensorDataset(x=x, y=y)
 
 
 class Learner(luz.Learner):
-    def __init__(self, degree):
-        super().__init__()
-        self.degree = degree
-
     def criterion(self):
         return torch.nn.MSELoss()
 
@@ -40,32 +27,28 @@ class Learner(luz.Learner):
 
     def fit_params(self):
         return {
-            "stop_epoch": 1000,
+            "max_epochs": 1000,
             "early_stopping": True,
             "patience": 10,
         }
 
-    def loader(self, dataset):
-        transform = luz.Transform(x=luz.PowerSeries(self.degree))
-        return dataset.loader(transform=transform)
+    def transform(self, dataset):
+        return luz.Transform(x=luz.PowerSeries(self.hparams["degree"]))
 
     def model(self):
-        return Net(self.degree)
-
-    def scorer(self):
-        return luz.Holdout(0.2, 0.2)
+        return luz.Dense(self.hparams["degree"], 5, 10, 5, 1)
 
 
 if __name__ == "__main__":
     d = get_dataset()
 
     learner = Learner(degree=2)
-    model, score = learner.score(d)
-    model.use_transform(luz.Squeeze(0))
+    scorer = luz.Holdout(0.2, 0.2)
+    model, score = scorer.score(learner, d, "cpu")
     print(score)
 
-    x = 5 * torch.rand(1000)
-    y = model.predict(luz.Compose(luz.Unsqueeze(-1), luz.PowerSeries(2))(x))
+    x = 5 * torch.rand((1000, 1))
+    y = model.predict(luz.Data(x=x))
 
     analytic_x = np.linspace(0, 5, 1000)
     analytic_y = f(analytic_x)

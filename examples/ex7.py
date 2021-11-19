@@ -12,18 +12,12 @@ def get_dataset(size):
     return luz.Dataset([d] * size)
 
 
-class Net(luz.Model):
-    def __init__(self):
-        super().__init__()
-        self.lin = torch.nn.Linear(10, 5)
-
-    def forward(self, x):
-        return self.lin(x)
-
-
 class Learner(luz.Learner):
-    def model(self):
-        return Net()
+    def model(self, dataset):
+        return torch.nn.Linear(10, 5)
+
+    def run_batch(self, model, data):
+        return model.forward(data.x)
 
     def criterion(self):
         return torch.nn.MSELoss()
@@ -31,26 +25,29 @@ class Learner(luz.Learner):
     def optimizer(self, model):
         return torch.optim.Adam(model.parameters())
 
-    def hyperparams(self, tuner):
-        return dict(batch_size=tuner.sample(1, 20))
-
     def fit_params(self):
         return dict(
-            stop_epoch=10,
+            max_epochs=10,
             early_stopping=True,
         )
 
     def loader(self, dataset):
-        return dataset.loader(batch_size=self.hparams.batch_size)
+        return dataset.loader(batch_size=self.hparams["batch_size"])
+
+
+class Tuner(luz.RandomSearchTuner):
+    def learner(self, trial):
+        return Learner(batch_size=trial.batch_size)
 
     def scorer(self):
         return luz.Holdout(0.25, 0.3)
 
-    def tuner(self):
-        return luz.RandomSearch(7)
+    def hparams(self):
+        return dict(batch_size=self.sample(1, 20, dtype=int))
 
 
-learner = Learner()
+if __name__ == "__main__":
+    tuner = Tuner(7)
 
-d = get_dataset(1000)
-print(learner.tune(d, "cpu"))
+    d = get_dataset(1000)
+    print(tuner.learn(d, "cpu"))

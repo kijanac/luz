@@ -1,11 +1,11 @@
 """
 
-Contains callback objects which perform various functions during the training process.
+Contains callback objects which perform various actions during the training process.
 
 """
 
-# FIXME: Write a test for every handler here (many are likely broken)
-# FIXME: Type annotate every handler here
+# FIXME: Write a test for every callback here (many are likely broken)
+# FIXME: Type annotate every callback here
 
 from __future__ import annotations
 from typing import Any, Iterable, Optional, Union
@@ -20,13 +20,11 @@ import pathlib
 import torch
 
 __all__ = [
-    "Handler",
-    "Accuracy",
+    "Callback",
     "ActualVsPredicted",
     # "Checkpoint",
     # "DataAndFit",
-    "DurbinWatson",
-    "FBeta",
+    "LogMetrics",
     "Loss",
     "PlotHistory",
     "Progress",
@@ -35,7 +33,7 @@ __all__ = [
 ]
 
 
-class Handler:
+class Callback:
     def batch_started(self, **kwargs: Any):
         pass
 
@@ -119,43 +117,7 @@ class Handler:
         pass
 
 
-class Accuracy(Handler):
-    def __init__(self) -> None:
-        self.correct = 0
-        self.total = 0
-
-    def epoch_started(self, **kwargs: Any) -> None:
-        """Compute on epoch start."""
-        self.correct = 0
-        self.total = 0
-
-    def batch_ended(
-        self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any
-    ) -> None:
-        """Compute on batch end.
-
-        Parameters
-        ----------
-        output
-            Output tensor.
-            Shape: :math:`(N,C)`
-        target
-            Target tensor. One-hot encoded.
-            Shape: :math:`(N,C)`
-        """
-        predicted = torch.argmax(torch.softmax(output, dim=1), dim=1)
-        correct = torch.argmax(target, dim=1)
-
-        self.correct += (predicted == correct).sum().item()
-        self.total += target.size(0)
-
-    def epoch_ended(self, model, epoch: int, loggers, **kwargs: Any) -> None:
-        acc = self.correct / self.total
-        s = f"[Epoch {epoch}] Classification accuracy: {acc}"
-        self.log(loggers, s)
-
-
-class ActualVsPredicted(Handler):
+class ActualVsPredicted(Callback):
     def __init__(self, filepath: Optional[Union[str, pathlib.Path]] = None) -> None:
         """Plot actual labels vs. predicted labels.
 
@@ -208,7 +170,7 @@ class ActualVsPredicted(Handler):
         plt.show()
 
 
-class Checkpoint(Handler):
+class Checkpoint(Callback):
     def __init__(self, save_interval, model_name, save_dir=None):
         if save_interval < 0:
             raise ValueError(
@@ -234,7 +196,7 @@ class Checkpoint(Handler):
             torch.save(obj=model.state_dict(), f=save_path)
 
 
-class DataAndFit(Handler):
+class DataAndFit(Callback):
     def __init__(self):
         self.xs = []
         self.actual = []
@@ -254,76 +216,28 @@ class DataAndFit(Handler):
         plt.show()
 
 
-class DurbinWatson(Handler):
-    def __init__(self):
-        self.numerator = 0
-        self.denominator = 0
-        self.last_residual = None
+class LogMetrics(Callback):
+    def __init__(self, metrics, log_every: Optional[int] = 1) -> None:
+        self.metrics = metrics
+        self.log_every = log_every
 
-    def batch_ended(self, x, y, output, **kwargs):
-        residual = (y - output).item()
-        if self.last_residual is not None:
-            self.numerator += (residual - self.last_residual) ** 2
-        self.last_residual = residual
-        self.denominator += residual ** 2
+    def epoch_started(self, **kwargs):
+        for m in self.metrics:
+            m.reset()
 
-    def epoch_ended(self, model, loggers, **kwargs):
-        self.log(loggers, f"DW: {self.numerator / self.denominator}")
+    def batch_ended(self, **kwargs):
+        for m in self.metrics:
+            m.update(**kwargs)
 
-
-class FBeta(Handler):
-    def __init__(self, beta: float) -> None:
-        self.beta = beta
-
-        self.true_positive = 0
-        self.predicted_positive = 0
-        self.actual_positive = 0
-
-    def epoch_started(self, **kwargs: Any) -> None:
-        """Compute on epoch start."""
-        self.true_positive = 0
-        self.predicted_positive = 0
-        self.actual_positive = 0
-
-    def batch_ended(
-        self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any
-    ) -> None:
-        """Compute on batch end.
-
-        Parameters
-        ----------
-        output
-            Output tensor.
-            Shape: :math:`(N,2)`
-        target
-            Target tensor. One-hot encoded.
-            Shape: :math:`(N,2)`
-        """
-        predicted = torch.argmax(torch.softmax(output, dim=1), dim=1)
-        correct = torch.argmax(target, dim=1)
-
-        self.true_positive += correct[predicted.nonzero(as_tuple=False)].sum().item()
-        self.predicted_positive += predicted.sum().item()
-        self.actual_positive += correct.sum().item()
-
-    def epoch_ended(self, model, epoch: int, loggers, **kwargs: Any) -> None:
-        try:
-            precision = self.true_positive / self.predicted_positive
-            recall = self.true_positive / self.actual_positive
-            F = (
-                (1 + self.beta ** 2)
-                * precision
-                * recall
-                / (precision * (self.beta ** 2) + recall)
+    def epoch_ended(self, model, epoch, loggers, **kwargs):
+        if epoch % self.log_every == 0:
+            s = "\n".join(
+                [f"[Epoch {epoch}] {str(m)} : {m.compute()}" for m in self.metrics]
             )
-        except ZeroDivisionError:
-            F = 1
-
-        s = f"[Epoch {epoch}] F-score: {F}"
-        self.log(loggers, s)
+            self.log(loggers, s)
 
 
-class Loss(Handler):
+class Loss(Callback):
     def __init__(self, print_interval: Optional[float] = 0.25) -> None:
         """Calculate running loss throughout each epoch.
 
@@ -385,7 +299,7 @@ class Loss(Handler):
                 self.log(loggers, f"[Epoch {epoch}] Running average loss: {avg_loss}.")
 
 
-class PlotHistory(Handler):
+class PlotHistory(Callback):
     def __init__(
         self,
         show_plot: Optional[bool] = True,
@@ -426,11 +340,17 @@ class PlotHistory(Handler):
 
             (line2,) = ax2.plot(x, y2, color="tab:orange")
 
-            plt.title("Loss history")
-            plt.legend((line1, line2), ("Training loss", "Validation loss"))
+            lines = (line1, line2)
+            labels = (
+                f"Training loss (min: {min(train_history)})",
+                f"Validation loss (min: {min(val_history)})",
+            )
         else:
-            plt.title("Loss history")
-            plt.legend((line1,), ("Training loss",))
+            lines = (line1,)
+            labels = (f"Training loss (min: {min(train_history)})",)
+
+        plt.title("Loss history")
+        plt.legend(lines, labels)
 
         fig.tight_layout()
 
@@ -443,7 +363,7 @@ class PlotHistory(Handler):
             plt.close(fig)
 
 
-class Progress(Handler):
+class Progress(Callback):
     def __init__(
         self, print_interval: Optional[float] = 0.25, bar_length: Optional[int] = 30
     ) -> None:
@@ -490,7 +410,7 @@ class Progress(Handler):
         self.log(loggers, "Testing complete.")
 
 
-class RVP(Handler):
+class RVP(Callback):
     def __init__(self) -> None:
         self.predicted = []
         self.residual = []
@@ -513,7 +433,7 @@ class RVP(Handler):
         plt.show()
 
 
-class Timer(Handler):
+class Timer(Callback):
     def __init__(self) -> None:
         self.start_time = 0
         self.end_time = 0

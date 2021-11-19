@@ -1,54 +1,165 @@
 from __future__ import annotations
-from typing import Any, Iterable, Iterator, Optional, Union
+from typing import Any, Iterable, Optional, Type, Union
 
-from abc import ABC, abstractmethod
 import ast
-import collections
-import copy
 import itertools
-import json
 import luz
 import numpy as np
 import operator
-import pathlib
 import re
 import torch
+from .predictors import BaseTuner
 
-__all__ = ["Tuner", "BayesianTuner", "GridSearch", "RandomSearch"]
+__all__ = ["GridSearchTuner", "RandomSearchTuner"]
 
 Device = Union[str, torch.device]
 
 
-class Experiment:
-    def __init__(self, **kwargs: Any) -> None:
-        self.kwargs = kwargs
+class Tuner(BaseTuner):
+    def learn(
+        self,
+        train_dataset: luz.Dataset,
+        val_dataset: Optional[luz.Dataset] = None,
+        device: Optional[Device] = "cpu",
+    ) -> luz.Model:
+        """Learn a model based on a given dataset.
 
-    def __getattr__(self, key: str) -> Any:
-        return self.kwargs[key]
+        Parameters
+        ----------
+        train_dataset
+            Training dataset used to learn a model.
+        val_dataset
+            Validation dataset, by default None.
+        device
+            Device to use for learning, by default "cpu".
 
-    def encode(self, obj):
-        if isinstance(obj, np.bool_):
-            return bool(obj)
-        if isinstance(obj, torch.nn.Module):
-            if len(obj._modules) > 0:
-                return obj._modules
-            else:
-                return repr(obj)
+        Returns
+        -------
+        luz.Model
+            Learned model.
+        """
+        self.trials = []
+        self.scores = []
 
-    def json(self, score: float, model: luz.Module) -> str:
-        d = {"hyperparameters": self.kwargs, "score": score, "model": model}
-        return json.dumps(d, default=self.encode, indent=4)
+        hparams = self.hparams()
 
-    def __str__(self):
-        return json.dumps(
-            {"hyperparameters": self.kwargs}, default=self.encode, indent=4
+        for _ in range(self.num_iterations):
+            trial = self.get_trial(hparams, self.trials, self.scores)
+            score = self.objective(trial, train_dataset, device)
+
+            self.trials.append(trial)
+            self.scores.append(score)
+
+        return self.best_trial.model
+
+    def predict(self, dataset, device="cpu"):
+        return self.best_trial.model.predict(dataset, device)
+
+    def evaluate(self, dataset, device="cpu"):
+        learner = self.best_trial.learner
+
+        return learner.evaluate(dataset, device)
+
+    @property
+    def best_trial(self):
+        return self.trials[np.argmin(self.scores)]
+
+    def sample(
+        self,
+        lower: Union[int, float],
+        upper: Union[int, float],
+        dtype: Union[Type[int], Union[Type[float]]],
+    ) -> Sample:
+        return Sample(lower, upper, dtype)
+
+    def choose(self, *choices: Any) -> Choose:
+        return Choose(choices)
+
+    def pin(self, equation: str) -> Pin:
+        return Pin(equation)
+
+    def conditional(self, condition: str, if_true: Any, if_false: Any) -> Conditional:
+        return Conditional(condition, if_true, if_false)
+
+    def objective(self, trial, dataset, device):
+        # with luz.temporary_seed(self.seed):
+        scorer = self.scorer()
+
+        learner = self.learner(trial)
+
+        model, score = scorer.score(learner, dataset, device)
+
+        trial.learner = learner
+        trial.model = model
+        trial.score = score
+
+        return score
+
+
+class RandomSearchTuner(Tuner):
+    def get_trial(self, hparams, trials, scores):
+
+        d = self.fixed_hparams.copy()
+
+        for k, v in hparams.items():
+            if isinstance(v, Sample) and v.dtype == int:
+                d[k] = np.random.randint(low=v.lower, high=v.upper)
+            elif isinstance(v, Sample) and v.dtype == float:
+                d[k] = np.random.uniform(low=v.lower, high=v.upper)
+            elif isinstance(v, Choose):
+                d[k] = np.random.choice(a=v.choices)
+            elif isinstance(v, Pin) or isinstance(v, Conditional):
+                d[k] = v(**d)
+
+        return Trial(**d)
+
+
+class GridSearchTuner(Tuner):
+    def __init__(self, **hparams):
+        n = np.prod(
+            [len(v.choices) for v in self.hparams().values() if isinstance(v, Choose)]
         )
+
+        super().__init__(n, **hparams)
+
+    def get_trial(self, hparams, trials, scores):
+        choices = [v for v in hparams.values() if isinstance(v, Choose)]
+        d = {}
+        grid = itertools.product(*[c.choices for c in choices])
+
+        kwargs = [t.kwargs for t in trials]
+        for g in grid:
+            t = dict(zip(hparams.keys(), g))
+            if t not in kwargs:
+                d.update(**t)
+                break
+
+        for k, v in hparams.items():
+            if isinstance(v, Pin) or isinstance(v, Conditional):
+                d[k] = v(**d)
+
+        return Trial(**d)
+
+
+class BayesianTuner(Tuner):
+    pass
+    # def get_trial(self, hparams, trials, scores):
+    #     pass # FIGURE OUT HOW TO WRITE THIS
+
+
+# ---------- AUXILLIARY CLASSES ---------- #
 
 
 class Sample:
-    def __init__(self, lower: Union[int, float], upper: Union[int, float]) -> None:
+    def __init__(
+        self,
+        lower: Union[int, float],
+        upper: Union[int, float],
+        dtype: Union[Type[int], Union[Type[float]]],
+    ) -> None:
         self.lower = lower
         self.upper = upper
+        self.dtype = dtype
 
 
 class Choose:
@@ -88,265 +199,12 @@ class Conditional:
         return self.if_false
 
 
-class Tuner(ABC):
-    def __init__(
-        self,
-        num_iterations: int,
-        seed: Optional[int] = 0,
-        json_dir: Optional[str] = None,
-    ) -> None:
-        """Hyperparameter tuning algorithm.
+class Trial:
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
 
-        Parameters
-        ----------
-        num_iterations
-            Number of tuning iterations.
-        seed
-            Random seed for consistency across tuning iterations; by default 0.
-        """
-        self.num_iterations = num_iterations
-        self.seed = seed
-        self.json_dir = json_dir
-
-        self.hyperparameters = []
-
-        self.experiment = None
-
-        self.scores = collections.defaultdict(list)
-        self.best_model = None
-
-    @abstractmethod
-    def sample_hyperparameters(self, **samples: Sample) -> Union[int, float]:
-        """Sample hyperparameter value.
-
-        Parameters
-        ----------
-        lower
-            Hyperparameter lower bound.
-        upper
-            Hyperparameter upper bound.
-
-        Returns
-        -------
-        Union[int, float]
-            Sampled hyperparameter value.
-        """
-        pass
-
-    @abstractmethod
-    def choose_hyperparameters(self, **choices: Choose) -> Any:
-        """Choose hyperparameter value.
-
-        Parameters
-        ----------
-        choices
-            Possible hyperparameter values.
-
-        Returns
-        -------
-        Any
-            Chosen hyperparameter value.
-        """
-        pass
-
-    def sample(self, lower: Union[int, float], upper: Union[int, float]) -> Sample:
-        s = Sample(lower, upper)
-        self.hyperparameters.append(s)
-
-        return s
-
-    def choose(self, *choices: Any) -> Choose:
-        c = Choose(choices=choices)
-        self.hyperparameters.append(c)
-
-        return c
-
-    def pin(self, equation: str) -> Pin:
-        p = Pin(equation)
-        self.hyperparameters.append(p)
-
-        return p
-
-    def conditional(self, condition: str, if_true: Any, if_false: Any) -> Conditional:
-        c = Conditional(condition, if_true, if_false)
-        self.hyperparameters.append(c)
-
-        return c
-
-    # NOTE: any pins or conditionals have to come after the variables they reference!
-    def tune(self, **kwargs: Union[Choose, Conditional, Pin, Sample]) -> Iterator[Any]:
-        """Tune hyperparameters. Wrap code to be run on each tuning iteration.
-
-        Yields
-        -------
-        Iterator[Any]
-            Hyperparameter values.
-        """
-        for i in range(self.num_iterations):
-            self.current_iteration = i
-
-            try:
-                sample_hps = {k: v for k, v in kwargs.items() if isinstance(v, Sample)}
-                samples = self.sample_hyperparameters(**sample_hps)
-            except NotImplementedError:
-                pass
-
-            try:
-                choice_hps = {k: v for k, v in kwargs.items() if isinstance(v, Choose)}
-                choices = self.choose_hyperparameters(**choice_hps)
-            except NotImplementedError:
-                pass
-
-            d = {}
-
-            for k, v in kwargs.items():
-                if k in sample_hps:
-                    d[k] = samples[k]
-                elif k in choice_hps:
-                    d[k] = choices[k]
-                else:
-                    d[k] = v(**d)
-
-            self.experiment = Experiment(**d)
-
-            if self.experiment in self.scores:
-                self.scores[self.experiment].append(self.scores[k][-1])
-            else:
-                # seed to ensure reproducibility in each iteration of the tuning loop
-                with luz.temporary_seed(self.seed):
-                    yield self.experiment
-
-    def score(
-        self, learner: luz.Learner, dataset: luz.Dataset, device: Device
-    ) -> luz.Score:
-        """
-        Learn a model and estimate its future performance based on a given dataset.
-
-        Parameters
-        ----------
-        learner
-            Learning algorithm to be scored.
-        dataset
-            Dataset used to learn and score a model.
-        device
-            Device to use for learning, by default "cpu".
-
-        Returns
-        -------
-        luz.Score
-            Learned model and estimated performance.
-        """
-        model, score = learner.score(dataset, device)
-
-        if self.best_model is None or score < self.best_score:
-            self.best_model = copy.deepcopy(model)
-
-        self.scores[self.experiment].append(score)
-
-        if self.json_dir is not None:
-            p = pathlib.Path(self.json_dir, f"{self.current_iteration}.json")
-            with open(str(p), "w") as f:
-                f.write(self.experiment.json(score, model))
-
-        return luz.Score(model, score)
-
-    @property
-    def best_hyperparameters(self):
-        mean_scores = {k: sum(v) / len(v) for k, v in self.scores.items()}
-        try:
-            k = min(mean_scores, key=mean_scores.get)
-            return k.kwargs
-        except ValueError:
-            return None
-
-    @property
-    def best_score(self):
-        mean_scores = {k: sum(v) / len(v) for k, v in self.scores.items()}
-        try:
-            k = min(mean_scores, key=mean_scores.get)
-            return mean_scores[k]
-        except ValueError:
-            return None
-
-
-class BayesianTuner(Tuner):
-    def sample_hyperparameter(
-        self, lower: Union[int, float], upper: Union[int, float]
-    ) -> Union[int, float]:
-        raise NotImplementedError
-
-    def choose_hyperparameter(self, choices: Iterable[Any]) -> Any:
-        raise NotImplementedError
-
-
-class GridSearch(Tuner):
-    def __init__(self, seed_loop: Optional[bool] = False) -> None:
-        """Hyperparameter tuning algorithm.
-
-        Parameters
-        ----------
-        seed_loop
-            If True seed each iteration, by default False.
-        """
-        super().__init__(0, seed_loop)
-        self.grid = None
-
-    def tune(self, **kwargs: Union[Choose, Conditional, Pin, Sample]) -> Iterator[Any]:
-        choices = [hp for hp in self.hyperparameters if isinstance(hp, Choose)]
-        self.grid = itertools.product(*[c.choices for c in choices])
-        self.num_iterations = np.prod([len(c.choices) for c in choices])
-
-        yield from super().tune(**kwargs)
-
-    def sample_hyperparameters(self, **samples: Sample) -> Union[int, float]:
-        raise NotImplementedError
-
-    def choose_hyperparameters(self, **choices: Choose) -> Any:
-        return dict(zip(choices.keys(), next(self.grid)))
-
-
-class RandomSearch(Tuner):
-    def sample_hyperparameters(self, **samples: Sample) -> Union[int, float]:
-        """Sample hyperparameter value.
-
-        Parameters
-        ----------
-        lower
-            Hyperparameter lower bound.
-        upper
-            Hyperparameter upper bound.
-
-        Returns
-        -------
-        Union[int, float]
-            Sampled hyperparameter value from the range `[lower, upper)`.
-        """
-        d = {}
-        for k, s in samples.items():
-            (datatype,) = set((type(s.lower), type(s.upper)))
-            if datatype == int:
-                d[k] = np.random.randint(low=s.lower, high=s.upper)
-            elif datatype == float:
-                d[k] = np.random.uniform(low=s.lower, high=s.upper)
-            else:
-                d[k] = None
-
-        return d
-
-    def choose_hyperparameters(self, **choices: Choose) -> Any:
-        """Choose hyperparameter value.
-
-        Parameters
-        ----------
-        choices
-            Possible hyperparameter values.
-
-        Returns
-        -------
-        Any
-            Chosen hyperparameter value.
-        """
-        return {k: np.random.choice(a=c.choices) for k, c in choices.items()}
+    def __getattr__(self, key: str) -> Any:
+        return self.kwargs[key]
 
 
 # from https://stackoverflow.com/a/9558001

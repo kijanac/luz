@@ -13,22 +13,17 @@ def get_dataset(size):
 
 
 class Learner(luz.Learner):
-    def model(self):
+    def model(self, dataset):
         return torch.nn.Linear(10, 5)
+
+    def run_batch(self, model, data):
+        return model.forward(data.x)
 
     def criterion(self):
         return torch.nn.MSELoss()
 
     def optimizer(self, model):
         return torch.optim.Adam(model.parameters())
-
-    def fit_params(self):
-        return dict(
-            max_epochs=10,
-        )
-
-    def loader(self, dataset):
-        return dataset.loader(batch_size=20)
 
     def callbacks(self):
         return (
@@ -37,10 +32,20 @@ class Learner(luz.Learner):
             luz.PlotHistory(),
         )
 
+    def loader(self, dataset):
+        return dataset.loader(batch_size=20)
+
+    def fit_params(self):
+        return dict(
+            max_epochs=10,
+        )
+
 
 if __name__ == "__main__":
-    learner = Learner()
-    scorer = luz.Holdout(0.2, 0.2)
-
     d = get_dataset(1000)
-    scorer.score(learner, d, "cpu")
+    d_train, d_val, d_test = d.split([600, 200, 200])
+
+    learner = Learner()
+    nn = learner.learn(d_train, d_val, "cpu")
+    score = learner.evaluate(d_test, "cpu")
+    print(score)

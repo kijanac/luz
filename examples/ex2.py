@@ -22,7 +22,7 @@ def get_dataset(size):
     return luz.Dataset([d] * size).use_collate(luz.graph_collate)
 
 
-class Net(luz.Model):
+class Net(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.lin = torch.nn.Linear(10, 1)
@@ -32,8 +32,11 @@ class Net(luz.Model):
 
 
 class Learner(luz.Learner):
-    def model(self):
+    def model(self, dataset):
         return Net()
+
+    def run_batch(self, model, data):
+        return model.forward(data.x)
 
     def criterion(self):
         return torch.nn.MSELoss()
@@ -43,11 +46,11 @@ class Learner(luz.Learner):
 
     def fit_params(self):
         return dict(
-            stop_epoch=10,
+            max_epochs=10,
             early_stopping=True,
         )
 
-    def handlers(self):
+    def callbacks(self):
         return luz.Loss()
 
 
@@ -56,6 +59,5 @@ if __name__ == "__main__":
     d_train, d_val, d_test = d.split([60, 20, 20])
 
     learner = Learner()
-    # print(learner.test(learner.model(),d_test))
     nn = learner.learn(d_train, d_val)
-    print(learner.test(nn, d_test))
+    print(learner.evaluate(d_test))

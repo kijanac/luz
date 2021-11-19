@@ -11,13 +11,16 @@ class IntegerDataset(luz.Dataset):
         super().__init__(data)
 
 
-class DummyModel(luz.Model):
+class DummyModel(torch.nn.Module):
     def forward(self, x):
         pass
 
 
 class DummyLearner(luz.Learner):
     def model(self):
+        pass
+
+    def run_batch(self):
         pass
 
     def criterion(self):
@@ -41,6 +44,7 @@ def test_cross_validation():
 
     learner = DummyLearner()
     learner.learn = mock.MagicMock(return_value=m)
+    learner.evaluate = mock.MagicMock(return_value=0.0)
 
     cv.score(learner, dataset, "cpu")
     mock_calls = learner.learn.mock_calls
@@ -70,6 +74,7 @@ def test_cross_validation():
 
     learner = DummyLearner()
     learner.learn = mock.MagicMock(return_value=m)
+    learner.evaluate = mock.MagicMock(return_value=0.0)
 
     cv.score(learner, dataset, "cpu")
     mock_calls = learner.learn.mock_calls
@@ -99,6 +104,7 @@ def test_cross_validation():
 
     learner = DummyLearner()
     learner.learn = mock.MagicMock(return_value=m)
+    learner.evaluate = mock.MagicMock(return_value=0.0)
 
     cv.score(learner, dataset, "cpu")
     mock_calls = learner.learn.mock_calls
