@@ -7,7 +7,7 @@ def test_argmax():
 
     assert torch.equal(luz.Argmax()(x), torch.tensor(5))
     assert torch.equal(luz.Argmax(dim=0)(x), torch.tensor(5))
-    assert torch.equal(luz.Argmax(keepdim=True)(x), torch.tensor(5))
+    assert torch.equal(luz.Argmax(keepdim=True)(x), torch.tensor([5]))
 
     x = torch.tensor(
         [[0.0, 11.0, 3.0, 5, -0.2, 830, -10], [0.1, -30, 4000, 53.7, 2.34, -100, 100.0]]
@@ -16,7 +16,7 @@ def test_argmax():
     assert torch.equal(luz.Argmax()(x), torch.tensor(9))
     assert torch.equal(luz.Argmax(dim=0)(x), torch.tensor([1, 0, 1, 1, 1, 0, 1]))
     assert torch.equal(luz.Argmax(dim=1)(x), torch.tensor([5, 2]))
-    assert torch.equal(luz.Argmax(keepdim=True)(x), torch.tensor(9))
+    assert torch.equal(luz.Argmax(keepdim=True)(x), torch.tensor([[9]]))
     assert torch.equal(
         luz.Argmax(dim=0, keepdim=True)(x), torch.tensor([[1, 0, 1, 1, 1, 0, 1]])
     )
@@ -237,7 +237,9 @@ def test_standardize():
         ]
     )
 
-    standardize = luz.Standardize(x.mean(), x.std())
+    standardize = luz.Standardize()
+    standardize.shift = x.mean()
+    standardize.scale = x.std()
 
     z = standardize(x)
 
