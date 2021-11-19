@@ -161,7 +161,16 @@
 * feat: Add transform functionality to datasets (`cfd7794 <https://github.com/kijanac/luz/commit/cfd779452a2a52de795ba8b581a16350fd7ab66c>` __)
 
 
-`Version 8.0.0 <https://github.com/kijanac/luz/compare/v8.0.0...v8.0.0>`__
+`Version 9.0.0 <https://github.com/kijanac/luz/compare/v8.0.0...v9.0.0>`__
+--------------------------------------------------------------------------
+
+* feat: Rewrite Transforms as torch Modules (`ad661b2 <https://github.com/kijanac/luz/commit/ad661b24562af25c061d998db1deeab0fc1bd34a>` __)
+* fix: Fix typo (`e45a233 <https://github.com/kijanac/luz/commit/e45a233a90a431b8ded27236c817626cdbf3dc5d>` __)
+* feat: Rewrite Model to act as a configurable wrapper for a torch Module with transform capabilities (`710de1a <https://github.com/kijanac/luz/commit/710de1a20d4161e38a169b9b386cdad8f81974e7>` __)
+* feat: Rename OnDiskDataset to FolderDataset. Add transform interface (`f6c8f7d <https://github.com/kijanac/luz/commit/f6c8f7d4ebab6f356f53aa04c86c65a8d1954000>` __)
+
+
+`Version 9.0.0 <https://github.com/kijanac/luz/compare/v9.0.0...v9.0.0>`__
 --------------------------------------------------------------------------
 
 
