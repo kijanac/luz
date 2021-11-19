@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.loggers module &mdash; luz 8.0.0 documentation</title>
+  <title>luz.loggers module &mdash; luz 9.0.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -38,7 +41,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="luz.model module" href="luz.model.html" />
+    <link rel="next" title="luz.metrics module" href="luz.metrics.html" />
     <link rel="prev" title="luz.learner module" href="luz.learner.html" /> 
 </head>
 
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                8.0.0
+                9.0.0
               </div>
             
           
@@ -88,19 +91,21 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">luz</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="luz.html">luz package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="luz.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="luz.callbacks.html">luz.callbacks module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.datasets.html">luz.datasets module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.events.html">luz.events module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.flags.html">luz.flags module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.handlers.html">luz.handlers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.learner.html">luz.learner module</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">luz.loggers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.metrics.html">luz.metrics module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.model.html">luz.model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.modules.html">luz.modules module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.predictors.html">luz.predictors module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.scorers.html">luz.scorers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.transforms.html">luz.transforms module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.tuners.html">luz.tuners module</a></li>
@@ -186,13 +191,13 @@
   <div class="section" id="module-luz.loggers">
 <span id="luz-loggers-module"></span><h1>luz.loggers module<a class="headerlink" href="#module-luz.loggers" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="luz.loggers.ConsoleLogger">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ConsoleLogger</span></code><a class="headerlink" href="#luz.loggers.ConsoleLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.loggers.ConsoleLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConsoleLogger</span></span><a class="headerlink" href="#luz.loggers.ConsoleLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.loggers.Logger" title="luz.loggers.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.loggers.Logger</span></code></a></p>
 <p>Logs messages to console.</p>
 <dl class="py method">
-<dt id="luz.loggers.ConsoleLogger.log">
-<code class="sig-name descname"><span class="pre">log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.loggers.ConsoleLogger.log" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.loggers.ConsoleLogger.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.loggers.ConsoleLogger.log" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -203,8 +208,8 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="luz.loggers.FileLogger">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">FileLogger</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.loggers.FileLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.loggers.FileLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FileLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.loggers.FileLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#luz.loggers.Logger" title="luz.loggers.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">luz.loggers.Logger</span></code></a></p>
 <p>Logs messages to file.</p>
 <dl class="field-list simple">
@@ -213,8 +218,8 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt id="luz.loggers.FileLogger.log">
-<code class="sig-name descname"><span class="pre">log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.loggers.FileLogger.log" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.loggers.FileLogger.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.loggers.FileLogger.log" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -225,12 +230,12 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="luz.loggers.Logger">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Logger</span></code><a class="headerlink" href="#luz.loggers.Logger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.loggers.Logger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Logger</span></span><a class="headerlink" href="#luz.loggers.Logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <dl class="py method">
-<dt id="luz.loggers.Logger.log">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.loggers.Logger.log" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.loggers.Logger.log">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.loggers.Logger.log" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -248,7 +253,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="luz.model.html" class="btn btn-neutral float-right" title="luz.model module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="luz.metrics.html" class="btn btn-neutral float-right" title="luz.metrics module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="luz.learner.html" class="btn btn-neutral float-left" title="luz.learner module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

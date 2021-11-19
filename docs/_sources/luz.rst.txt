@@ -7,14 +7,16 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   luz.callbacks
    luz.datasets
    luz.events
    luz.flags
-   luz.handlers
    luz.learner
    luz.loggers
+   luz.metrics
    luz.model
    luz.modules
+   luz.predictors
    luz.scorers
    luz.transforms
    luz.tuners

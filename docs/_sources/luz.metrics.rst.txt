@@ -1,0 +1,7 @@
+luz.metrics module
+==================
+
+.. automodule:: luz.metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:

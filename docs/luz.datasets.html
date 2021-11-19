@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.datasets module &mdash; luz 8.0.0 documentation</title>
+  <title>luz.datasets module &mdash; luz 9.0.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -39,7 +42,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="luz.events module" href="luz.events.html" />
-    <link rel="prev" title="luz package" href="luz.html" /> 
+    <link rel="prev" title="luz.callbacks module" href="luz.callbacks.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                8.0.0
+                9.0.0
               </div>
             
           
@@ -88,19 +91,21 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">luz</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="luz.html">luz package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="luz.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="luz.callbacks.html">luz.callbacks module</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">luz.datasets module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.events.html">luz.events module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.flags.html">luz.flags module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.handlers.html">luz.handlers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.learner.html">luz.learner module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.loggers.html">luz.loggers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.metrics.html">luz.metrics module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.model.html">luz.model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.modules.html">luz.modules module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.predictors.html">luz.predictors module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.scorers.html">luz.scorers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.transforms.html">luz.transforms module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.tuners.html">luz.tuners module</a></li>
@@ -186,24 +191,24 @@
   <div class="section" id="module-luz.datasets">
 <span id="luz-datasets-module"></span><h1>luz.datasets module<a class="headerlink" href="#module-luz.datasets" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="luz.datasets.ConcatDataset">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ConcatDataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.ConcatDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<dt class="sig sig-object py" id="luz.datasets.ConcatDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConcatDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.ConcatDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.datasets.BaseDataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.ConcatDataset</span></code></p>
 <dl class="py attribute">
-<dt id="luz.datasets.ConcatDataset.cumulative_sizes">
-<code class="sig-name descname"><span class="pre">cumulative_sizes</span></code><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#luz.datasets.ConcatDataset.cumulative_sizes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.datasets.ConcatDataset.cumulative_sizes">
+<span class="sig-name descname"><span class="pre">cumulative_sizes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#luz.datasets.ConcatDataset.cumulative_sizes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="luz.datasets.ConcatDataset.datasets">
-<code class="sig-name descname"><span class="pre">datasets</span></code><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.utils.data.dataset.Dataset</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#luz.datasets.ConcatDataset.datasets" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.datasets.ConcatDataset.datasets">
+<span class="sig-name descname"><span class="pre">datasets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.utils.data.dataset.Dataset</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.utils.data.dataset.T_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#luz.datasets.ConcatDataset.datasets" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="luz.datasets.Data">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Data" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.datasets.Data">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Data containing one or more tensors.</p>
 <dl class="field-list simple">
@@ -215,9 +220,9 @@
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt id="luz.datasets.Data.keys">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">keys</span></code><a class="headerlink" href="#luz.datasets.Data.keys" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="luz.datasets.Data.keys">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#luz.datasets.Data.keys" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -226,8 +231,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="luz.datasets.Data.to">
-<code class="sig-name descname"><span class="pre">to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Data.to" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.datasets.Data.to">
+<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Data.to" title="Permalink to this definition">¶</a></dt>
 <dd><p>Migrate tensors to device. Modifies Data object in-place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -245,9 +250,9 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="luz.datasets.Dataset">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<dt class="sig sig-object py" id="luz.datasets.Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.datasets.BaseDataset</span></code></p>
 <p>Object containing points from a domain, possibly with labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -257,9 +262,9 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="luz.datasets.OnDiskDataset">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">OnDiskDataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.OnDiskDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<dt class="sig sig-object py" id="luz.datasets.FolderDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FolderDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.FolderDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.datasets.BaseDataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
 <p>Dataset which reads data from disk.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -269,36 +274,42 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="luz.datasets.Subset">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Subset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Subset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<dt class="sig sig-object py" id="luz.datasets.Subset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.Subset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.datasets.BaseDataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Subset</span></code></p>
 <dl class="py attribute">
-<dt id="luz.datasets.Subset.dataset">
-<code class="sig-name descname"><span class="pre">dataset</span></code><em class="property"><span class="pre">:</span> <span class="pre">torch.utils.data.dataset.Dataset</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#luz.datasets.Subset.dataset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.datasets.Subset.dataset">
+<span class="sig-name descname"><span class="pre">dataset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.utils.data.dataset.Dataset</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.utils.data.dataset.T_co</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#luz.datasets.Subset.dataset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="luz.datasets.Subset.indices">
-<code class="sig-name descname"><span class="pre">indices</span></code><em class="property"><span class="pre">:</span> <span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#luz.datasets.Subset.indices" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.datasets.Subset.indices">
+<span class="sig-name descname"><span class="pre">indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#luz.datasets.Subset.indices" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="luz.datasets.UnpackDataset">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">UnpackDataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.UnpackDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<dt class="sig sig-object py" id="luz.datasets.TensorDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TensorDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tensors</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.TensorDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.datasets.BaseDataset</span></code></p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="luz.datasets.WrapperDataset">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">WrapperDataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">datasets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.WrapperDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<dt class="sig sig-object py" id="luz.datasets.UnpackDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UnpackDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.UnpackDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.datasets.BaseDataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="luz.datasets.WrapperDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">WrapperDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">datasets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.WrapperDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">luz.datasets.BaseDataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="luz.datasets.default_collate">
-<code class="sig-name descname"><span class="pre">default_collate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.default_collate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.datasets.default_collate">
+<span class="sig-name descname"><span class="pre">default_collate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.default_collate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collate multiple Data objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -314,8 +325,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="luz.datasets.graph_collate">
-<code class="sig-name descname"><span class="pre">graph_collate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.graph_collate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.datasets.graph_collate">
+<span class="sig-name descname"><span class="pre">graph_collate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.datasets.graph_collate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collate multiple Data objects containing graph data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -339,7 +350,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="luz.events.html" class="btn btn-neutral float-right" title="luz.events module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="luz.html" class="btn btn-neutral float-left" title="luz package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="luz.callbacks.html" class="btn btn-neutral float-left" title="luz.callbacks module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

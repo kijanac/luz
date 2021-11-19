@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>luz.flags module &mdash; luz 8.0.0 documentation</title>
+  <title>luz.flags module &mdash; luz 9.0.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -38,7 +41,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="luz.handlers module" href="luz.handlers.html" />
+    <link rel="next" title="luz.learner module" href="luz.learner.html" />
     <link rel="prev" title="luz.events module" href="luz.events.html" /> 
 </head>
 
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                8.0.0
+                9.0.0
               </div>
             
           
@@ -88,19 +91,21 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">luz</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="luz.html">luz package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="luz.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="luz.callbacks.html">luz.callbacks module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.datasets.html">luz.datasets module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.events.html">luz.events module</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">luz.flags module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="luz.handlers.html">luz.handlers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.learner.html">luz.learner module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.loggers.html">luz.loggers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.metrics.html">luz.metrics module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.model.html">luz.model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.modules.html">luz.modules module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="luz.predictors.html">luz.predictors module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.scorers.html">luz.scorers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.transforms.html">luz.transforms module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="luz.tuners.html">luz.tuners module</a></li>
@@ -186,23 +191,23 @@
   <div class="section" id="module-luz.flags">
 <span id="luz-flags-module"></span><h1>luz.flags module<a class="headerlink" href="#module-luz.flags" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="luz.flags.Flag">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Flag</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.flags.Flag" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.flags.Flag">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Flag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#luz.flags.Flag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
-<dt id="luz.flags.Flag.TESTING">
-<code class="sig-name descname"><span class="pre">TESTING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'TESTING'</span></em><a class="headerlink" href="#luz.flags.Flag.TESTING" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.flags.Flag.TESTING">
+<span class="sig-name descname"><span class="pre">TESTING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TESTING'</span></em><a class="headerlink" href="#luz.flags.Flag.TESTING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="luz.flags.Flag.TRAINING">
-<code class="sig-name descname"><span class="pre">TRAINING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'TRAINING'</span></em><a class="headerlink" href="#luz.flags.Flag.TRAINING" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.flags.Flag.TRAINING">
+<span class="sig-name descname"><span class="pre">TRAINING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TRAINING'</span></em><a class="headerlink" href="#luz.flags.Flag.TRAINING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="luz.flags.Flag.VALIDATING">
-<code class="sig-name descname"><span class="pre">VALIDATING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'VALIDATING'</span></em><a class="headerlink" href="#luz.flags.Flag.VALIDATING" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="luz.flags.Flag.VALIDATING">
+<span class="sig-name descname"><span class="pre">VALIDATING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'VALIDATING'</span></em><a class="headerlink" href="#luz.flags.Flag.VALIDATING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -215,7 +220,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="luz.handlers.html" class="btn btn-neutral float-right" title="luz.handlers module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="luz.learner.html" class="btn btn-neutral float-right" title="luz.learner module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="luz.events.html" class="btn btn-neutral float-left" title="luz.events module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
