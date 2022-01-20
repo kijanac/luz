@@ -17,14 +17,12 @@ def train(state, batch):
 
 def evaluate(state, batch):
     state.model.eval()
+    state.x = batch.x
     state.output = state.model(batch.x)
     state.target = batch.y
 
     state.loss = state.criterion(state.output, state.target)
     state.model.train()
-
-def preprocess(state, batch):
-    state.x = batch.x
 
 class Learner(luz.Learner):
     def model(self):
@@ -37,38 +35,28 @@ class Learner(luz.Learner):
         return torch.nn.MSELoss()
     
     def runner(self, model, dataset, stage):
-        loader = dataset.loader(batch_size=int(self.hparams.batch_size))
+        loader = dataset.loader(batch_size=4)
 
         if stage == "train":
             metrics=[luz.Loss(), luz.TimeEpochs()]
-            return luz.Runner(train, max_epochs=10, model=model, loader=loader, metrics=metrics)
+            return luz.Runner(train, max_epochs=50, model=model, loader=loader, metrics=metrics)
         if stage == "validate":
             metrics=[luz.Loss()]
             return luz.Runner(evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics)
         if stage == "test":
-            metrics=[luz.Loss()]
+            metrics=[luz.Loss(), luz.CalibrationPlot("calibration.pdf"), luz.RegressionPlot("regression.pdf"), luz.ResidualPlot("residual.pdf")]
             return luz.Runner(evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics)
-        if stage == "preprocess":
-            metrics=[luz.Max(), luz.Min()]
-            return luz.Runner(preprocess, max_epochs=1, model=model, loader=loader, metrics=metrics)
 
     def callbacks(self, runner, stage):
         runner.EPOCH_ENDED.attach(luz.LogMetrics())
         if stage == "train":
             runner.EPOCH_ENDED.attach(luz.Checkpoint("model"))
 
-    def transform(self, runner, stage):
-        if stage in ["train", "validate", "test"]:
-            shift = self.preprocessor.state.metrics["min"]
-            scale = self.preprocessor.state.metrics["max"] - shift
-            transform = luz.Transform(x=luz.Scale(shift, scale))
-            transform.attach(runner)
-
 if __name__ == "__main__":
     x = torch.linspace(0., 4., 1000)
     y = 3*x**2 + 1
     dataset = luz.TensorDataset(x=x, y=y)
 
-    tuner = luz.RandomSearch(Learner(), scorer=luz.Holdout(0.1,0.1), num_iterations=3)
-    tuned_model = tuner.tune(dataset, batch_size=tuner.choose(1,2,4,8))
-    print(tuner.best_trial)
+    train_dataset, val_dataset, test_dataset = dataset.split([800, 100, 100])
+
+    model, loss = Learner().learn(train_dataset, val_dataset, test_dataset, device="cpu")

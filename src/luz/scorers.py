@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Optional, Union
 
 from abc import ABC, abstractmethod
-import collections
 import contextlib
 import math
 import numpy as np
@@ -10,14 +9,12 @@ import torch
 import luz
 
 __all__ = [
-    "Score",
     "Scorer",
     "CrossValidation",
     "Holdout",
 ]
 
 Device = Union[str, torch.device]
-Score = collections.namedtuple("Score", ["model", "score"])
 
 
 class Scorer(ABC):
@@ -27,7 +24,8 @@ class Scorer(ABC):
         learner: luz.Learner,
         dataset: luz.Dataset,
         device: Union[torch.device, str],
-    ) -> luz.Score:
+    ) -> tuple[torch.nn.Module, float]:
+        """Learn a model and estimate its future performance."""
         pass
 
 
@@ -76,8 +74,10 @@ class CrossValidation(Scorer):
 
         Returns
         -------
-        luz.Score
-            Learned model and cross-validation score.
+        torch.nn.Module
+            Learned model.
+        float
+            Cross-validation score.
         """
         if self.fold_seed is None:
             cm = contextlib.nullcontext()
@@ -106,13 +106,12 @@ class CrossValidation(Scorer):
                 )
 
             with cm:
-                model = learner.learn(
+                model, test_loss = learner.learn(
                     train_dataset=train_dataset,
                     val_dataset=val_dataset,
+                    test_dataset=test_dataset,
                     device=device,
                 )
-
-                test_loss = learner.evaluate(test_dataset, device)
 
             test_losses.append(test_loss)
 
@@ -120,7 +119,7 @@ class CrossValidation(Scorer):
 
         model = learner.learn(train_dataset=dataset, device=device)
 
-        return Score(model, score)
+        return model, score
 
 
 class Holdout(Scorer):
@@ -158,8 +157,10 @@ class Holdout(Scorer):
 
         Returns
         -------
-        luz.Score
-            Learned model and holdout score.
+        torch.nn.Module
+            Learned model
+        float
+            Holdout score.
         """
         n = len(dataset)
         n_test = round(self.test_fraction * n)
@@ -170,16 +171,15 @@ class Holdout(Scorer):
                 [n - n_val - n_test, n_val, n_test]
             )
 
-            model = learner.learn(
+            return learner.learn(
                 train_dataset=train_dataset,
                 val_dataset=val_dataset,
+                test_dataset=test_dataset,
                 device=device,
             )
         else:
             train_dataset, test_dataset = dataset.split([n - n_test, n_test])
 
-            model = learner.learn(train_dataset=train_dataset, device=device)
-
-        test_loss = learner.evaluate(dataset=test_dataset, device=device)
-
-        return luz.Score(model, test_loss)
+            return learner.learn(
+                train_dataset=train_dataset, test_dataset=test_dataset, device=device
+            )

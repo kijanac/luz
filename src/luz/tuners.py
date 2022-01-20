@@ -8,67 +8,73 @@ import numpy as np
 import operator
 import re
 import torch
-from .predictors import BaseTuner
 
-__all__ = ["GridSearchTuner", "RandomSearchTuner"]
+__all__ = ["GridSearch", "RandomSearch", "Trial"]
 
 Device = Union[str, torch.device]
 
 
-class Tuner(BaseTuner):
-    def learn(
+class Trial(dict):
+    def __getattr__(self, key: str) -> Any:
+        if key.startswith("__") and key.endswith("__"):
+            return dict.__getattr__(self, key)
+
+        return self[key]
+
+
+class Tuner:
+    def __init__(
+        self, learner: luz.Learner, scorer: luz.Scorer, num_iterations: int
+    ) -> None:
+        self.learner = learner
+        self.scorer = scorer
+        self.num_iterations = num_iterations
+        # self.seed = seed
+
+        self.trials = []
+        self.scores = []
+
+    def tune(
         self,
-        train_dataset: luz.Dataset,
-        val_dataset: Optional[luz.Dataset] = None,
+        dataset: luz.Dataset,
         device: Optional[Device] = "cpu",
-    ) -> luz.Model:
+        **hparams: Union[Sample, Choose, Pin, Conditional],
+    ) -> torch.nn.Module:
         """Learn a model based on a given dataset.
 
         Parameters
         ----------
         train_dataset
             Training dataset used to learn a model.
-        val_dataset
-            Validation dataset, by default None.
         device
             Device to use for learning, by default "cpu".
 
         Returns
         -------
-        luz.Model
+        torch.nn.Module
             Learned model.
         """
         self.trials = []
         self.scores = []
 
-        hparams = self.hparams()
-
         for _ in range(self.num_iterations):
-            trial = self.get_trial(hparams, self.trials, self.scores)
-            score = self.objective(trial, train_dataset, device)
+            trial = self.get_trial(**hparams)
+            score = self._objective(trial, dataset, device)
 
             self.trials.append(trial)
             self.scores.append(score)
 
         return self.best_trial.model
 
-    def predict(self, dataset, device="cpu"):
-        return self.best_trial.model.predict(dataset, device)
-
-    def evaluate(self, dataset, device="cpu"):
-        learner = self.best_trial.learner
-
-        return learner.evaluate(dataset, device)
-
     @property
-    def best_trial(self):
+    def best_trial(self) -> Trial:
         return self.trials[np.argmin(self.scores)]
 
     def sample(
         self,
         lower: Union[int, float],
         upper: Union[int, float],
-        dtype: Union[Type[int], Union[Type[float]]],
+        dtype: Union[Type[int], Type[float]],
     ) -> Sample:
         return Sample(lower, upper, dtype)
 
@@ -81,29 +87,26 @@ class Tuner(BaseTuner):
     def conditional(self, condition: str, if_true: Any, if_false: Any) -> Conditional:
         return Conditional(condition, if_true, if_false)
 
-    def objective(self, trial, dataset, device):
-        # with luz.temporary_seed(self.seed):
-        scorer = self.scorer()
+    def _objective(self, trial: Trial, dataset: luz.Dataset, device: Device) -> float:
+        self.learner.hparams = trial
 
-        learner = self.learner(trial)
+        model, score = self.scorer.score(self.learner, dataset, device)
 
-        model, score = scorer.score(learner, dataset, device)
-
-        trial.learner = learner
+        trial.learner = self.learner
         trial.model = model
         trial.score = score
 
         return score
 
 
-class RandomSearchTuner(Tuner):
-    def get_trial(self, hparams, trials, scores):
+class RandomSearch(Tuner):
+    def get_trial(self, **hparams: Union[Sample, Choose, Pin, Conditional]) -> Trial:
 
-        d = self.fixed_hparams.copy()
+        d = {}
 
         for k, v in hparams.items():
             if isinstance(v, Sample) and v.dtype == int:
-                d[k] = np.random.randint(low=v.lower, high=v.upper)
+                d[k] = int(np.random.randint(low=v.lower, high=v.upper))
             elif isinstance(v, Sample) and v.dtype == float:
                 d[k] = np.random.uniform(low=v.lower, high=v.upper)
             elif isinstance(v, Choose):
@@ -114,7 +117,7 @@ class RandomSearchTuner(Tuner):
         return Trial(**d)
 
 
-class GridSearchTuner(Tuner):
+class GridSearch(Tuner):
     def __init__(self, **hparams):
         n = np.prod(
             [len(v.choices) for v in self.hparams().values() if isinstance(v, Choose)]
@@ -122,12 +125,12 @@ class GridSearchTuner(Tuner):
 
         super().__init__(n, **hparams)
 
-    def get_trial(self, hparams, trials, scores):
+    def get_trial(self, **hparams: Union[Sample, Choose, Pin, Conditional]) -> Trial:
         choices = [v for v in hparams.values() if isinstance(v, Choose)]
         d = {}
         grid = itertools.product(*[c.choices for c in choices])
 
-        kwargs = [t.kwargs for t in trials]
+        kwargs = [t.kwargs for t in self.trials]
         for g in grid:
             t = dict(zip(hparams.keys(), g))
             if t not in kwargs:
@@ -155,7 +158,7 @@ class Sample:
         self,
         lower: Union[int, float],
         upper: Union[int, float],
-        dtype: Union[Type[int], Union[Type[float]]],
+        dtype: Union[Type[int], Type[float]],
     ) -> None:
         self.lower = lower
         self.upper = upper
@@ -197,14 +200,6 @@ class Conditional:
         if self.pin(**kwargs):
             return self.if_true
         return self.if_false
-
-
-class Trial:
-    def __init__(self, **kwargs):
-        self.kwargs = kwargs
-
-    def __getattr__(self, key: str) -> Any:
-        return self.kwargs[key]
 
 
 # from https://stackoverflow.com/a/9558001

@@ -131,7 +131,7 @@ class AdditiveNodeAttention(torch.nn.Module):
 
 
 class ApplyFunction(torch.nn.Module):
-    def __init__(self, f: Callable[torch.Tensor, torch.Tensor]) -> None:
+    def __init__(self, f: Callable[[torch.Tensor], torch.Tensor]) -> None:
         self.f = f
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

@@ -2,22 +2,22 @@ from __future__ import annotations
 from typing import Any, Iterable, Optional, Union
 
 import luz
-import scipy.optimize
+
+# import scipy.optimize
+import functools
 import torch
 
 __all__ = [
     "Argmax",
-    "Center",
     "Compose",
     "Identity",
     "Lookup",
     "NanToNum",
-    "Normalize",
     "NormalizePerTensor",
     "PowerSeries",
     "Reshape",
+    "Scale",
     "Squeeze",
-    "Standardize",
     "TensorTransform",
     "Transform",
     "Transpose",
@@ -66,34 +66,21 @@ class Transform(torch.nn.Module):
 
         return Transform(**kw)
 
-    def fit(self, dataset):
-        for k, t in self.transforms.items():
-            if hasattr(t, "fit"):
-                t.fit(dataset, k)
+    def attach(self, runner: luz.Runner):
 
-        remaining = {k: t for k, t in self.transforms.items() if not hasattr(t, "fit")}
-        setup_vars = {k: t._fit_setup(dataset, k) for k, t in remaining.items()}
+        runner.run_batch = self.dec(runner.run_batch)
 
-        for i, x in enumerate(dataset):
-            for k, t in remaining.items():
-                setup_vars[k] = t._fit_loop(i, x[k], setup_vars[k])
+    def dec(self, f):
+        @functools.wraps(f)
+        def g(state, batch):
+            return f(state, self.forward(batch))
 
-        for k, t in remaining.items():
-            t._fit_finish(setup_vars[k])
+        return g
 
 
 class TensorTransform(torch.nn.Module):
     def inverse(self) -> TensorTransform:
         raise NotImplementedError
-
-    def _fit_setup(self, dataset, key):
-        pass
-
-    def _fit_loop(self, i, x, setup_vars):
-        return setup_vars
-
-    def _fit_finish(self, setup_vars):
-        pass
 
 
 # INVERTIBLE
@@ -120,20 +107,6 @@ class Compose(TensorTransform):
         for transform in self.transforms:
             x = transform(x)
         return x
-
-    def fit(self, dataset, key):
-        for t in self.transforms:
-            if hasattr(t, "fit"):
-                t.fit(dataset, key)
-            else:
-                setup_vars = t._fit_setup(dataset, key)
-
-                for j, x in enumerate(dataset):
-                    setup_vars = t._fit_loop(j, x[key], setup_vars)
-
-                t._fit_finish(setup_vars)
-
-            dataset = dataset.apply(luz.Transform(**{key: t}))
 
     def inverse(self) -> TensorTransform:
         inverse_transforms = [t.inverse() for t in self.transforms][::-1]
@@ -259,47 +232,12 @@ class YeoJohnson(TensorTransform):
 
         return out
 
-    def fit(self, dataset, key, batch_size=20):
-        for x in dataset:
-            self.lmbda = torch.zeros_like(x[key])
-            break
-
-        def objective(i):
-            def nll(lmbda):
-                self.lmbda[i] = lmbda
-
-                loglike = 0.0
-                mean = 0.0
-                variance = 0.0
-                denom = 0
-                for x in dataset.loader(batch_size=batch_size, shuffle=False):
-                    denom += x[key].shape[0]
-                    x_trans = torch.stack([self.forward(_x) for _x in x[key]])
-                    delta = x_trans - mean
-                    mean += delta.sum(0) / denom
-                    variance += (delta * (x_trans - mean)).sum(0)
-
-                    loglike += (
-                        torch.sign(x[key]) * torch.log1p(torch.abs(x[key]))
-                    ).sum(0)
-
-                variance /= len(dataset)
-
-                loglike *= self.lmbda - 1
-                loglike += -len(dataset) / 2 * torch.log(variance)
-                return -loglike.numpy()[i]
-
-            return nll
-
-        for i in range(len(self.lmbda)):
-            scipy.optimize.brent(objective(i), brack=(-2.0, 2.0))
-
 
 class Scale(TensorTransform):
-    def __init__(self):
+    def __init__(self, shift: torch.Tensor, scale: torch.Tensor) -> None:
         super().__init__()
-        self.shift = None
-        self.scale = None
+        self.shift = shift
+        self.scale = scale
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Transform tensor.
@@ -321,134 +259,6 @@ class Scale(TensorTransform):
         t.shift = -self.shift / self.scale
         t.scale = 1 / self.scale
         return t
-
-
-class Center(Scale):
-    def __init__(self, accumulate_along: Optional[int] = None) -> None:
-        super().__init__()
-        self.accumulate_along = accumulate_along
-
-    def _fit_setup(self, dataset, key):
-        if self.accumulate_along is not None:
-            for x in dataset:
-                mean = torch.zeros_like(x[key]).sum(self.accumulate_along)
-                break
-
-            denom = 0
-
-            return mean, denom
-        else:
-            for x in dataset:
-                mean = torch.zeros_like(x[key])
-                break
-
-            return mean
-
-    def _fit_loop(self, i, x, setup_vars):
-        if self.accumulate_along is not None:
-            mean, denom = setup_vars
-            m = x.shape[self.accumulate_along]
-            denom += m
-            delta = (x - mean).sum(self.accumulate_along)
-            mean += delta / denom
-
-            return mean, denom
-        else:
-            mean = setup_vars
-            delta = x - mean
-            mean += delta / (i + 1)
-
-            return mean
-
-    def _fit_finish(self, setup_vars):
-        self.shift, *_ = setup_vars
-        self.scale = torch.full_like(self.shift, 1.0)
-
-
-class Normalize(Scale):
-    def __init__(self, accumulate_along: Optional[int] = None) -> None:
-        super().__init__()
-        self.accumulate_along = accumulate_along
-
-    def _fit_setup(self, dataset, key):
-        if self.accumulate_along is not None:
-            for x in dataset:
-                _min, _ = torch.min(x[key], dim=self.accumulate_along)
-                _max, _ = torch.max(x[key], dim=self.accumulate_along)
-                break
-        else:
-            for x in dataset:
-                _min = x[key]
-                _max = x[key]
-                break
-
-        return _min, _max
-
-    def _fit_loop(self, i, x, setup_vars):
-        _min, _max = setup_vars
-        if self.accumulate_along is not None:
-            a, _ = torch.min(_min, dim=self.accumulate_along)
-            b, _ = torch.min(x, dim=self.accumulate_along)
-            _min = torch.min(a, b)
-
-            a, _ = torch.max(_max, dim=self.accumulate_along)
-            b, _ = torch.max(x, dim=self.accumulate_along)
-            _max = torch.max(a, b)
-        else:
-            _min = torch.min(_min, x)
-            _max = torch.max(_max, x)
-
-        return _min, _max
-
-    def _fit_finish(self, setup_vars):
-        _min, _max = setup_vars
-        self.shift = _min
-        self.scale = _max - _min
-
-
-class Standardize(Scale):
-    def __init__(self, accumulate_along: Optional[int] = None) -> None:
-        super().__init__()
-        self.accumulate_along = accumulate_along
-
-    def _fit_setup(self, dataset, key):
-        if self.accumulate_along is not None:
-            for x in dataset:
-                mean = torch.zeros_like(x[key]).sum(self.accumulate_along)
-                variance = torch.zeros_like(x[key].sum(self.accumulate_along))
-                break
-            n = len(dataset)
-            denom = 0
-            return mean, variance, n, denom
-        else:
-            for x in dataset:
-                mean = torch.zeros_like(x[key])
-                variance = torch.zeros_like(x[key])
-                break
-            n = len(dataset)
-            return mean, variance, n
-
-    def _fit_loop(self, i, x, setup_vars):
-        if self.accumulate_along is not None:
-            mean, variance, n, denom = setup_vars
-            m = x.shape[self.accumulate_along]
-            denom += m
-            delta = x - mean
-            mean += delta.sum(self.accumulate_along) / denom
-            variance += (delta * (x - mean)).sum(self.accumulate_along)
-
-            return mean, variance, n, denom
-        else:
-            mean, variance, n = setup_vars
-            delta = x - mean
-            mean += delta / (i + 1)
-            variance += delta * (x - mean)
-
-            return mean, variance, n
-
-    def _fit_finish(self, setup_vars):
-        self.shift, variance, n, *_ = setup_vars
-        self.scale = torch.sqrt(variance / n)
 
 
 class Transpose(TensorTransform):
@@ -558,10 +368,9 @@ class NormalizePerTensor(TensorTransform):
 
 
 class PowerSeries(TensorTransform):
-    def __init__(self, degree: int, dim: Optional[int] = -1) -> None:
+    def __init__(self, degree: int) -> None:
         super().__init__()
         self.degree = degree
-        self.dim = dim
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Transform tensor.
@@ -576,11 +385,7 @@ class PowerSeries(TensorTransform):
         torch.Tensor
             Output tensor.
         """
-        tensors = tuple(x ** k for k in range(1, self.degree + 1))
-        try:
-            return torch.cat(tensors=tensors, dim=self.dim)
-        except RuntimeError:
-            return torch.stack(tensors=tensors, dim=self.dim)
+        return torch.vander(x, self.degree + 1)
 
 
 class Reshape(TensorTransform):

@@ -1,46 +1,56 @@
 import luz
 import torch
 
-luz.set_seed(123)
+def setup(state):
+    state.optimizer = torch.optim.Adam(state.model.parameters())
+    state.criterion = torch.nn.MSELoss()
 
+def train(state, batch):
+    state.output = state.model(batch.x)
+    state.target = batch.y
 
-def get_dataset(size):
-    x = torch.rand(10)
-    y = torch.tensor([0.0, 0.0, 0.0, 1.0, 0.0])
+    state.loss = state.criterion(state.output, state.target)
 
-    d = luz.Data(x=x, y=y)
-    return luz.Dataset([d] * size)
+    state.loss.backward()
+    state.optimizer.step()
+    state.optimizer.zero_grad()
 
+def evaluate(state, batch):
+    state.model.eval()
+    state.output = state.model(batch.x)
+    state.target = batch.y
+
+    state.loss = state.criterion(state.output, state.target)
+    state.model.train()
 
 class Learner(luz.Learner):
     def model(self):
-        return torch.nn.Linear(10, 5)
-
-    def criterion(self):
-        return torch.nn.MSELoss()
+        return luz.Dense(1, 5, 10, 5, 1)
 
     def optimizer(self, model):
         return torch.optim.Adam(model.parameters())
 
-    def fit_params(self):
-        return dict(
-            max_epochs=10,
-        )
+    def criterion(self):
+        return torch.nn.MSELoss()
+    
+    def runner(self, model, dataset, stage):
+        loader = dataset.loader(batch_size=4)
 
-    def loader(self, dataset):
-        return dataset.loader(batch_size=20)
+        if stage == "train":
+            return luz.Runner(train, max_epochs=10, model=model, loader=loader)
+        if stage in ["validate", "test"]:
+            return luz.Runner(evaluate, max_epochs=1, model=model, loader=loader)
 
-    def callbacks(self):
-        return (
-            luz.LogMetrics([luz.Accuracy()]),
-            luz.ActualVsPredicted(),
-            luz.PlotHistory(),
-        )
-
+    def callbacks(self, runner, stage):
+        runner.EPOCH_ENDED.attach(luz.LogMetrics())
+        if stage == "train":
+            runner.EPOCH_ENDED.attach(luz.Checkpoint("model"))
 
 if __name__ == "__main__":
-    learner = Learner()
-    scorer = luz.Holdout(0.2, 0.2)
+    x = torch.linspace(0., 4., 1000)
+    y = 3*x**2 + 1
+    dataset = luz.TensorDataset(x=x, y=y)
 
-    d = get_dataset(1000)
-    scorer.score(learner, d, "cpu")
+    train_dataset, val_dataset, test_dataset = dataset.split([800, 100, 100])
+
+    model, loss = Learner().learn(train_dataset, val_dataset, test_dataset, device="cpu")

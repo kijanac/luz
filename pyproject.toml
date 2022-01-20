@@ -4,8 +4,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "luz"
-version = "9.0.0"
-description = "Framework for rapid research and development of machine learning projects using PyTorch."
+version = "10.0.0"
+description = "Lightweight framework for structuring arbitrary reproducible neural network learning procedures using PyTorch."
 authors = [ "Ki-Jana Carter <kijana@mit.edu>",]
 license = "MIT"
 readme = "README.rst"
@@ -20,6 +20,7 @@ python = ">=3.9,<3.11"
 matplotlib = "^3.3.2"
 torch = "^1.7.0"
 scipy = "^1.7.2"
+pymitter = "^0.3.1"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

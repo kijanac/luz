@@ -1,10 +1,32 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Optional, Union
 
 from abc import ABC, abstractmethod
+import datetime
+import luz
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import pathlib
 import torch
 
-__all__ = ["Accuracy", "DurbinWatson", "FBeta", "Max", "MeanStd", "Metric", "Min"]
+__all__ = [
+    "Accuracy",
+    "CalibrationPlot",
+    "DurbinWatson",
+    "FBeta",
+    "LearningCurvePlot",
+    "Loss",
+    "Max",
+    "MeanStd",
+    "Metric",
+    "Min",
+    "RegressionPlot",
+    "ResidualPlot",
+    "TimeEpochs",
+]
+
+Path = Optional[Union[str, pathlib.Path]]
 
 
 class Metric(ABC):
@@ -19,23 +41,68 @@ class Metric(ABC):
         pass
 
     @abstractmethod
-    def compute(self):
+    def compute(self) -> Any:
         """Compute metric."""
         pass
 
+    def store_compute(self, state, name):
+        state.metrics[name] = self.compute()
+
+    def reset_handler(self, state: luz.State) -> None:
+        self.reset()
+
+    def update_handler(self, state: luz.State) -> None:
+        self.update(**state.__dict__)
+
+    def compute_handler(self, state: luz.State) -> None:
+        state.metrics[self.name] = self.compute()
+
+    @property
     @abstractmethod
-    def __str__(self) -> str:
+    def name(self) -> str:
+        """Metric name."""
         pass
+
+    def attach_events(
+        self, runner: luz.Runner
+    ) -> tuple[luz.Event, luz.Event, luz.Event]:
+        """Get events to attach metric steps.
+
+        Parameters
+        ----------
+        luz.Runner
+            Runner to which metric will be attached.
+
+        Returns
+        -------
+        tuple[luz.Event, luz.Event, luz.Event]
+            Runner events to which reset, update, and compute steps are attached.
+        """
+        return runner.EPOCH_STARTED, runner.BATCH_ENDED, runner.EPOCH_ENDED
+
+    def attach(
+        self,
+        runner: luz.Runner,
+    ) -> None:
+        reset_event, update_event, compute_event = self.attach_events(runner)
+        getattr(runner, reset_event.name).attach(self.reset_handler)
+        getattr(runner, update_event.name).attach(self.update_handler)
+        getattr(runner, compute_event.name).attach(self.compute_handler)
 
 
 class Accuracy(Metric):
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "accuracy"
+
     def reset(self) -> None:
-        """Compute on epoch start."""
+        """Reset metric state."""
         self.correct = 0
         self.total = 0
 
     def update(self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any) -> None:
-        """Compute on batch end.
+        """Update metric state.
 
         Parameters
         ----------
@@ -53,19 +120,79 @@ class Accuracy(Metric):
         self.total += target.size(0)
 
     def compute(self) -> float:
+        """Compute metric."""
         return self.correct / self.total
 
-    def __str__(self) -> str:
-        return "Classification accuracy"
+
+class CalibrationPlot(Metric):
+    def __init__(self, filepath: Optional[Path] = None) -> None:
+        """Plot actual labels vs. predicted labels.
+
+        Parameters
+        ----------
+        filepath
+            Path to save plot if not None, by default None.
+        """
+        self.filepath = filepath
+
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "calibration_plot"
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.fig, self.ax = plt.subplots()
+
+    def update(self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any) -> None:
+        """Update metric state.
+
+        Parameters
+        ----------
+        output
+            Output tensor.
+            Shape: :math:`(N,C)`
+        target
+            Target tensor.
+            Shape: :math:`(N,C)`
+        """
+        x = target.detach().reshape(-1).numpy()
+        y = output.detach().reshape(-1).numpy()
+        self.ax.scatter(x, y, color="black")
+
+    def compute(self) -> plt.Figure:
+        """Compute metric."""
+        self.ax.relim()
+        self.ax.autoscale_view()
+
+        line = matplotlib.lines.Line2D([0, 1], [0, 1], color="red")
+        line.set_transform(self.ax.transAxes)
+        self.ax.add_line(line)
+
+        self.ax.set_xlabel("Predicted")
+        self.ax.set_ylabel("Actual")
+        self.ax.set_title("Actual vs. predicted")
+
+        if self.filepath is not None:
+            self.fig.savefig(luz.expand_path(self.filepath))
+
+        return self.fig
 
 
 class DurbinWatson(Metric):
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "durbin_watson"
+
     def reset(self) -> None:
+        """Reset metric state."""
         self.num = 0.0
         self.denom = 0.0
         self.last_residual = 0.0
 
-    def update(self, output: torch.Tensor, target: torch.Tensor, **kwargs) -> None:
+    def update(self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any) -> None:
+        """Update metric state."""
         residual = target.detach() - output.detach()
         diffs = torch.diff(residual, dim=0)
 
@@ -75,15 +202,18 @@ class DurbinWatson(Metric):
         self.last_residual = residual[-1]
 
     def compute(self) -> float:
+        """Compute metric."""
         return self.num / self.denom
-
-    def __str__(self) -> str:
-        return "DW"
 
 
 class FBeta(Metric):
     def __init__(self, beta: float) -> None:
         self.beta = beta
+
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "f_beta"
 
     def reset(self, **kwargs: Any) -> None:
         """Reset metric state."""
@@ -92,7 +222,7 @@ class FBeta(Metric):
         self.actual_positive = 0
 
     def update(self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any) -> None:
-        """Compute on batch end.
+        """Update metric state.
 
         Parameters
         ----------
@@ -111,6 +241,7 @@ class FBeta(Metric):
         self.actual_positive += correct.sum().item()
 
     def compute(self) -> float:
+        """Compute metric."""
         try:
             precision = self.true_positive / self.predicted_positive
             recall = self.true_positive / self.actual_positive
@@ -123,65 +254,446 @@ class FBeta(Metric):
         except ZeroDivisionError:
             return 1.0
 
-    def __str__(self) -> str:
-        return "F-score"
+
+class LearningCurvePlot(Metric):
+    def __init__(
+        self,
+        # loss_func,
+        filepath: Optional[Path] = None,
+        reduction: Optional[str] = "mean",
+    ) -> None:
+        # self.loss_func = loss_func
+        self.filepath = filepath
+        self.reduction = reduction
+        self.epoch_losses = []
+
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "regression_plot"
+
+    # def attach_events(
+    #     self, runner
+    #     ) -> tuple[luz.Event, luz.Event, luz.Event]:
+    #     """Get events to attach metric steps.
+
+    #     Parameters
+    #     ----------
+    #     luz.Runner
+    #         Runner to which metric will be attached.
+
+    #     Returns
+    #     -------
+    #     tuple[luz.Event, luz.Event, luz.Event]
+    #         Runner events to which reset, update, and compute steps are attached.
+    #     """
+    #     return runner.RUNNER_STARTED, runner.EPOCH_ENDED, runner.RUNNER_ENDED
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.fig, self.ax = plt.subplots()
+        [self.history] = self.ax.plot([], [])
+
+    def update(self, ind: int, epoch: int, loss: torch.Tensor, **kwargs: Any) -> None:
+        """Update metric state.
+
+        Parameters
+        ----------
+        epoch
+            Epoch number.
+        loss
+            Loss tensor.
+            Shape: :math:`(1,)`
+        """
+        delta = loss.item() - self.mean_loss
+        self.mean_loss += delta / (ind + 1)
+
+        fit_xdata, fit_ydata = self.history.get_data()
+        xdata = np.append(fit_xdata, epoch + 1)
+        loss = self.loss_func()
+        ydata = np.append(fit_ydata, loss.item())
+        self.history.set(xdata=xdata, ydata=ydata)
+
+    def compute(self) -> plt.Figure:
+        """Compute metric."""
+        fit_xdata, fit_ydata = self.history.get_data()
+        argsort = fit_xdata.argsort()
+        self.history.set(xdata=fit_xdata[argsort], ydata=fit_ydata[argsort])
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+
+        self.ax.set_xlabel("Epoch")
+        self.ax.set_ylabel("Loss")
+        self.ax.set_title("Loss history")
+
+        self.fig.tight_layout()
+
+        if self.filepath is not None:
+            self.fig.savefig(luz.expand_path(self.filepath))
+
+        return self.fig
+
+    # def __call__(
+    #     self,
+    #     state: luz.State,
+    # ) -> None:
+    #     history = state.history
+    #     loader = state.loader
+
+    #     if self.reduction == "mean":
+    #         # divide each epoch loss (which is the sum of batch averages)
+    #         # by the number of batches to estimate average epoch loss
+    #         y1 = np.array(history) / len(loader)
+
+    #     #(line1,) = ax1.plot(x, y1, color="tab:blue")
+
+    #     if len(history) > 0:
+    #         ax2 = ax1.twinx()
+
+    #         if self.reduction == "mean":
+    #             # divide each epoch loss (which is the sum of batch averages)
+    #             # by the number of batches to estimate average epoch loss
+    #             y2 = np.array(history) / len(loader)
+
+    #         (line2,) = ax2.plot(x, y2, color="tab:orange")
+
+    #         lines = (line1, line2)
+    #         labels = (
+    #             f"Training loss (min: {min(history)})",
+    #             f"Validation loss (min: {min(history)})",
+    #         )
+    #     else:
+    #         lines = (line1,)
+    #         labels = (f"Training loss (min: {min(history)})",)
+
+    #     plt.title("Loss history")
+    #     plt.legend(lines, labels)
+
+    #     fig.tight_layout()
+
+    #     if self.save_filepath is not None:
+    #         plt.savefig(self.save_filepath)
+
+    #     if self.show_plot:
+    #         plt.show()
+    #     else:
+    #         plt.close(fig)
+
+
+class Loss(Metric):
+    def __init__(self) -> None:
+        self.reset()
+
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "loss"
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.mean_loss = 0
+
+    def update(
+        self,
+        loss: torch.Tensor,
+        ind: int,
+        **kwargs: Any,
+    ) -> None:
+        """Update metric state.
+
+        Parameters
+        ----------
+        loss
+            Last computed loss.
+        ind
+            Data index.
+        **kwargs
+            Superfluous kwargs.
+        """
+        delta = loss.item() - self.mean_loss
+        self.mean_loss += delta / (ind + 1)
+
+    def compute(self) -> float:
+        """Compute metric."""
+        return self.mean_loss
 
 
 class Max(Metric):
     def __init__(self, batch_dim=0) -> None:
         self.batch_dim = batch_dim
 
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "max"
+
     def reset(self) -> None:
+        """Reset metric state."""
         self.max = torch.Tensor([float("-inf")])
 
-    def update(self, x, **kwargs) -> None:
+    def update(self, x: torch.Tensor, **kwargs: Any) -> None:
+        """Update metric state."""
         a, _ = torch.max(self.max, dim=self.batch_dim)
         b, _ = torch.max(x, dim=self.batch_dim)
         self.max = torch.max(a, b)
 
-    def compute(self):
+    def compute(self) -> torch.Tensor:
+        """Compute metric."""
         return self.max
-
-    def __str__(self) -> str:
-        return "Max"
 
 
 class MeanStd(Metric):
-    def __init__(self, batch_dim=0) -> None:
+    def __init__(self, key: Optional[str] = "x", batch_dim: Optional[int] = 0) -> None:
+        self.key = key
         self.batch_dim = batch_dim
 
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "mean_std"
+
     def reset(self) -> None:
+        """Reset metric state."""
         self.mean = 0.0
         self.var = 0.0
         self.n = 0.0
 
-    def update(self, x, **kwargs) -> None:
+    def update(self, data, **kwargs: Any) -> None:
+        """Update metric state."""
+        x = data[self.key].detach()
         self.n = x.size(self.batch_dim)
         delta = x.detach() - self.mean
         self.mean += delta.sum(self.batch_dim) / self.n
         self.var += (delta * (x.detach() - self.mean)).sum(self.batch_dim)
 
-    def compute(self):
+    def compute(self) -> tuple[torch.Tensor, torch.Tensor]:
+        """Compute metric."""
         return self.mean, torch.sqrt(self.var / self.n)
-
-    def __str__(self) -> str:
-        return "MeanStd"
 
 
 class Min(Metric):
     def __init__(self, batch_dim=0) -> None:
         self.batch_dim = batch_dim
 
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "min"
+
     def reset(self) -> None:
+        """Reset metric state."""
         self.min = torch.Tensor([float("inf")])
 
-    def update(self, x, **kwargs) -> None:
+    def update(self, x: torch.Tensor, **kwargs: Any) -> None:
+        """Update metric state."""
         a, _ = torch.min(self.min, dim=self.batch_dim)
         b, _ = torch.min(x, dim=self.batch_dim)
         self.min = torch.min(a, b)
 
-    def compute(self):
+    def compute(self) -> torch.Tensor:
+        """Compute metric."""
         return self.min
 
-    def __str__(self) -> str:
-        return "Min"
+
+class RegressionPlot(Metric):
+    def __init__(self, filepath: Optional[Path] = None) -> None:
+        """Plot data and regression.
+
+        Parameters
+        ----------
+        filepath
+            Path to save plot if not None, by default None.
+        """
+        self.filepath = filepath
+
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "regression_plot"
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.fig, self.ax = plt.subplots()
+        [self.fit] = self.ax.plot([], [])
+
+    def update(
+        self, x: torch.Tensor, output: torch.Tensor, target: torch.Tensor, **kwargs: Any
+    ) -> None:
+        """Update metric state.
+
+        Parameters
+        ----------
+        output
+            Output tensor.
+            Shape: :math:`(N,C)`
+        target
+            Target tensor.
+            Shape: :math:`(N,C)`
+        """
+        x = x.detach().reshape(-1).numpy()
+        y = target.detach().reshape(-1).numpy()
+        y_fit = output.detach().reshape(-1).numpy()
+
+        self.ax.scatter(x, y, color="black", label="Data")
+
+        fit_xdata, fit_ydata = self.fit.get_data()
+        xdata = np.append(fit_xdata, x)
+        ydata = np.append(fit_ydata, y_fit)
+        self.fit.set(xdata=xdata, ydata=ydata)
+
+    def compute(self) -> plt.Figure:
+        """Compute metric."""
+        fit_xdata, fit_ydata = self.fit.get_data()
+        argsort = fit_xdata.argsort()
+        self.fit.set(xdata=fit_xdata[argsort], ydata=fit_ydata[argsort])
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+
+        self.ax.set_xlabel("Input")
+        self.ax.set_ylabel("Output")
+        self.ax.set_title("Data and fit function")
+
+        if self.filepath is not None:
+            self.fig.savefig(luz.expand_path(self.filepath))
+
+        return self.fig
+
+
+class ResidualPlot(Metric):
+    def __init__(self, filepath: Optional[Path] = None) -> None:
+        """Plot residuals.
+
+        Parameters
+        ----------
+        filepath
+            Path to save plot if not None, by default None.
+        """
+        self.filepath = filepath
+
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "residual_plot"
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.fig, self.ax = plt.subplots()
+
+    def update(
+        self, x: torch.Tensor, output: torch.Tensor, target: torch.Tensor, **kwargs: Any
+    ) -> None:
+        """Update metric state.
+
+        Parameters
+        ----------
+        output
+            Output tensor.
+            Shape: :math:`(N,C)`
+        target
+            Target tensor.
+            Shape: :math:`(N,C)`
+        """
+        x = x.detach().reshape(-1).numpy()
+        r = (output - target).detach().reshape(-1).numpy()
+
+        self.ax.scatter(x, r, color="black")
+
+    def compute(self) -> plt.Figure:
+        """Compute metric."""
+        self.ax.relim()
+        self.ax.autoscale_view()
+
+        self.ax.axhline(y=0, color="r", linestyle="--")
+
+        self.ax.set_xlabel("Input")
+        self.ax.set_ylabel("Residual")
+        self.ax.set_title("Residuals")
+
+        if self.filepath is not None:
+            self.fig.savefig(luz.expand_path(self.filepath))
+
+        return self.fig
+
+
+class TimeEpochs(Metric):
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "epoch_time"
+
+    def attach_events(self, runner) -> tuple[luz.Event, luz.Event, luz.Event]:
+        """Get events to attach metric steps.
+
+        Parameters
+        ----------
+        luz.Runner
+            Runner to which metric will be attached.
+
+        Returns
+        -------
+        tuple[luz.Event, luz.Event, luz.Event]
+            Runner events to which reset, update, and compute steps are attached.
+        """
+        return runner.EPOCH_STARTED, runner.EPOCH_ENDED, runner.EPOCH_ENDED
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.start_time = datetime.datetime.now()  # .replace(microsecond=0)
+        self.end_time = None
+
+    def update(self, **kwargs: Any) -> None:
+        """Update metric state."""
+        self.end_time = datetime.datetime.now()  # .replace(microsecond=0)
+
+    def compute(self):
+        """Compute metric."""
+        return self.end_time - self.start_time
+
+
+class YeoJohnsonNLL(Metric):
+    def __init__(self, lmbda: torch.Tensor) -> None:
+        """Negative log loss for Yeo-Johnson transform fitting.
+
+        Parameters
+        ----------
+        lmbda
+            Lambda tensor.
+        """
+        self.lmbda = lmbda
+
+    @property
+    def name(self) -> str:
+        """Metric name."""
+        return "yeo_johnson_nll"
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.loglike = 0.0
+        self.mean = 0.0
+        self.variance = 0.0
+        self.denom = 0.0
+
+    def update(self, x: torch.Tensor, **kwargs: Any) -> None:
+        """Update metric state."""
+        self.denom += x.shape[0]
+
+        x_trans = torch.stack([self.forward(_x) for _x in x])
+        delta = x_trans - self.mean
+        self.mean += delta.sum(0) / self.denom
+        self.variance += (delta * (x_trans - self.mean)).sum(0)
+
+        self.loglike += (torch.sign(x) * torch.log1p(torch.abs(x))).sum(0)
+
+    def compute(self) -> torch.Tensor:
+        """Compute metric."""
+        nll = self.loglike
+        nll *= self.lmbda - 1
+        nll += -self.denom / 2 * torch.log(self.variance / self.denom)
+        nll = -nll.numpy()
+
+        return nll
+
+        # for i in range(len(self.lmbda)):
+        # scipy.optimize.brent(objective(i), brack=(-2.0, 2.0))

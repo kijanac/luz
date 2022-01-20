@@ -164,7 +164,7 @@ class BaseDataset:
         return data
 
     def use_collate(
-        self, collate: Callable[Iterable[luz.Data], luz.Data]
+        self, collate: Callable[[Iterable[luz.Data]], luz.Data]
     ) -> luz._BaseDataset:
         self._collate = collate
         return self

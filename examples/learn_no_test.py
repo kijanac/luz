@@ -23,9 +23,6 @@ def evaluate(state, batch):
     state.loss = state.criterion(state.output, state.target)
     state.model.train()
 
-def preprocess(state, batch):
-    state.x = batch.x
-
 class Learner(luz.Learner):
     def model(self):
         return luz.Dense(1, 5, 10, 5, 1)
@@ -37,7 +34,7 @@ class Learner(luz.Learner):
         return torch.nn.MSELoss()
     
     def runner(self, model, dataset, stage):
-        loader = dataset.loader(batch_size=int(self.hparams.batch_size))
+        loader = dataset.loader(batch_size=4)
 
         if stage == "train":
             metrics=[luz.Loss(), luz.TimeEpochs()]
@@ -45,30 +42,17 @@ class Learner(luz.Learner):
         if stage == "validate":
             metrics=[luz.Loss()]
             return luz.Runner(evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics)
-        if stage == "test":
-            metrics=[luz.Loss()]
-            return luz.Runner(evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics)
-        if stage == "preprocess":
-            metrics=[luz.Max(), luz.Min()]
-            return luz.Runner(preprocess, max_epochs=1, model=model, loader=loader, metrics=metrics)
 
     def callbacks(self, runner, stage):
         runner.EPOCH_ENDED.attach(luz.LogMetrics())
         if stage == "train":
             runner.EPOCH_ENDED.attach(luz.Checkpoint("model"))
 
-    def transform(self, runner, stage):
-        if stage in ["train", "validate", "test"]:
-            shift = self.preprocessor.state.metrics["min"]
-            scale = self.preprocessor.state.metrics["max"] - shift
-            transform = luz.Transform(x=luz.Scale(shift, scale))
-            transform.attach(runner)
-
 if __name__ == "__main__":
     x = torch.linspace(0., 4., 1000)
     y = 3*x**2 + 1
     dataset = luz.TensorDataset(x=x, y=y)
 
-    tuner = luz.RandomSearch(Learner(), scorer=luz.Holdout(0.1,0.1), num_iterations=3)
-    tuned_model = tuner.tune(dataset, batch_size=tuner.choose(1,2,4,8))
-    print(tuner.best_trial)
+    train_dataset, val_dataset= dataset.split([800, 200])
+
+    model = Learner().learn(train_dataset, val_dataset, device="cpu")

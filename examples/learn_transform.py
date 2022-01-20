@@ -37,7 +37,7 @@ class Learner(luz.Learner):
         return torch.nn.MSELoss()
     
     def runner(self, model, dataset, stage):
-        loader = dataset.loader(batch_size=int(self.hparams.batch_size))
+        loader = dataset.loader(batch_size=4)
 
         if stage == "train":
             metrics=[luz.Loss(), luz.TimeEpochs()]
@@ -69,6 +69,6 @@ if __name__ == "__main__":
     y = 3*x**2 + 1
     dataset = luz.TensorDataset(x=x, y=y)
 
-    tuner = luz.RandomSearch(Learner(), scorer=luz.Holdout(0.1,0.1), num_iterations=3)
-    tuned_model = tuner.tune(dataset, batch_size=tuner.choose(1,2,4,8))
-    print(tuner.best_trial)
+    train_dataset, val_dataset, test_dataset = dataset.split([800, 100, 100])
+
+    model, loss = Learner().learn(train_dataset, val_dataset, test_dataset, device="cpu")
