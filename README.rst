@@ -26,11 +26,11 @@ Installing
 ----------
 From `pip <https://pypi.org/project/luz/>`_:
 
-`pip install luz`
+``pip install luz``
 
 From `conda <https://anaconda.org/kijana/luz>`_:
 
-`conda install -c conda-forge -c pytorch -c kijana luz`
+``conda install -c conda-forge -c pytorch -c kijana luz``
 
 Documentation
 -------------
@@ -38,7 +38,7 @@ See documentation `here <https://kijanac.github.io/luz/>`_.
 
 Examples
 --------
-See example scripts in [Examples](examples).
+See example scripts in `Examples <https://github.com/kijanac/luz/tree/main/examples>`_.
 
 -------
 Authors
@@ -48,9 +48,9 @@ Ki-Jana Carter
 -------
 License
 -------
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the `LICENSE <https://github.com/kijanac/luz/blob/main/LICENSE>`_ file for details.
 
 ------------
 Contributing
 ------------
-See [CONTRIBUTING](CONTRIBUTING).
+See `CONTRIBUTING <https://github.com/kijanac/luz/blob/main/CONTRIBUTING.rst>`_.

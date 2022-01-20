@@ -1,9 +1,11 @@
 import luz
 import torch
 
+
 def setup(state):
     state.optimizer = torch.optim.Adam(state.model.parameters())
     state.criterion = torch.nn.MSELoss()
+
 
 def train(state, batch):
     state.output = state.model(batch.x)
@@ -15,6 +17,7 @@ def train(state, batch):
     state.optimizer.step()
     state.optimizer.zero_grad()
 
+
 def evaluate(state, batch):
     state.model.eval()
     state.output = state.model(batch.x)
@@ -23,8 +26,10 @@ def evaluate(state, batch):
     state.loss = state.criterion(state.output, state.target)
     state.model.train()
 
+
 def preprocess(state, batch):
     state.x = batch.x
+
 
 class Learner(luz.Learner):
     def model(self):
@@ -35,22 +40,30 @@ class Learner(luz.Learner):
 
     def criterion(self):
         return torch.nn.MSELoss()
-    
+
     def runner(self, model, dataset, stage):
         loader = dataset.loader(batch_size=int(self.hparams.batch_size))
 
         if stage == "train":
-            metrics=[luz.Loss(), luz.TimeEpochs()]
-            return luz.Runner(train, max_epochs=10, model=model, loader=loader, metrics=metrics)
+            metrics = [luz.Loss(), luz.TimeEpochs()]
+            return luz.Runner(
+                train, max_epochs=10, model=model, loader=loader, metrics=metrics
+            )
         if stage == "validate":
-            metrics=[luz.Loss()]
-            return luz.Runner(evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics)
+            metrics = [luz.Loss()]
+            return luz.Runner(
+                evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics
+            )
         if stage == "test":
-            metrics=[luz.Loss()]
-            return luz.Runner(evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics)
+            metrics = [luz.Loss()]
+            return luz.Runner(
+                evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics
+            )
         if stage == "preprocess":
-            metrics=[luz.Max(), luz.Min()]
-            return luz.Runner(preprocess, max_epochs=1, model=model, loader=loader, metrics=metrics)
+            metrics = [luz.Max(), luz.Min()]
+            return luz.Runner(
+                preprocess, max_epochs=1, model=model, loader=loader, metrics=metrics
+            )
 
     def callbacks(self, runner, stage):
         runner.EPOCH_ENDED.attach(luz.LogMetrics())
@@ -64,11 +77,12 @@ class Learner(luz.Learner):
             transform = luz.Transform(x=luz.Scale(shift, scale))
             transform.attach(runner)
 
+
 if __name__ == "__main__":
-    x = torch.linspace(0., 4., 1000)
-    y = 3*x**2 + 1
+    x = torch.linspace(0.0, 4.0, 1000)
+    y = 3 * x ** 2 + 1
     dataset = luz.TensorDataset(x=x, y=y)
 
-    tuner = luz.RandomSearch(Learner(), scorer=luz.Holdout(0.1,0.1), num_iterations=3)
-    tuned_model = tuner.tune(dataset, batch_size=tuner.choose(1,2,4,8))
+    tuner = luz.RandomSearch(Learner(), scorer=luz.Holdout(0.1, 0.1), num_iterations=3)
+    tuned_model = tuner.tune(dataset, batch_size=tuner.choose(1, 2, 4, 8))
     print(tuner.best_trial)

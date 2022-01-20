@@ -1,9 +1,11 @@
 import luz
 import torch
 
+
 def setup(state):
     state.optimizer = torch.optim.Adam(state.model.parameters())
     state.criterion = torch.nn.MSELoss()
+
 
 def train(state, batch):
     state.output = state.model(batch.x)
@@ -15,6 +17,7 @@ def train(state, batch):
     state.optimizer.step()
     state.optimizer.zero_grad()
 
+
 def evaluate(state, batch):
     state.model.eval()
     state.output = state.model(batch.x)
@@ -22,6 +25,7 @@ def evaluate(state, batch):
 
     state.loss = state.criterion(state.output, state.target)
     state.model.train()
+
 
 class Learner(luz.Learner):
     def model(self):
@@ -32,7 +36,7 @@ class Learner(luz.Learner):
 
     def criterion(self):
         return torch.nn.MSELoss()
-    
+
     def runner(self, model, dataset, stage):
         loader = dataset.loader(batch_size=4)
 
@@ -46,11 +50,14 @@ class Learner(luz.Learner):
         if stage == "train":
             runner.EPOCH_ENDED.attach(luz.Checkpoint("model"))
 
+
 if __name__ == "__main__":
-    x = torch.linspace(0., 4., 1000)
-    y = 3*x**2 + 1
+    x = torch.linspace(0.0, 4.0, 1000)
+    y = 3 * x ** 2 + 1
     dataset = luz.TensorDataset(x=x, y=y)
 
     train_dataset, val_dataset, test_dataset = dataset.split([800, 100, 100])
 
-    model, loss = Learner().learn(train_dataset, val_dataset, test_dataset, device="cpu")
+    model, loss = Learner().learn(
+        train_dataset, val_dataset, test_dataset, device="cpu"
+    )

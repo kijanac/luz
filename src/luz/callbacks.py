@@ -69,8 +69,10 @@ class LogMetrics(Callback):
 class Progress(Callback):
     def __call__(self, state: luz.State) -> None:
         """Execute callback."""
+        e = state.epoch + 1
+        b = state.ind + 1
         print(
-            f"Epoch {state.epoch + 1}/{state.max_epochs}, batch {state.ind + 1}/{len(state.loader)}",
+            f"Epoch {e}/{state.max_epochs}, batch {b}/{len(state.loader)}",
             end="\r",
             flush=True,
         )

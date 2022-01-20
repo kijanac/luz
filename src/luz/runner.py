@@ -37,12 +37,12 @@ class Event(pymitter.EventEmitter):
             def filter(count):
                 return count == once
 
-        if every is not None:
+        elif every is not None:
 
             def filter(count):
                 return count % every == 0
 
-        if filter is not None:
+        elif filter is not None:
 
             @functools.wraps(f)
             def g(*args, **kwargs):
