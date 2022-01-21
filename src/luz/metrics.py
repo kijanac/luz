@@ -420,7 +420,17 @@ class Loss(Metric):
 
 
 class Max(Metric):
-    def __init__(self, batch_dim=0) -> None:
+    def __init__(self, key: Optional[str] = "x", batch_dim: Optional[int] = 0) -> None:
+        """Compute maximum of data.
+
+        Parameters
+        ----------
+        key
+            Data key, by default "x".
+        batch_dim
+            Batch dimension, by default 0.
+        """
+        self.key = key
         self.batch_dim = batch_dim
 
     @property
@@ -432,10 +442,10 @@ class Max(Metric):
         """Reset metric state."""
         self.max = torch.Tensor([float("-inf")])
 
-    def update(self, x: torch.Tensor, **kwargs: Any) -> None:
+    def update(self, data: luz.Data, **kwargs: Any) -> None:
         """Update metric state."""
         a, _ = torch.max(self.max, dim=self.batch_dim)
-        b, _ = torch.max(x, dim=self.batch_dim)
+        b, _ = torch.max(data[self.key], dim=self.batch_dim)
         self.max = torch.max(a, b)
 
     def compute(self) -> torch.Tensor:
@@ -482,7 +492,17 @@ class MeanStd(Metric):
 
 
 class Min(Metric):
-    def __init__(self, batch_dim=0) -> None:
+    def __init__(self, key: Optional[str] = "x", batch_dim: Optional[int] = 0) -> None:
+        """Compute minimum of data.
+
+        Parameters
+        ----------
+        key
+            Data key, by default "x".
+        batch_dim
+            Batch dimension, by default 0.
+        """
+        self.key = key
         self.batch_dim = batch_dim
 
     @property
@@ -494,10 +514,10 @@ class Min(Metric):
         """Reset metric state."""
         self.min = torch.Tensor([float("inf")])
 
-    def update(self, x: torch.Tensor, **kwargs: Any) -> None:
+    def update(self, data: luz.Data, **kwargs: Any) -> None:
         """Update metric state."""
         a, _ = torch.min(self.min, dim=self.batch_dim)
-        b, _ = torch.min(x, dim=self.batch_dim)
+        b, _ = torch.min(data[self.key], dim=self.batch_dim)
         self.min = torch.min(a, b)
 
     def compute(self) -> torch.Tensor:
