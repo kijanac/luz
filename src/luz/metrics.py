@@ -445,6 +445,15 @@ class Max(Metric):
 
 class MeanStd(Metric):
     def __init__(self, key: Optional[str] = "x", batch_dim: Optional[int] = 0) -> None:
+        """Compute mean and standard deviation of data.
+
+        Parameters
+        ----------
+        key
+            Data key, by default "x".
+        batch_dim
+            Batch dimension, by default 0.
+        """
         self.key = key
         self.batch_dim = batch_dim
 
@@ -459,7 +468,7 @@ class MeanStd(Metric):
         self.var = 0.0
         self.n = 0.0
 
-    def update(self, data, **kwargs: Any) -> None:
+    def update(self, data: luz.Data, **kwargs: Any) -> None:
         """Update metric state."""
         x = data[self.key].detach()
         self.n = x.size(self.batch_dim)
