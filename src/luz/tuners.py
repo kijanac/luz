@@ -9,7 +9,7 @@ import operator
 import re
 import torch
 
-__all__ = ["GridSearch", "RandomSearch", "Trial"]
+__all__ = ["GridSearch", "RandomSearch", "StopTuning", "Trial"]
 
 Device = Union[str, torch.device]
 
@@ -20,6 +20,10 @@ class Trial(dict):
             return dict.__getattr__(self, key)
 
         return self[key]
+
+
+class StopTuning(Exception):
+    pass
 
 
 class Tuner:
@@ -57,12 +61,15 @@ class Tuner:
         self.trials = []
         self.scores = []
 
-        for _ in range(self.num_iterations):
-            trial = self.get_trial(**hparams)
-            score = self._objective(trial, dataset, device)
+        while True:
+            try:
+                trial = self.get_trial(**hparams)
+                score = self._objective(trial, dataset, device)
 
-            self.trials.append(trial)
-            self.scores.append(score)
+                self.trials.append(trial)
+                self.scores.append(score)
+            except StopTuning:
+                break
 
         return self.best_trial.model
 
@@ -101,6 +108,8 @@ class Tuner:
 
 class RandomSearch(Tuner):
     def get_trial(self, **hparams: Union[Sample, Choose, Pin, Conditional]) -> Trial:
+        if len(self.trials) == self.num_iterations:
+            raise StopTuning
 
         d = {}
 
@@ -119,23 +128,22 @@ class RandomSearch(Tuner):
 
 class GridSearch(Tuner):
     def __init__(self, learner: luz.Learner, scorer: luz.Scorer) -> None:
-        n = np.prod(
-            [len(v.choices) for v in self.hparams().values() if isinstance(v, Choose)]
-        )
-
-        super().__init__(learner, scorer, n)
+        super().__init__(learner, scorer, None)
 
     def get_trial(self, **hparams: Union[Sample, Choose, Pin, Conditional]) -> Trial:
         choices = [v for v in hparams.values() if isinstance(v, Choose)]
         d = {}
         grid = itertools.product(*[c.choices for c in choices])
 
-        kwargs = [t.kwargs for t in self.trials]
         for g in grid:
             t = dict(zip(hparams.keys(), g))
-            if t not in kwargs:
+
+            if t not in self.trials:
                 d.update(**t)
                 break
+
+        if d == {}:
+            raise StopTuning
 
         for k, v in hparams.items():
             if isinstance(v, Pin) or isinstance(v, Conditional):
