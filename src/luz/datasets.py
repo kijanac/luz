@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
-import copy
 import itertools
 import luz
 import matplotlib.pyplot as plt
@@ -141,60 +140,15 @@ class Data:
         return f"Data({kw_str})"
 
 
-def transform_getitem(getitem):
-    def f(self, index: int) -> luz.Data:
-        return self._transform(getitem(self, index))
-
-    return f
-
-
-def transform_iter(iter):
-    def f(self) -> luz.Data:
-        for x in iter:
-            yield (self._transform(x))
-
-    return f
-
-
 class BaseDataset:
     def _collate(self, batch: Iterable[luz.Data]) -> luz.Data:
         return default_collate(batch)
-
-    def _transform(self, data: luz.Data) -> luz.Data:
-        return data
 
     def use_collate(
         self, collate: Callable[[Iterable[luz.Data]], luz.Data]
     ) -> luz._BaseDataset:
         self._collate = collate
         return self
-
-    def use_transform(self, transform: luz.Transform):
-        """Set data transform.
-
-        Parameters
-        ----------
-        transform
-            Data transform.
-            By default None.
-        """
-        self._transform = transform
-
-        return self
-
-    def apply(self, transform: luz.Transform) -> BaseDataset:
-        t1 = self._transform
-        t2 = transform
-
-        if not isinstance(t1, luz.Transform):
-            t1 = luz.Transform()
-        if not isinstance(t2, luz.Transform):
-            t2 = luz.Transform()
-
-        d = copy.copy(self)
-        d.use_transform(t1 * t2)
-
-        return d
 
     def loader(
         self,
@@ -227,16 +181,13 @@ class BaseDataset:
             Generated Dataloader.
         """
 
-        def f(batch):
-            return self._transform(self._collate(batch))
-
         return torch.utils.data.DataLoader(
             dataset=self,
             batch_size=batch_size,
             shuffle=shuffle,
             num_workers=num_workers,
             pin_memory=pin_memory,
-            collate_fn=f,  # self._collate,
+            collate_fn=self._collate,
         )
 
     def __add__(self, other: luz.Dataset) -> luz.ConcatDataset:
@@ -255,11 +206,7 @@ class BaseDataset:
         luz.Subset
             Generated subset.
         """
-        return (
-            Subset(dataset=self, indices=indices)
-            .use_collate(self._collate)
-            .use_transform(self._transform)
-        )
+        return Subset(dataset=self, indices=indices).use_collate(self._collate)
 
     def split(
         self, lengths: Iterable[int], shuffle: Optional[int] = True
@@ -285,79 +232,9 @@ class BaseDataset:
         else:
             indices = torch.arange(sum(lengths)).tolist()
         return tuple(
-            self.subset(indices=indices[offset - l : offset])
-            .use_collate(self._collate)
-            .use_transform(self._transform)
+            self.subset(indices=indices[offset - l : offset]).use_collate(self._collate)
             for offset, l in zip(itertools.accumulate(lengths), lengths)
         )
-
-    def mean_std(
-        self, key: str, accumulate_along: Optional[int] = None
-    ) -> torch.Tensor:
-        """Compute mean and standard deviation of data using Welford's online algorithm.
-
-        Parameters
-        ----------
-        key
-            Data key.
-        accumulate_along
-
-
-        Returns
-        -------
-        Tuple[BaseDataset]
-            Generated subsets.
-        """
-        for x in self:
-            if accumulate_along is not None:
-                mean = torch.zeros_like(x[key].sum(accumulate_along))
-                variance = torch.zeros_like(x[key].sum(accumulate_along))
-            else:
-                mean = torch.zeros_like(x[key])
-                variance = torch.zeros_like(x[key])
-            break
-
-        n = len(self)
-
-        if accumulate_along is not None:
-            denom = 0
-            for i in range(n):
-                m = self[i][key].shape[accumulate_along]
-                denom += m
-                delta = (self[i][key] - mean).sum(accumulate_along)
-                mean += delta / denom
-                variance += delta * ((self[i][key] - mean).sum(accumulate_along))
-
-            std = torch.sqrt(variance / denom)
-        else:
-            for i in range(n):
-                delta = self[i][key] - mean
-                mean += delta / (i + 1)
-                variance += delta * (self[i][key] - mean)
-
-            std = torch.sqrt(variance / n)
-
-        return mean, std
-
-    def max(self, key: str, dim: int) -> float:
-        for x in self:
-            m = x[key][dim]
-            break
-
-        for i in range(len(self)):
-            m = torch.max(m, self[i][key][dim])
-
-        return m
-
-    def min(self, key: str, dim: int) -> float:
-        for x in self:
-            m = x[key][dim]
-            break
-
-        for i in range(len(self)):
-            m = torch.min(m, self[i][key][dim])
-
-        return m
 
     def plot_histogram(
         self,
@@ -408,7 +285,6 @@ class Dataset(torch.utils.data.Dataset, BaseDataset):
         self.data = tuple(data)
         self.len = len(self.data)
 
-    @transform_getitem
     def __getitem__(self, index: int) -> luz.Data:
         return self.data[index]
 
@@ -424,7 +300,6 @@ class TensorDataset(torch.utils.data.Dataset, BaseDataset):
         )
         self.len = len(self.data)
 
-    @transform_getitem
     def __getitem__(self, index: int) -> luz.Data:
         return self.data[index]
 
@@ -437,9 +312,7 @@ class ConcatDataset(BaseDataset, torch.utils.data.ConcatDataset):
 
 
 class Subset(BaseDataset, torch.utils.data.Subset):
-    @transform_getitem
-    def __getitem__(self, index: int) -> luz.Data:
-        return super().__getitem__(index)
+    pass
 
 
 class FolderDataset(BaseDataset, torch.utils.data.Dataset):
@@ -453,7 +326,6 @@ class FolderDataset(BaseDataset, torch.utils.data.Dataset):
         """
         self.root = luz.expand_path(root)
 
-    @transform_getitem
     def __getitem__(self, index: int) -> luz.Data:
         return torch.load(pathlib.Path(self.root, f"{index}.pt"))
 
