@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable, Iterable, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import functools
 import luz
@@ -90,7 +90,7 @@ class Runner:
         model: torch.nn.Module,
         loader: torch.utils.data.DataLoader,
         max_epochs: int,
-        metrics: Optional[Iterable[luz.Metric]] = None,
+        metrics: Optional[dict[str, luz.Metric]] = None,
     ) -> None:
         """Runner.
 
@@ -119,8 +119,8 @@ class Runner:
         self.state = State(model=model, loader=loader, max_epochs=max_epochs)
 
         if metrics is not None:
-            for metric in metrics:
-                metric.attach(self)
+            for name, metric in metrics.items():
+                metric.attach(self, name)
 
     def run(
         self,

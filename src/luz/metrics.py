@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from abc import ABC, abstractmethod
 import datetime
@@ -54,14 +54,11 @@ class Metric(ABC):
     def update_handler(self, state: luz.State) -> None:
         self.update(**state.__dict__)
 
-    def compute_handler(self, state: luz.State) -> None:
-        state.metrics[self.name] = self.compute()
+    def get_compute_handler(self, name: str) -> Callable[[luz.State], None]:
+        def compute_handler(state: luz.State) -> None:
+            state.metrics[name] = self.compute()
 
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """Metric name."""
-        pass
+        return compute_handler
 
     def attach_events(
         self, runner: luz.Runner
@@ -83,19 +80,15 @@ class Metric(ABC):
     def attach(
         self,
         runner: luz.Runner,
+        name: str,
     ) -> None:
         reset_event, update_event, compute_event = self.attach_events(runner)
-        getattr(runner, reset_event.name).attach(self.reset_handler)
-        getattr(runner, update_event.name).attach(self.update_handler)
-        getattr(runner, compute_event.name).attach(self.compute_handler)
+        reset_event.attach(self.reset_handler)
+        update_event.attach(self.update_handler)
+        compute_event.attach(self.get_compute_handler(name))
 
 
 class Accuracy(Metric):
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "accuracy"
-
     def reset(self) -> None:
         """Reset metric state."""
         self.correct = 0
@@ -140,11 +133,6 @@ class CalibrationPlot(Metric):
         self.filepath = filepath
         self.rasterized = rasterized
 
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "calibration_plot"
-
     def reset(self) -> None:
         """Reset metric state."""
         self.fig, self.ax = plt.subplots()
@@ -185,11 +173,6 @@ class CalibrationPlot(Metric):
 
 
 class DurbinWatson(Metric):
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "durbin_watson"
-
     def reset(self) -> None:
         """Reset metric state."""
         self.num = 0.0
@@ -214,11 +197,6 @@ class DurbinWatson(Metric):
 class FBeta(Metric):
     def __init__(self, beta: float) -> None:
         self.beta = beta
-
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "f_beta"
 
     def reset(self, **kwargs: Any) -> None:
         """Reset metric state."""
@@ -271,11 +249,6 @@ class LearningCurvePlot(Metric):
         self.filepath = filepath
         self.reduction = reduction
         self.epoch_losses = []
-
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "regression_plot"
 
     # def attach_events(
     #     self, runner
@@ -390,11 +363,6 @@ class Loss(Metric):
     def __init__(self) -> None:
         self.reset()
 
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "loss"
-
     def reset(self) -> None:
         """Reset metric state."""
         self.mean_loss = 0
@@ -438,11 +406,6 @@ class Max(Metric):
         self.key = key
         self.batch_dim = batch_dim
 
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "max"
-
     def reset(self) -> None:
         """Reset metric state."""
         self.max = torch.Tensor([float("-inf")])
@@ -471,11 +434,6 @@ class MeanStd(Metric):
         """
         self.key = key
         self.batch_dim = batch_dim
-
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "mean_std"
 
     def reset(self) -> None:
         """Reset metric state."""
@@ -509,11 +467,6 @@ class Min(Metric):
         """
         self.key = key
         self.batch_dim = batch_dim
-
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "min"
 
     def reset(self) -> None:
         """Reset metric state."""
@@ -606,11 +559,6 @@ class ResidualPlot(Metric):
         """
         self.filepath = filepath
 
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "residual_plot"
-
     def reset(self) -> None:
         """Reset metric state."""
         self.fig, self.ax = plt.subplots()
@@ -652,11 +600,6 @@ class ResidualPlot(Metric):
 
 
 class TimeEpochs(Metric):
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "epoch_time"
-
     def attach_events(self, runner) -> tuple[luz.Event, luz.Event, luz.Event]:
         """Get events to attach metric steps.
 
@@ -696,11 +639,6 @@ class YeoJohnsonNLL(Metric):
             Lambda tensor.
         """
         self.lmbda = lmbda
-
-    @property
-    def name(self) -> str:
-        """Metric name."""
-        return "yeo_johnson_nll"
 
     def reset(self) -> None:
         """Reset metric state."""
