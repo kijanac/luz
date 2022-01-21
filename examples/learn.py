@@ -43,7 +43,13 @@ class Learner(luz.Learner):
         if stage == "train":
             return luz.Runner(train, max_epochs=10, model=model, loader=loader)
         if stage in ["validate", "test"]:
-            return luz.Runner(evaluate, max_epochs=1, model=model, loader=loader)
+            return luz.Runner(
+                evaluate,
+                max_epochs=1,
+                model=model,
+                loader=loader,
+                metrics={"loss": luz.Loss()},
+            )
 
     def callbacks(self, runner, stage):
         runner.EPOCH_ENDED.attach(luz.LogMetrics())

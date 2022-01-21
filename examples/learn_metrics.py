@@ -42,22 +42,22 @@ class Learner(luz.Learner):
         loader = dataset.loader(batch_size=4)
 
         if stage == "train":
-            metrics = [luz.Loss(), luz.TimeEpochs()]
+            metrics = {"loss": luz.Loss(), "time": luz.TimeEpochs()}
             return luz.Runner(
                 train, max_epochs=50, model=model, loader=loader, metrics=metrics
             )
         if stage == "validate":
-            metrics = [luz.Loss()]
+            metrics = {"loss": luz.Loss()}
             return luz.Runner(
                 evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics
             )
         if stage == "test":
-            metrics = [
-                luz.Loss(),
-                luz.CalibrationPlot("calibration.pdf"),
-                luz.RegressionPlot("regression.pdf"),
-                luz.ResidualPlot("residual.pdf"),
-            ]
+            metrics = {
+                "loss": luz.Loss(),
+                "calibration": luz.CalibrationPlot("calibration.pdf"),
+                "regression": luz.RegressionPlot("regression.pdf"),
+                "residuals": luz.ResidualPlot("residual.pdf"),
+            }
             return luz.Runner(
                 evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics
             )

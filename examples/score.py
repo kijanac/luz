@@ -28,7 +28,7 @@ def evaluate(state, batch):
 
 
 def preprocess(state, batch):
-    state.x = batch.x
+    state.data = batch
 
 
 class Learner(luz.Learner):
@@ -45,22 +45,22 @@ class Learner(luz.Learner):
         loader = dataset.loader(batch_size=4)
 
         if stage == "train":
-            metrics = [luz.Loss(), luz.TimeEpochs()]
+            metrics = {"loss": luz.Loss(), "time": luz.TimeEpochs()}
             return luz.Runner(
                 train, max_epochs=10, model=model, loader=loader, metrics=metrics
             )
         if stage == "validate":
-            metrics = [luz.Loss()]
+            metrics = {"loss": luz.Loss()}
             return luz.Runner(
                 evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics
             )
         if stage == "test":
-            metrics = [luz.Loss()]
+            metrics = {"loss": luz.Loss()}
             return luz.Runner(
                 evaluate, max_epochs=1, model=model, loader=loader, metrics=metrics
             )
         if stage == "preprocess":
-            metrics = [luz.Max(), luz.Min()]
+            metrics = {"max": luz.Max(), "min": luz.Min()}
             return luz.Runner(
                 preprocess, max_epochs=1, model=model, loader=loader, metrics=metrics
             )
