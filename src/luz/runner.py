@@ -3,7 +3,7 @@ from typing import Any, Callable, Iterable, Optional, Union
 
 import functools
 import luz
-import pymitter
+import pyee
 import torch
 
 __all__ = ["Event", "Runner", "State"]
@@ -12,7 +12,7 @@ Device = Union[str, torch.device]
 Model = Union[torch.nn.Module, dict[str, torch.nn.Module]]
 
 
-class Event(pymitter.EventEmitter):
+class Event(pyee.EventEmitter):
     def __init__(self, name: str) -> None:
         super().__init__()
         self.name = name
