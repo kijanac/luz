@@ -118,12 +118,12 @@ class RandomSearch(Tuner):
 
 
 class GridSearch(Tuner):
-    def __init__(self, **hparams):
+    def __init__(self, learner: luz.Learner, scorer: luz.Scorer) -> None:
         n = np.prod(
             [len(v.choices) for v in self.hparams().values() if isinstance(v, Choose)]
         )
 
-        super().__init__(n, **hparams)
+        super().__init__(learner, scorer, n)
 
     def get_trial(self, **hparams: Union[Sample, Choose, Pin, Conditional]) -> Trial:
         choices = [v for v in hparams.values() if isinstance(v, Choose)]
