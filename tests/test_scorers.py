@@ -29,9 +29,6 @@ class DummyLearner(luz.Learner):
     def optimizer(self, model):
         pass
 
-    def fit_params(self):
-        pass
-
 
 def test_cross_validation():
     cv = luz.CrossValidation(num_folds=3, shuffle=False)
@@ -39,12 +36,9 @@ def test_cross_validation():
     dataset = IntegerDataset(n=15)
 
     m = DummyModel()
-    m.fit = mock.MagicMock(return_value=0.0)
-    m.test = mock.MagicMock(return_value=0.0)
 
     learner = DummyLearner()
-    learner.learn = mock.MagicMock(return_value=m)
-    learner.evaluate = mock.MagicMock(return_value=0.0)
+    learner.learn = mock.MagicMock(return_value=(m, 0.0))
 
     cv.score(learner, dataset, "cpu")
     mock_calls = learner.learn.mock_calls
@@ -69,12 +63,9 @@ def test_cross_validation():
     dataset = IntegerDataset(n=17)
 
     m = DummyModel()
-    m.fit = mock.MagicMock(return_value=0.0)
-    m.test = mock.MagicMock(return_value=0.0)
 
     learner = DummyLearner()
-    learner.learn = mock.MagicMock(return_value=m)
-    learner.evaluate = mock.MagicMock(return_value=0.0)
+    learner.learn = mock.MagicMock(return_value=(m, 0.0))
 
     cv.score(learner, dataset, "cpu")
     mock_calls = learner.learn.mock_calls
@@ -99,12 +90,9 @@ def test_cross_validation():
     dataset = IntegerDataset(n=17)
 
     m = DummyModel()
-    m.fit = mock.MagicMock(return_value=0.0)
-    m.test = mock.MagicMock(return_value=0.0)
 
     learner = DummyLearner()
-    learner.learn = mock.MagicMock(return_value=m)
-    learner.evaluate = mock.MagicMock(return_value=0.0)
+    learner.learn = mock.MagicMock(return_value=(m, 0.0))
 
     cv.score(learner, dataset, "cpu")
     mock_calls = learner.learn.mock_calls

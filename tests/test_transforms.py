@@ -131,7 +131,7 @@ def test_unsqueeze():
     assert torch.equal(luz.Unsqueeze(dim=2).inverse()(y5), x2)
 
 
-def test_standardize():
+def test_scale():
     x = torch.tensor(
         [
             0.3582,
@@ -237,12 +237,10 @@ def test_standardize():
         ]
     )
 
-    standardize = luz.Standardize()
-    standardize.shift = x.mean()
-    standardize.scale = x.std()
+    scale = luz.Scale(x.mean(), x.std())
 
-    z = standardize(x)
+    z = scale(x)
 
     assert torch.allclose(z.mean(), torch.tensor(0.0), atol=1e-6)
     assert torch.allclose(z.std(), torch.tensor(1.0))
-    assert torch.allclose(standardize.inverse()(z), x)
+    assert torch.allclose(scale.inverse()(z), x)
