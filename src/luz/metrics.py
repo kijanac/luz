@@ -125,15 +125,20 @@ class Accuracy(Metric):
 
 
 class CalibrationPlot(Metric):
-    def __init__(self, filepath: Optional[Path] = None) -> None:
+    def __init__(
+        self, filepath: Optional[Path] = None, rasterized: Optional[bool] = False
+    ) -> None:
         """Plot actual labels vs. predicted labels.
 
         Parameters
         ----------
         filepath
             Path to save plot if not None, by default None.
+        rasterized
+            Rasterize data points if True, by default False.
         """
         self.filepath = filepath
+        self.rasterized = rasterized
 
     @property
     def name(self) -> str:
@@ -151,14 +156,14 @@ class CalibrationPlot(Metric):
         ----------
         output
             Output tensor.
-            Shape: :math:`(N,C)`
+            Shape: :math:`(N,)`
         target
             Target tensor.
-            Shape: :math:`(N,C)`
+            Shape: :math:`(N,)`
         """
-        x = target.detach().reshape(-1).numpy()
-        y = output.detach().reshape(-1).numpy()
-        self.ax.scatter(x, y, color="black")
+        x = target.cpu().detach().numpy().reshape(-1)
+        y = output.cpu().detach().numpy().reshape(-1)
+        self.ax.scatter(x, y, color="black", rasterized=self.rasterized)
 
     def compute(self) -> plt.Figure:
         """Compute metric."""
