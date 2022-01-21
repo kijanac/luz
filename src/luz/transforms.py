@@ -255,10 +255,7 @@ class Scale(TensorTransform):
         return (x - self.shift) / self.scale
 
     def inverse(self) -> TensorTransform:
-        t = Scale()
-        t.shift = -self.shift / self.scale
-        t.scale = 1 / self.scale
-        return t
+        return Scale(-self.shift / self.scale, 1 / self.scale)
 
 
 class Transpose(TensorTransform):
