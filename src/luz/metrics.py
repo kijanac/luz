@@ -149,8 +149,8 @@ class CalibrationPlot(Metric):
             Target tensor.
             Shape: :math:`(N,)`
         """
-        x = target.cpu().detach().numpy().reshape(-1)
-        y = output.cpu().detach().numpy().reshape(-1)
+        x = output.cpu().detach().numpy().reshape(-1)
+        y = target.cpu().detach().numpy().reshape(-1)
         self.ax.scatter(x, y, color="black", rasterized=self.rasterized)
 
     def compute(self) -> plt.Figure:
@@ -236,6 +236,70 @@ class FBeta(Metric):
             )
         except ZeroDivisionError:
             return 1.0
+
+class HistogramData(Metric):
+    def __init__(
+        self, filepath: Optional[Path] = None, num_bins: Optional[int] = 100, rasterized: Optional[bool] = False
+    ) -> None:
+        """Plot actual labels vs. predicted labels.
+
+        Parameters
+        ----------
+        filepath
+            Path to save plot if not None, by default None.
+        num_bins
+            Number of histogram bins, by default 100.
+        rasterized
+            Rasterize data points if True, by default False.
+        """
+        self.filepath = filepath
+        self.num_bins = num_bins
+        self.rasterized = rasterized
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.fig, self.ax = plt.subplots()
+        self.bins = np.linspace(self.data_min, self.data_max, self.num_bins + 1)
+        self.histc = None
+
+    def update(self, x: torch.Tensor, **kwargs: Any) -> None:
+        """Update metric state.
+
+        Parameters
+        ----------
+        output
+            Output tensor.
+            Shape: :math:`(N,)`
+        target
+            Target tensor.
+            Shape: :math:`(N,)`
+        """
+        if self.histc is None:
+            self.histc = torch.histc(x, bins=self.num_bins, min=self.data_min, max=self.data_max)
+        else:
+            self.histc += torch.histc(x, bins=self.num_bins, min=self.data_min, max=self.data_max)
+
+    def compute(self) -> plt.Figure:
+        """Compute metric."""
+        plt.hist(self.bins[:-1], self.bins, weights=self.histc.numpy())
+        if self.filepath is not None:
+            plt.savefig(luz.expand_path(self.filepath))
+        
+        self.ax.relim()
+        self.ax.autoscale_view()
+
+        line = matplotlib.lines.Line2D([0, 1], [0, 1], color="red")
+        line.set_transform(self.ax.transAxes)
+        self.ax.add_line(line)
+
+        self.ax.set_xlabel("Predicted")
+        self.ax.set_ylabel("Actual")
+        self.ax.set_title("Actual vs. predicted")
+
+        if self.filepath is not None:
+            self.fig.savefig(luz.expand_path(self.filepath))
+
+        return self.fig
 
 
 class LearningCurvePlot(Metric):
@@ -484,15 +548,21 @@ class Min(Metric):
 
 
 class RegressionPlot(Metric):
-    def __init__(self, filepath: Optional[Path] = None) -> None:
+    def __init__(
+        self, filepath: Optional[Path] = None, rasterized: Optional[bool] = False
+    ) -> None:
         """Plot data and regression.
 
         Parameters
         ----------
         filepath
             Path to save plot if not None, by default None.
+        rasterized
+            Rasterize data points if True, by default False.
         """
         self.filepath = filepath
+        self.rasterized = rasterized
+
 
     @property
     def name(self) -> str:
@@ -522,7 +592,7 @@ class RegressionPlot(Metric):
         y = target.detach().reshape(-1).numpy()
         y_fit = output.detach().reshape(-1).numpy()
 
-        self.ax.scatter(x, y, color="black", label="Data")
+        self.ax.scatter(x, y, color="black", label="Data", rasterized=self.rasterized)
 
         fit_xdata, fit_ydata = self.fit.get_data()
         xdata = np.append(fit_xdata, x)
@@ -549,15 +619,21 @@ class RegressionPlot(Metric):
 
 
 class ResidualPlot(Metric):
-    def __init__(self, filepath: Optional[Path] = None) -> None:
+    def __init__(
+        self, filepath: Optional[Path] = None, rasterized: Optional[bool] = False
+    ) -> None:
         """Plot residuals.
 
         Parameters
         ----------
         filepath
             Path to save plot if not None, by default None.
+        rasterized
+            Rasterize data points if True, by default False.
         """
         self.filepath = filepath
+        self.rasterized = rasterized
+
 
     def reset(self) -> None:
         """Reset metric state."""
@@ -580,7 +656,7 @@ class ResidualPlot(Metric):
         x = x.detach().reshape(-1).numpy()
         r = (output - target).detach().reshape(-1).numpy()
 
-        self.ax.scatter(x, r, color="black")
+        self.ax.scatter(x, r, color="black", rasterized=self.rasterized)
 
     def compute(self) -> plt.Figure:
         """Compute metric."""
