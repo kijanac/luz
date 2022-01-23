@@ -237,9 +237,13 @@ class FBeta(Metric):
         except ZeroDivisionError:
             return 1.0
 
+
 class HistogramData(Metric):
     def __init__(
-        self, filepath: Optional[Path] = None, num_bins: Optional[int] = 100, rasterized: Optional[bool] = False
+        self,
+        filepath: Optional[Path] = None,
+        num_bins: Optional[int] = 100,
+        rasterized: Optional[bool] = False,
     ) -> None:
         """Plot actual labels vs. predicted labels.
 
@@ -275,16 +279,20 @@ class HistogramData(Metric):
             Shape: :math:`(N,)`
         """
         if self.histc is None:
-            self.histc = torch.histc(x, bins=self.num_bins, min=self.data_min, max=self.data_max)
+            self.histc = torch.histc(
+                x, bins=self.num_bins, min=self.data_min, max=self.data_max
+            )
         else:
-            self.histc += torch.histc(x, bins=self.num_bins, min=self.data_min, max=self.data_max)
+            self.histc += torch.histc(
+                x, bins=self.num_bins, min=self.data_min, max=self.data_max
+            )
 
     def compute(self) -> plt.Figure:
         """Compute metric."""
         plt.hist(self.bins[:-1], self.bins, weights=self.histc.numpy())
         if self.filepath is not None:
             plt.savefig(luz.expand_path(self.filepath))
-        
+
         self.ax.relim()
         self.ax.autoscale_view()
 
@@ -563,7 +571,6 @@ class RegressionPlot(Metric):
         self.filepath = filepath
         self.rasterized = rasterized
 
-
     @property
     def name(self) -> str:
         """Metric name."""
@@ -633,7 +640,6 @@ class ResidualPlot(Metric):
         """
         self.filepath = filepath
         self.rasterized = rasterized
-
 
     def reset(self) -> None:
         """Reset metric state."""
