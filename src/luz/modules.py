@@ -274,14 +274,12 @@ class Dense(torch.nn.Module):
         """
         super().__init__()
 
-        if activation is None:
-            activation = torch.nn.LeakyReLU()
-
         layers = []
 
         for n_in, n_out in zip(features, features[1:]):
-            lin = torch.nn.Linear(n_in, n_out, bias=bias)
-            layers.extend([lin, activation])
+            layers.append(torch.nn.Linear(n_in, n_out, bias=bias))
+            if activation is not None:
+                layers.append(activation)
 
         self.seq = torch.nn.Sequential(*layers)
 
