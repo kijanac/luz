@@ -568,14 +568,14 @@ class MeanStd(Metric):
     def update(self, data: luz.Data, **kwargs: Any) -> None:
         """Update metric state."""
         x = data[self.key].detach()
-        self.n = x.size(self.batch_dim)
+        self.n += x.size(self.batch_dim)
         delta = x.detach() - self.mean
         self.mean += delta.sum(self.batch_dim) / self.n
         self.var += (delta * (x.detach() - self.mean)).sum(self.batch_dim)
 
     def compute(self) -> tuple[torch.Tensor, torch.Tensor]:
         """Compute metric."""
-        return self.mean, torch.sqrt(self.var / self.n)
+        return self.mean, torch.sqrt(self.var / (self.n - 1))
 
 
 class Min(Metric):
