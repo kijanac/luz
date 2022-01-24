@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "luz"
-version = "10.2.1"
+version = "10.2.2"
 description = "Lightweight framework for structuring arbitrary reproducible neural network learning procedures using PyTorch."
 authors = [ "Ki-Jana Carter <kijana@mit.edu>",]
 license = "MIT"
