@@ -83,6 +83,7 @@ class State:
         self.metrics = {}
         self.model = None
         self.output = None
+        self.transform = None
 
         self.update(**kwargs)
 

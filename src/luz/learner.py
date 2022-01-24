@@ -34,20 +34,19 @@ class Learner:
         """Get dataloader."""
         return dataset.loader()
 
-    def transform(self, runner: luz.Runner, stage: str) -> None:
-        """Create and apply transform to runners."""
+    def transform(self, state: luz.State) -> None:
+        """Create and apply transform to runners.
+
+        Parameters
+        ----------
+        state
+            Preprocessor state.
+        """
         pass
 
     def callbacks(self, runner: luz.Runner, stage: str) -> None:
         """Apply callbacks to runners."""
         pass
-
-    def _attach_transforms(self, state: luz.State) -> None:
-        self.transform(self.trainer, "train")
-        if self.validator is not None:
-            self.transform(self.validator, "validate")
-        if self.tester is not None:
-            self.transform(self.tester, "test")
 
     def learn(
         self,
@@ -123,3 +122,9 @@ class Learner:
             self.validator = self.runner(model, val_dataset, "validate")
         if test_dataset is not None:
             self.tester = self.runner(model, test_dataset, "test")
+
+    def _attach_transform(self, state: luz.State) -> None:
+        transform = self.transform(state)
+        for runner in [self.trainer, self.validator, self.tester]:
+            if runner is not None:
+                runner.state.update(transform=transform)
