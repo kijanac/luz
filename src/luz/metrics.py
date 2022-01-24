@@ -15,6 +15,7 @@ __all__ = [
     "CalibrationPlot",
     "DurbinWatson",
     "FBeta",
+    "HistogramResiduals",
     "LearningCurvePlot",
     "Loss",
     "Max",
@@ -310,6 +311,58 @@ class HistogramData(Metric):
         return self.fig
 
 
+class HistogramResiduals(Metric):
+    def __init__(
+        self,
+        filepath: Optional[Path] = None,
+        num_bins: Optional[int] = 100,
+    ) -> None:
+        """Histogram residuals.
+
+        Parameters
+        ----------
+        filepath
+            Path to save plot if not None, by default None.
+        num_bins
+            Number of histogram bins, by default 100.
+        """
+        self.filepath = filepath
+        self.num_bins = num_bins
+
+    def reset(self) -> None:
+        """Reset metric state."""
+        self.fig, self.ax = plt.subplots()
+        self.residuals = []
+
+    def update(self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any) -> None:
+        """Update metric state.
+
+        Parameters
+        ----------
+        output
+            Output tensor.
+            Shape: :math:`(N,C)`
+        target
+            Target tensor.
+            Shape: :math:`(N,C)`
+        """
+        r = (output - target).cpu().detach().reshape(-1).numpy()
+        self.residuals.extend(r)
+
+    def compute(self) -> plt.Figure:
+        """Compute metric."""
+        self.ax.hist(self.residuals, bins=self.num_bins, edgecolor="black")
+
+        self.ax.axvline(x=0, color="r", linestyle="--")
+
+        self.ax.set_xlabel("Residual")
+        self.ax.set_ylabel("Count")
+        self.ax.set_title("Residuals")
+
+        if self.filepath is not None:
+            self.fig.savefig(luz.expand_path(self.filepath))
+
+        return self.fig
 class LearningCurvePlot(Metric):
     def __init__(
         self,
