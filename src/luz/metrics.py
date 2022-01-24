@@ -182,7 +182,7 @@ class DurbinWatson(Metric):
 
     def update(self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any) -> None:
         """Update metric state."""
-        residual = target.detach() - output.detach()
+        residual = target.cpu().detach() - output.cpu().detach()
         diffs = torch.diff(residual, dim=0)
 
         self.num += (diffs ** 2).sum(dim=0) + (residual[0] - self.last_residual) ** 2
@@ -363,6 +363,8 @@ class HistogramResiduals(Metric):
             self.fig.savefig(luz.expand_path(self.filepath))
 
         return self.fig
+
+
 class LearningCurvePlot(Metric):
     def __init__(
         self,
@@ -568,11 +570,11 @@ class MeanStd(Metric):
 
     def update(self, data: luz.Data, **kwargs: Any) -> None:
         """Update metric state."""
-        x = data[self.key].detach()
+        x = data[self.key].cpu().detach()
         self.n = x.size(self.batch_dim)
-        delta = x.detach() - self.mean
+        delta = x.cpu().detach() - self.mean
         self.mean += delta.sum(self.batch_dim) / self.n
-        self.var += (delta * (x.detach() - self.mean)).sum(self.batch_dim)
+        self.var += (delta * (x.cpu().detach() - self.mean)).sum(self.batch_dim)
 
     def compute(self) -> tuple[torch.Tensor, torch.Tensor]:
         """Compute metric."""
@@ -648,9 +650,9 @@ class RegressionPlot(Metric):
             Target tensor.
             Shape: :math:`(N,C)`
         """
-        x = x.detach().reshape(-1).numpy()
-        y = target.detach().reshape(-1).numpy()
-        y_fit = output.detach().reshape(-1).numpy()
+        x = x.cpu().detach().reshape(-1).numpy()
+        y = target.cpu().detach().reshape(-1).numpy()
+        y_fit = output.cpu().detach().reshape(-1).numpy()
 
         self.ax.scatter(x, y, color="black", label="Data", rasterized=self.rasterized)
 
@@ -712,8 +714,8 @@ class ResidualPlot(Metric):
             Target tensor.
             Shape: :math:`(N,C)`
         """
-        x = x.detach().reshape(-1).numpy()
-        r = (output - target).detach().reshape(-1).numpy()
+        x = x.cpu().detach().reshape(-1).numpy()
+        r = (output - target).cpu().detach().reshape(-1).numpy()
 
         self.ax.scatter(x, r, color="black", rasterized=self.rasterized)
 
