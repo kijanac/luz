@@ -46,9 +46,6 @@ class Metric(ABC):
         """Compute metric."""
         pass
 
-    def store_compute(self, state, name):
-        state.metrics[name] = self.compute()
-
     def reset_handler(self, state: luz.State) -> None:
         self.reset()
 
