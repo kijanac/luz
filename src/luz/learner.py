@@ -87,7 +87,7 @@ class Learner:
             self.preprocessor.RUNNER_STARTED.attach(
                 luz.UpdateState(criterion=criterion)
             )
-            self.preprocessor.RUNNER_ENDED.attach(self._attach_transforms)
+            self.preprocessor.RUNNER_ENDED.attach(self._attach_transform)
             self.trainer.RUNNER_STARTED.attach(luz.Run(self.preprocessor, device))
             self.callbacks(self.preprocessor, "preprocess")
 
