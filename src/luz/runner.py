@@ -34,13 +34,21 @@ class Event(pyee.EventEmitter):
     ) -> None:
         if once is not None:
 
-            def filter(count):
-                return count == once
+            @functools.wraps(f)
+            def g(*args, **kwargs):
+                if self.count == once:
+                    f(*args, **kwargs)
+
+            self.on(self.name, g)
 
         elif every is not None:
 
-            def filter(count):
-                return count % every == 0
+            @functools.wraps(f)
+            def g(*args, **kwargs):
+                if self.count % every == 0:
+                    f(*args, **kwargs)
+
+            self.on(self.name, g)
 
         elif filter is not None:
 
