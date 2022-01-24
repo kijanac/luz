@@ -179,7 +179,7 @@ class DurbinWatson(Metric):
 
     def update(self, output: torch.Tensor, target: torch.Tensor, **kwargs: Any) -> None:
         """Update metric state."""
-        residual = target.cpu().detach() - output.cpu().detach()
+        residual = target.detach() - output.detach()
         diffs = torch.diff(residual, dim=0)
 
         self.num += (diffs ** 2).sum(dim=0) + (residual[0] - self.last_residual) ** 2
@@ -338,10 +338,10 @@ class HistogramResiduals(Metric):
         ----------
         output
             Output tensor.
-            Shape: :math:`(N,C)`
+            Shape: :math:`(N,)`
         target
             Target tensor.
-            Shape: :math:`(N,C)`
+            Shape: :math:`(N,)`
         """
         r = (output - target).cpu().detach().reshape(-1).numpy()
         self.residuals.extend(r)
@@ -567,11 +567,11 @@ class MeanStd(Metric):
 
     def update(self, data: luz.Data, **kwargs: Any) -> None:
         """Update metric state."""
-        x = data[self.key].cpu().detach()
+        x = data[self.key].detach()
         self.n = x.size(self.batch_dim)
-        delta = x.cpu().detach() - self.mean
+        delta = x.detach() - self.mean
         self.mean += delta.sum(self.batch_dim) / self.n
-        self.var += (delta * (x.cpu().detach() - self.mean)).sum(self.batch_dim)
+        self.var += (delta * (x.detach() - self.mean)).sum(self.batch_dim)
 
     def compute(self) -> tuple[torch.Tensor, torch.Tensor]:
         """Compute metric."""
