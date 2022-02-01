@@ -12,26 +12,65 @@ Criterion = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 
 class Learner:
     def __init__(self) -> None:
+        """Learner."""
         self.hparams = None
-        self.preprocessor = None
-        self.trainer = None
-        self.validator = None
-        self.tester = None
+        self.runners = {
+            "preprocess": None,
+            "train": None,
+            "validate": None,
+            "test": None,
+        }
 
     def model(self) -> torch.nn.Module:
-        """Get model."""
+        """Get model.
+
+        Returns
+        -------
+        torch.nn.Module
+            Model.
+        """
         raise NotImplementedError
 
     def optimizer(self, model: torch.nn.Module) -> torch.optim.Optimizer:
-        """Get optimizer."""
+        """Get optimizer.
+
+        Parameters
+        ----------
+        model
+            Model.
+
+        Returns
+        -------
+        torch.optim.Optimizer
+            Optimizer.
+        """
         raise NotImplementedError
 
     def criterion(self) -> Criterion:
-        """Get loss function."""
+        """Get loss function.
+
+        Returns
+        -------
+        Criterion
+            Loss function.
+        """
         raise NotImplementedError
 
     def loader(self, dataset: luz.Dataset, stage: str) -> torch.utils.data.DataLoader:
-        """Get dataloader."""
+        """Get dataloader.
+
+        Parameters
+        ----------
+        dataset
+            Dataset.
+        stage
+            Current stage.
+
+        Returns
+        -------
+        torch.utils.data.DataLoader
+            Data loader.
+        """
         return dataset.loader()
 
     def transform(self, state: luz.State) -> None:
@@ -45,7 +84,15 @@ class Learner:
         pass
 
     def callbacks(self, runner: luz.Runner, stage: str) -> None:
-        """Apply callbacks to runners."""
+        """Apply callbacks to runners.
+
+        Parameters
+        ----------
+        runner
+            Runner.
+        stage
+            Current stage.
+        """
         pass
 
     def learn(
@@ -79,35 +126,48 @@ class Learner:
 
         self._runners(model, train_dataset, val_dataset, test_dataset)
 
-        self.trainer.RUNNER_STARTED.attach(
+        self.runners["train"].RUNNER_STARTED.attach(
             luz.UpdateState(optimizer=optimizer, criterion=criterion)
         )
 
-        if self.preprocessor is not None:
-            self.preprocessor.RUNNER_STARTED.attach(
+        if self.runners["preprocess"] is not None:
+            self.runners["preprocess"].RUNNER_STARTED.attach(
                 luz.UpdateState(criterion=criterion)
             )
-            self.preprocessor.RUNNER_ENDED.attach(self._attach_transform)
-            self.trainer.RUNNER_STARTED.attach(luz.Run(self.preprocessor, device))
-            self.callbacks(self.preprocessor, "preprocess")
+            self.runners["preprocess"].RUNNER_ENDED.attach(self._attach_transform)
+            self.runners["train"].RUNNER_STARTED.attach(
+                luz.Run(self.runners["preprocess"], device)
+            )
+            self.callbacks(self.runners["preprocess"], "preprocess")
 
         if val_dataset is not None:
-            self.validator.RUNNER_STARTED.attach(luz.UpdateState(criterion=criterion))
-            self.trainer.EPOCH_ENDED.attach(luz.Run(self.validator, device))
-            self.callbacks(self.validator, "validate")
+            self.runners["validate"].RUNNER_STARTED.attach(
+                luz.UpdateState(criterion=criterion)
+            )
+            self.runners["train"].EPOCH_ENDED.attach(
+                luz.Run(self.runners["validate"], device)
+            )
+            self.callbacks(self.runners["validate"], "validate")
 
         if test_dataset is not None:
-            self.tester.RUNNER_STARTED.attach(luz.UpdateState(criterion=criterion))
-            self.trainer.RUNNER_ENDED.attach(luz.Run(self.tester, device))
-            self.callbacks(self.tester, "test")
+            self.runners["test"].RUNNER_STARTED.attach(
+                luz.UpdateState(criterion=criterion)
+            )
+            self.runners["train"].RUNNER_ENDED.attach(
+                luz.Run(self.runners["test"], device)
+            )
+            self.callbacks(self.runners["test"], "test")
 
-        self.callbacks(self.trainer, "train")
+        self.callbacks(self.runners["train"], "train")
 
-        self.trainer.run(device=device)
+        self.runners["train"].run(device=device)
 
         if test_dataset is not None:
-            return self.trainer.state.model, self.tester.state.metrics["loss"]
-        return self.trainer.state.model
+            return (
+                self.runners["train"].state.model,
+                self.runners["test"].state.metrics["loss"],
+            )
+        return self.runners["train"].state.model
 
     def _runners(
         self,
@@ -116,15 +176,15 @@ class Learner:
         val_dataset: Optional[luz.Dataset] = None,
         test_dataset: Optional[luz.Dataset] = None,
     ) -> None:
-        self.trainer = self.runner(model, train_dataset, "train")
-        self.preprocessor = self.runner(model, train_dataset, "preprocess")
+        self.runners["train"] = self.runner(model, train_dataset, "train")
+        self.runners["preprocess"] = self.runner(model, train_dataset, "preprocess")
         if val_dataset is not None:
-            self.validator = self.runner(model, val_dataset, "validate")
+            self.runners["validate"] = self.runner(model, val_dataset, "validate")
         if test_dataset is not None:
-            self.tester = self.runner(model, test_dataset, "test")
+            self.runners["test"] = self.runner(model, test_dataset, "test")
 
     def _attach_transform(self, state: luz.State) -> None:
         transform = self.transform(state)
-        for runner in [self.trainer, self.validator, self.tester]:
-            if runner is not None:
-                runner.state.update(transform=transform)
+        for k in ["train", "validate", "test"]:
+            if self.runners[k] is not None:
+                self.runners[k].state.update(transform=transform)
