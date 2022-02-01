@@ -83,6 +83,7 @@ class State:
         self.metrics = {}
         self.model = None
         self.output = None
+        self.terminate = False
         self.transform = None
 
         self.update(**kwargs)
@@ -150,6 +151,9 @@ class Runner:
         self.RUNNER_STARTED(self.state)
 
         for epoch in range(self.state.max_epochs):
+            if self.state.terminate:
+                break
+
             self.state.update(epoch=epoch)
 
             self.BATCH_STARTED.count = 0

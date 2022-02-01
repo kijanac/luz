@@ -15,6 +15,7 @@ import torch
 __all__ = [
     "Callback",
     "Checkpoint",
+    "EarlyStopping",
     "LogMetrics",
     "Progress",
     "Run",
@@ -50,6 +51,49 @@ class Checkpoint(Callback):
 
         save_path = pathlib.Path(self.save_dir, f"{self.model_name}_{epoch}.pth.tar")
         torch.save(obj=model.state_dict(), f=save_path)
+
+
+class EarlyStopping(Callback):
+    def __init__(
+        self,
+        runner,
+        metric_name: str,
+        patience: int,
+        delta: Optional[float] = 0.0,
+        minimize: Optional[bool] = True,
+    ) -> None:
+        self.runner = runner
+        self.metric_name = metric_name
+        self.patience = patience
+        self.delta = delta
+        self.minimize = minimize
+
+        self.evals_since_improvement = 0
+        self.best_metric = float("inf") if self.minimize else -float("inf")
+
+    def __call__(self, state: luz.State) -> None:
+        """Execute callback.
+
+        Parameters
+        ----------
+        state
+            Runner state.
+        """
+        val = self.runner.state.metrics[self.metric_name]
+
+        if self.minimize:
+            improved = val + self.delta < self.best_metric
+        else:
+            improved = val - self.delta > self.best_metric
+
+        if improved:
+            self.evals_since_improvement = 0
+            self.best_metric = self.runner.state.metrics[self.metric_name]
+        else:
+            self.evals_since_improvement += 1
+
+        if self.evals_since_improvement == self.patience:
+            state.terminate = True
 
 
 class LogMetrics(Callback):
